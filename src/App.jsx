@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MISSIONS } from './data/missions.js'
 import { UNLOCKS } from './data/unlocks.js'
-import MissionCard, { getRecommended } from './components/MissionCard.jsx'
+import MissionCard from './components/MissionCard.jsx'
 import RewardReveal from './components/RewardReveal.jsx'
 import TabNav from './components/TabNav.jsx'
 import UnlocksTab from './components/UnlocksTab.jsx'
@@ -9,7 +9,6 @@ import HistoryTab from './components/HistoryTab.jsx'
 import ConfigTab from './components/ConfigTab.jsx'
 import { loadState, saveState } from './hooks/useSave.js'
 
-// Retorna o ID da missão mais recomendada entre as opções sorteadas
 export function getRecommended(options) {
   if (!options.length) return null
   return options.reduce((best, m) =>
@@ -110,6 +109,8 @@ export default function App() {
     persist(u, c, h, null, mode)
   }
 
+  const recId = getRecommended(options)
+
   const TABS = [
     { id: 'board',   label: 'Missões' },
     { id: 'unlocks', label: `Desbloqueios (${unlocked.size})` },
@@ -133,7 +134,7 @@ export default function App() {
         </div>
         <button onClick={handleReset}
           style={{ fontSize: 11, color: '#8B6914', background: 'transparent',
-            border: '1px solid #c8a96e', padding: '5px 12px', borderRadius: 6 }}>
+            border: '1px solid #c8a96e', padding: '5px 12px', borderRadius: 6, fontFamily: 'inherit' }}>
           Resetar
         </button>
       </div>
@@ -155,7 +156,9 @@ export default function App() {
                   </p>
                 : <div style={{ display: 'flex', gap: 10 }}>
                     {options.map(m => (
-                      <MissionCard key={m.id} mission={m} state="idle" onClick={() => handlePick(m)} />
+                      <MissionCard key={m.id} mission={m} state="idle"
+                        recommended={m.id === recId}
+                        onClick={() => handlePick(m)} />
                     ))}
                   </div>
               }
@@ -171,12 +174,14 @@ export default function App() {
                 {options.map(m => (
                   <MissionCard key={m.id} mission={m}
                     state={m.id === pickedId ? 'selected' : 'faded'}
+                    recommended={false}
                     onClick={() => {}} />
                 ))}
               </div>
               <button onClick={() => setShowReward(true)}
                 style={{ width: '100%', padding: 11, fontSize: 13, borderRadius: 8,
-                  border: 'none', fontWeight: 500, background: '#2c1a00', color: '#f5ead0' }}>
+                  border: 'none', fontWeight: 500, background: '#2c1a00', color: '#f5ead0',
+                  fontFamily: 'inherit' }}>
                 Completei! Revelar recompensa
               </button>
             </>
