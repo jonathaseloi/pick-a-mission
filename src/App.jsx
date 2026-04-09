@@ -1,13 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MISSIONS } from './data/missions.js'
 import { UNLOCKS } from './data/unlocks.js'
-import MissionCard from './components/MissionCard.jsx'
+import MissionCard, { getRecommended } from './components/MissionCard.jsx'
 import RewardReveal from './components/RewardReveal.jsx'
 import TabNav from './components/TabNav.jsx'
 import UnlocksTab from './components/UnlocksTab.jsx'
 import HistoryTab from './components/HistoryTab.jsx'
 import ConfigTab from './components/ConfigTab.jsx'
 import { loadState, saveState } from './hooks/useSave.js'
+
+// Retorna o ID da missão mais recomendada entre as opções sorteadas
+export function getRecommended(options) {
+  if (!options.length) return null
+  return options.reduce((best, m) =>
+    (m.priority ?? 0) > (best.priority ?? 0) ? m : best
+  ).id
+}
 
 export const DIFF = {
   easy:   { label: 'Fácil',   bg: '#3B6D11', light: '#EAF3DE', border: '#97C459', text: '#EAF3DE' },
@@ -117,7 +125,7 @@ export default function App() {
         marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 2px', color: '#2c1a00' }}>
-            Pick a Mission
+            OSRS Mission Board
           </h1>
           <p style={{ fontSize: 12, color: '#8B6914', margin: 0 }}>
             {completed.size} missões concluídas · {unlocked.size} desbloqueios ativos

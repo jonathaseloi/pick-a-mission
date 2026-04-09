@@ -38,7 +38,7 @@ function StarRow({ diff }) {
   )
 }
 
-export default function MissionCard({ mission, state, onClick }) {
+export default function MissionCard({ mission, state, onClick, recommended }) {
   const d = DIFF[mission.diff]
   const isSelected = state === 'selected'
   const isFaded    = state === 'faded'
@@ -50,15 +50,33 @@ export default function MissionCard({ mission, state, onClick }) {
         cursor: isFaded ? 'default' : 'pointer',
         opacity: isFaded ? 0.25 : 1,
         borderRadius: 12,
-        border: `3px solid ${isSelected ? d.border : '#7a5a1e'}`,
-        boxShadow: isSelected ? `0 0 0 1px ${d.bg}, 0 6px 20px ${d.border}44` : '0 0 0 1px #3a2a0a',
+        border: `3px solid ${isSelected ? d.border : recommended ? '#f5d78e' : '#7a5a1e'}`,
+        boxShadow: isSelected
+          ? `0 0 0 1px ${d.bg}, 0 6px 20px ${d.border}44`
+          : recommended
+          ? '0 0 0 1px #c8a96e, 0 4px 14px #f5d78e33'
+          : '0 0 0 1px #3a2a0a',
         background: '#1a0f00',
         display: 'flex', flexDirection: 'column',
-        transform: isSelected ? 'translateY(-4px) scale(1.02)' : 'none',
+        transform: isSelected ? 'translateY(-4px) scale(1.02)' : recommended ? 'translateY(-2px)' : 'none',
         transition: 'all 0.2s',
         overflow: 'hidden',
         fontFamily: "'IM Fell English', Georgia, serif",
+        position: 'relative',
       }}>
+
+      {/* Recommended badge */}
+      {recommended && !isSelected && (
+        <div style={{
+          position: 'absolute', top: 8, right: 8, zIndex: 2,
+          background: '#c8a96e', color: '#1a0f00',
+          fontSize: 8, fontWeight: 700, padding: '2px 6px',
+          borderRadius: 4, letterSpacing: '0.08em',
+          fontFamily: 'system-ui, sans-serif',
+        }}>
+          RECOMENDADO
+        </div>
+      )}
 
       {/* Art area */}
       <div style={{
@@ -92,7 +110,7 @@ export default function MissionCard({ mission, state, onClick }) {
 
       {/* Description */}
       <div style={{ padding: '8px 10px 12px', flex: 1 }}>
-        <p style={{ fontSize: 11, color: '#c8a96e', margin: 0, lineHeight: 1.5, fontStyle: 'italic' }}>
+        <p style={{ fontSize: 11, color: '#c8a96e', margin: 0, lineHeight: 1.5, fontFamily: 'system-ui, sans-serif', fontStyle: 'normal' }}>
           {mission.desc}
         </p>
       </div>
