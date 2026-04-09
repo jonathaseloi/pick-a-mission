@@ -1,16 +1,24 @@
 export default function TabNav({ tabs, active, onChange }) {
   return (
-    <div style={{ display: 'flex', gap: 4, marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-      {tabs.map(t => (
-        <button key={t.id} onClick={() => onChange(t.id)}
-          style={{ padding: '6px 14px', fontSize: 12, borderRadius: 20,
-            border: '1px solid #c8a96e',
-            background: active === t.id ? '#2c1a00' : 'transparent',
-            color:      active === t.id ? '#f5ead0' : '#5a3e1b',
-            fontWeight: active === t.id ? 500 : 400 }}>
-          {t.label}
-        </button>
-      ))}
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+      {tabs.map(t => {
+        const isActive = active === t.id
+        return (
+          <button key={t.id} onClick={() => onChange(t.id)}
+            style={{
+              padding: '6px 14px', fontSize: 12, borderRadius: 20,
+              fontFamily: 'inherit', cursor: 'pointer',
+              border: '1px solid',
+              borderColor: isActive ? '#c8a96e' : '#5a3a0e',
+              background:  isActive ? '#c8a96e' : '#2a1a0a',
+              color:       isActive ? '#1a0f00' : '#c8a96e',
+              fontWeight:  isActive ? 600 : 400,
+              transition: 'all 0.15s',
+            }}>
+            {t.label}
+          </button>
+        )
+      })}
     </div>
   )
 }
