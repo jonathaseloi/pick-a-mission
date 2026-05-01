@@ -70,46 +70,59 @@ const subTabBtn = (id, active, label, onChange) => (
 )
 
 // ── Skills sub-tab ─────────────────────────────────────────────────────────
-function SkillsTab({ unlocked }) {
-  // Build map: skillName → highest unlocked level
-  const skillLevels = {}
+function SkillsTab({ unlocked, realLevels }) {
+  const unlockedCaps = {}
   for (const [id, u] of Object.entries(UNLOCKS)) {
     if (u.category === 'skill' && unlocked.has(id)) {
-      const cur = skillLevels[u.skill] ?? 0
-      if (u.level > cur) skillLevels[u.skill] = u.level
+      const cur = unlockedCaps[u.skill] ?? 0
+      if (u.level > cur) unlockedCaps[u.skill] = u.level
     }
   }
 
   return (
     <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-      <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 14px', letterSpacing: '0.06em' }}>
+      <p style={{ fontSize: 11, color: '#5a3e1b', margin: '0 0 4px', letterSpacing: '0.06em' }}>
         SKILLS DESBLOQUEADAS
       </p>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 6,
-      }}>
+      <p style={{ fontSize: 10, color: '#8B6914', margin: '0 0 14px', fontStyle: 'italic' }}>
+        Vermelho = você passou do nível liberado
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
-          const level = skillLevels[sk.name]
-          const hasLevel = !!level
+          const cap     = unlockedCaps[sk.name]
+          const real    = realLevels?.[sk.name]
+          const hasReal = real != null && real > 0
+          const hasCap  = cap != null
+          const overCap = hasCap && hasReal && real > cap
+
           return (
             <div key={sk.name} style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '6px 8px', borderRadius: 8,
-              border: `1px solid ${hasLevel ? '#c8a96e66' : '#3a2a0a'}`,
-              background: hasLevel ? '#1e1005' : '#120a0088',
-              opacity: hasLevel ? 1 : 0.4,
+              border: `1px solid ${overCap ? '#D85A30' : hasReal ? '#c8a96e' : '#c8a96e66'}`,
+              background: overCap ? '#FAECE7' : hasReal ? '#fffdf4' : '#f5ead0',
+              opacity: hasReal ? 1 : 0.4,
             }}>
               <img src={sk.img} alt={sk.name}
                 style={{ width: 20, height: 20, objectFit: 'contain', imageRendering: 'pixelated',
-                  filter: hasLevel ? 'none' : 'grayscale(1)' }} />
-              <div>
-                <p style={{ fontSize: 10, color: '#8B6914', margin: 0, lineHeight: 1 }}>{sk.name}</p>
-                <p style={{ fontSize: 13, fontWeight: 600, color: hasLevel ? '#f5d78e' : '#5a3a0e',
-                  margin: 0, lineHeight: 1.3, fontFamily: 'system-ui, sans-serif' }}>
-                  {hasLevel ? level : '—'}
-                </p>
+                  filter: hasReal ? 'none' : 'grayscale(1)' }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 9, color: '#5a3e1b', margin: 0, lineHeight: 1 }}>{sk.name}</p>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                  <p style={{
+                    fontSize: 13, fontWeight: 700, margin: 0, lineHeight: 1.3,
+                    fontFamily: 'system-ui, sans-serif',
+                    color: overCap ? '#D85A30' : hasReal ? '#2c1a00' : '#5a3a0e',
+                  }}>
+                    {hasReal ? real : '—'}
+                  </p>
+                  {hasCap && (
+                    <p style={{ fontSize: 9, color: '#8B6914', margin: 0,
+                      fontFamily: 'system-ui, sans-serif' }}>
+                      /{cap}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )
@@ -173,7 +186,7 @@ function EquipmentTab({ unlocked }) {
                   width: 56, height: 56,
                   border: `2px solid ${item ? styleColors[style] : '#3a2a0a'}`,
                   borderRadius: 8,
-                  background: item ? '#1e1005' : '#2a1a0a',
+                  background: item ? '#1e1005' : '#e8d5a3',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: item ? 'pointer' : 'default',
                   position: 'relative',
@@ -184,7 +197,7 @@ function EquipmentTab({ unlocked }) {
                   <img src={item.image} alt={item.name}
                     style={{ width: 40, height: 40, objectFit: 'contain', imageRendering: 'pixelated' }} />
                 ) : (
-                  <span style={{ fontSize: 9, color: '#c8a96e88', textAlign: 'center', lineHeight: 1.3,
+                  <span style={{ fontSize: 9, color: '#2c1a00', textAlign: 'center', lineHeight: 1.3,
                     fontFamily: 'system-ui, sans-serif' }}>
                     {SLOT_LABELS[slot]}
                   </span>
@@ -299,7 +312,7 @@ function GeneralTab({ unlocked }) {
             padding: '6px 10px', borderRadius: 8,
             border: '1px solid #c8a96e33', background: '#1e100588' }}>
             <span style={{ fontSize: 13 }}>{u.icon}</span>
-            <span style={{ fontSize: 12, color: '#c8a96e', fontFamily: 'system-ui, sans-serif' }}>
+            <span style={{ fontSize: 12, color: '#5a3e1b', fontFamily: 'system-ui, sans-serif' }}>
               {u.label}
             </span>
           </div>
