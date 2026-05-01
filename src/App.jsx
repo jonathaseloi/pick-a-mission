@@ -8,6 +8,7 @@ import UnlocksTab from './components/UnlocksTab.jsx'
 import HistoryTab from './components/HistoryTab.jsx'
 import ConfigTab from './components/ConfigTab.jsx'
 import SetupScreen from './components/SetupScreen.jsx'
+import HuntTab from './components/HuntTab.jsx'
 import { loadState, saveState } from './hooks/useSave.js'
 import { fetchPlayerLevels, calcCombatLevel } from './hooks/useOSRSApi.js'
 
@@ -66,6 +67,7 @@ export default function App() {
   const [showReward, setShowReward] = useState(false)
   const [tab,        setTab]        = useState('board')
   const [pamCoins,   setPamCoins]   = useState(() => saved?.pamCoins   || 0)
+  const [hunt,       setHunt]       = useState(() => saved?.hunt       || null)
 
   const combatLevel = calcCombatLevel(realLevels)
   const activeMission = pickedId ? MISSIONS.find(m => m.id === pickedId) : null
@@ -75,10 +77,10 @@ export default function App() {
       username, realLevels, pamCoins,
       options: next,
       unlocked: [...unlocked], completed: [...completed],
-      history, pickedId, mode,
+      history, pickedId, mode, hunt,
       ...overrides,
     })
-  }, [username, realLevels, pamCoins, unlocked, completed, history, pickedId, mode])
+  }, [username, realLevels, pamCoins, unlocked, completed, history, pickedId, mode, hunt])
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
@@ -95,7 +97,7 @@ export default function App() {
     saveState({
       username: name, realLevels: levels, pamCoins,
       unlocked: [...unlocked], completed: [...completed],
-      history, pickedId: null, mode,
+      history, pickedId: null, mode, hunt,
     })
   }
 
@@ -108,7 +110,7 @@ export default function App() {
       saveState({
         username, realLevels: levels, pamCoins,
         unlocked: [...unlocked], completed: [...completed],
-        history, pickedId, mode,
+        history, pickedId, mode, hunt,
       })
       return true
     } catch {
@@ -145,7 +147,7 @@ export default function App() {
     saveState({
       username, realLevels, pamCoins: newCoins,
       unlocked: [...newU], completed: [...newC],
-      history: newH, pickedId: null, mode,
+      history: newH, pickedId: null, mode, hunt,
     })
   }
 
@@ -167,13 +169,24 @@ export default function App() {
     persist({ mode: m })
   }
 
+  function handleHuntUpdate(newHunt) {
+    setHunt(newHunt)
+    persist({ hunt: newHunt })
+  }
+
+  function handleHuntCoins(amount) {
+    const newCoins = pamCoins + amount
+    setPamCoins(newCoins)
+    persist({ pamCoins: newCoins })
+  }
+
   function handleReset() {
     if (!window.confirm('Tem certeza? Todo o progresso será perdido.')) return
     const u = new Set(), c = new Set(), h = []
     setUnlocked(u); setCompleted(c); setHistory(h)
     setPickedId(null); setShowReward(false); setPamCoins(0)
     setOptions(drawOptions(u, c, mode))
-    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode })
+    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null })
   }
 
   function handleChangeUser() {
@@ -190,6 +203,7 @@ export default function App() {
 
   const TABS = [
     { id: 'board',   label: 'Missões' },
+    { id: 'hunt',    label: hunt ? `Hunt 🎯` : 'Hunt' },
     { id: 'unlocks', label: `Desbloqueios (${unlocked.size})` },
     { id: 'history', label: `Histórico (${history.length})` },
     { id: 'config',  label: 'Config' },
@@ -289,6 +303,15 @@ export default function App() {
         </div>
       )}
 
+      {tab === 'hunt'    && (
+        <HuntTab
+          combatLevel={combatLevel}
+          hunt={hunt}
+          onHuntUpdate={handleHuntUpdate}
+          pamCoins={pamCoins}
+          onCoinsChange={handleHuntCoins}
+        />
+      )}
       {tab === 'unlocks' && <UnlocksTab unlocked={unlocked} realLevels={realLevels} />}
       {tab === 'history' && <HistoryTab history={history} />}
       {tab === 'config'  && (

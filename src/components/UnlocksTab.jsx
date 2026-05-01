@@ -3,28 +3,41 @@ import { UNLOCKS } from '../data/unlocks.js'
 import { getBIS } from '../data/bis.js'
 
 // ── Skill metadata ─────────────────────────────────────────────────────────
+// Ordem idêntica ao grid do jogo (3 colunas, lido linha a linha):
+// Attack      Hitpoints   Mining
+// Strength    Agility     Smithing
+// Defence     Herblore    Fishing
+// Ranged      Thieving    Cooking
+// Prayer      Crafting    Firemaking
+// Magic       Fletching   Woodcutting
+// Runecraft   Slayer      Farming
+// Construction Hunter     Sailing
+const COMBAT_SKILLS = new Set([
+  'Attack','Strength','Defence','Ranged','Prayer','Magic','Hitpoints','Slayer'
+])
+
 const ALL_SKILLS = [
   { name: 'Attack',       img: 'https://oldschool.runescape.wiki/images/Attack_icon.png' },
-  { name: 'Strength',     img: 'https://oldschool.runescape.wiki/images/Strength_icon.png' },
-  { name: 'Defence',      img: 'https://oldschool.runescape.wiki/images/Defence_icon.png' },
-  { name: 'Ranged',       img: 'https://oldschool.runescape.wiki/images/Ranged_icon.png' },
-  { name: 'Prayer',       img: 'https://oldschool.runescape.wiki/images/Prayer_icon.png' },
-  { name: 'Magic',        img: 'https://oldschool.runescape.wiki/images/Magic_icon.png' },
   { name: 'Hitpoints',    img: 'https://oldschool.runescape.wiki/images/Hitpoints_icon.png' },
-  { name: 'Slayer',       img: 'https://oldschool.runescape.wiki/images/Slayer_icon.png' },
-  { name: 'Agility',      img: 'https://oldschool.runescape.wiki/images/Agility_icon.png' },
-  { name: 'Herblore',     img: 'https://oldschool.runescape.wiki/images/Herblore_icon.png' },
-  { name: 'Thieving',     img: 'https://oldschool.runescape.wiki/images/Thieving_icon.png' },
-  { name: 'Crafting',     img: 'https://oldschool.runescape.wiki/images/Crafting_icon.png' },
-  { name: 'Fletching',    img: 'https://oldschool.runescape.wiki/images/Fletching_icon.png' },
   { name: 'Mining',       img: 'https://oldschool.runescape.wiki/images/Mining_icon.png' },
+  { name: 'Strength',     img: 'https://oldschool.runescape.wiki/images/Strength_icon.png' },
+  { name: 'Agility',      img: 'https://oldschool.runescape.wiki/images/Agility_icon.png' },
   { name: 'Smithing',     img: 'https://oldschool.runescape.wiki/images/Smithing_icon.png' },
+  { name: 'Defence',      img: 'https://oldschool.runescape.wiki/images/Defence_icon.png' },
+  { name: 'Herblore',     img: 'https://oldschool.runescape.wiki/images/Herblore_icon.png' },
   { name: 'Fishing',      img: 'https://oldschool.runescape.wiki/images/Fishing_icon.png' },
+  { name: 'Ranged',       img: 'https://oldschool.runescape.wiki/images/Ranged_icon.png' },
+  { name: 'Thieving',     img: 'https://oldschool.runescape.wiki/images/Thieving_icon.png' },
   { name: 'Cooking',      img: 'https://oldschool.runescape.wiki/images/Cooking_icon.png' },
+  { name: 'Prayer',       img: 'https://oldschool.runescape.wiki/images/Prayer_icon.png' },
+  { name: 'Crafting',     img: 'https://oldschool.runescape.wiki/images/Crafting_icon.png' },
   { name: 'Firemaking',   img: 'https://oldschool.runescape.wiki/images/Firemaking_icon.png' },
+  { name: 'Magic',        img: 'https://oldschool.runescape.wiki/images/Magic_icon.png' },
+  { name: 'Fletching',    img: 'https://oldschool.runescape.wiki/images/Fletching_icon.png' },
   { name: 'Woodcutting',  img: 'https://oldschool.runescape.wiki/images/Woodcutting_icon.png' },
-  { name: 'Farming',      img: 'https://oldschool.runescape.wiki/images/Farming_icon.png' },
   { name: 'Runecraft',    img: 'https://oldschool.runescape.wiki/images/Runecraft_icon.png' },
+  { name: 'Slayer',       img: 'https://oldschool.runescape.wiki/images/Slayer_icon.png' },
+  { name: 'Farming',      img: 'https://oldschool.runescape.wiki/images/Farming_icon.png' },
   { name: 'Construction', img: 'https://oldschool.runescape.wiki/images/Construction_icon.png' },
   { name: 'Hunter',       img: 'https://oldschool.runescape.wiki/images/Hunter_icon.png' },
   { name: 'Sailing',      img: 'https://oldschool.runescape.wiki/images/Sailing_icon.png' },
@@ -82,18 +95,18 @@ function SkillsTab({ unlocked, realLevels }) {
   return (
     <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
       <p style={{ fontSize: 11, color: '#5a3e1b', margin: '0 0 4px', letterSpacing: '0.06em' }}>
-        SKILLS DESBLOQUEADAS
+        SKILLS
       </p>
       <p style={{ fontSize: 10, color: '#8B6914', margin: '0 0 14px', fontStyle: 'italic' }}>
-        Vermelho = você passou do nível liberado
+        Skills de combate sem bloqueio · Vermelho = passou do cap liberado
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
-          const cap     = unlockedCaps[sk.name] ?? 1
-          const real    = realLevels?.[sk.name]
-          const hasReal = real != null && real > 0
-          const hasCap  = true
-          const overCap = hasCap && hasReal && real > cap
+          const isCombat  = COMBAT_SKILLS.has(sk.name)
+          const cap       = isCombat ? null : (unlockedCaps[sk.name] ?? null)
+          const real      = realLevels?.[sk.name]
+          const hasReal   = real != null && real > 0
+          const overCap   = !isCombat && cap != null && hasReal && real > cap
 
           return (
             <div key={sk.name} style={{
@@ -116,7 +129,7 @@ function SkillsTab({ unlocked, realLevels }) {
                   }}>
                     {hasReal ? real : '—'}
                   </p>
-                  {hasCap && (
+                  {!isCombat && cap != null && (
                     <p style={{ fontSize: 9, color: '#8B6914', margin: 0,
                       fontFamily: 'system-ui, sans-serif' }}>
                       /{cap}
