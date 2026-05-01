@@ -299,12 +299,22 @@ function KillFeed({ events, onDismiss }) {
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
-export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange, huntUnlocked, onHuntUnlockedChange }) {
+export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange, huntUnlocked, onHuntUnlockedChange, huntPrefs, onHuntPrefsChange }) {
   const [pendingMonster, setPendingMonster] = useState(null)
   const [feedEvents, setFeedEvents]         = useState([])
   const [tierBanners, setTierBanners]       = useState([])
   const [search, setSearch]                 = useState('')
   const prevCBRef = useRef(combatLevel)
+
+  const hideSlayer = huntPrefs?.hideSlayer ?? false
+  const sortOrder  = huntPrefs?.sort ?? 'tier'
+
+  function setHideSlayer(val) {
+    onHuntPrefsChange({ ...huntPrefs, hideSlayer: val })
+  }
+  function setSortOrder(val) {
+    onHuntPrefsChange({ ...huntPrefs, sort: val })
+  }
 
   // Detect tier unlocks on CB change (never bosses)
   useEffect(() => {
@@ -360,8 +370,21 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
   }
 
   function handleFinish() {
-    onHuntUpdate(null)
-    addFeed('bonus', '✅ Hunt finalizado!', `${hunt?.kills || 0} kills registradas`)
+    if (!hunt) return
+    const monster = MONSTERS.find(m => m.id === hunt.monsterId)
+    const entry = {
+      type: 'hunt',
+      monsterId: hunt.monsterId,
+      monsterName: monster?.name ?? hunt.monsterId,
+      monsterImg: monster?.img ?? '',
+      monsterTier: monster?.tier ?? 'cb1',
+      kills: hunt.kills,
+      coinsEarned: hunt.totalCoinsEarned || 0,
+      date: new Date().toLocaleDateString('pt-BR'),
+      startedAt: hunt.startedAt,
+    }
+    onHuntUpdate(null, entry)
+    addFeed('bonus', '✅ Hunt finalizado!', `${hunt.kills} kills · ${(hunt.totalCoinsEarned || 0).toLocaleString()} 🪙`)
   }
 
   function handleAbandon() {
@@ -369,10 +392,18 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
     onHuntUpdate(null)
   }
 
-  // Build filtered list
+  // Build filtered + sorted list
+  const SORT_FNS = {
+    tier:      (a, b) => TIERS.findIndex(t => t.id === a.tier) - TIERS.findIndex(t => t.id === b.tier),
+    coins:     (a, b) => b.coinsPerKill - a.coinsPerKill,
+    name:      (a, b) => a.name.localeCompare(b.name),
+  }
+
   const unlockedMonsters = MONSTERS
     .filter(m => huntUnlocked.has(m.id))
+    .filter(m => !hideSlayer || !m.slayerReq)
     .filter(m => !search || m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort(SORT_FNS[sortOrder] ?? SORT_FNS.tier)
 
   return (
     <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
@@ -403,12 +434,48 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              width: '100%', padding: '8px 12px', fontSize: 12, marginBottom: 10,
+              width: '100%', padding: '8px 12px', fontSize: 12, marginBottom: 8,
               borderRadius: 8, border: '1px solid #c8a96e',
               background: '#fffdf4', color: '#2c1a00', fontFamily: 'inherit', outline: 'none',
               boxSizing: 'border-box',
             }}
           />
+
+          {/* Controls row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+            {/* Sort */}
+            <div style={{ display: 'flex', gap: 4 }}>
+              {[
+                { id: 'tier',  label: 'Tier' },
+                { id: 'coins', label: 'Coins' },
+                { id: 'name',  label: 'Nome' },
+              ].map(s => (
+                <button key={s.id} onClick={() => setSortOrder(s.id)} style={{
+                  padding: '4px 10px', fontSize: 11, borderRadius: 20,
+                  border: '1px solid',
+                  borderColor: sortOrder === s.id ? '#c8a96e' : '#5a3a0e',
+                  background:  sortOrder === s.id ? '#c8a96e' : '#2a1a0a',
+                  color:       sortOrder === s.id ? '#1a0f00' : '#c8a96e',
+                  fontFamily: 'inherit', cursor: 'pointer',
+                  fontWeight: sortOrder === s.id ? 600 : 400,
+                }}>{s.label}</button>
+              ))}
+            </div>
+
+            {/* Slayer toggle */}
+            <label style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              fontSize: 11, color: '#c8a96e', cursor: 'pointer', marginLeft: 'auto',
+            }}>
+              <input
+                type="checkbox"
+                checked={hideSlayer}
+                onChange={e => setHideSlayer(e.target.checked)}
+                style={{ accentColor: '#c8a96e' }}
+              />
+              Ocultar Slayer Task
+            </label>
+          </div>
 
           {unlockedMonsters.length === 0 ? (
             <p style={{ color: '#8B6914', fontSize: 13, textAlign: 'center', padding: '1rem' }}>
@@ -417,7 +484,7 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 4px', letterSpacing: '0.05em' }}>
-                SEUS MONSTROS — clique para iniciar
+                {unlockedMonsters.length} MONSTRO{unlockedMonsters.length !== 1 ? 'S' : ''} — clique para iniciar
               </p>
               {unlockedMonsters.map(m => (
                 <MonsterCard key={m.id} monster={m} onSelect={setPendingMonster} />

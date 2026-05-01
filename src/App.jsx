@@ -62,6 +62,8 @@ export default function App() {
   const [pamCoins,   setPamCoins]   = useState(() => saved?.pamCoins   || 0)
   const [hunt,          setHunt]          = useState(() => saved?.hunt          || null)
   const [huntUnlocked,  setHuntUnlocked]  = useState(() => new Set(saved?.huntUnlocked || []))
+  const [huntHistory,   setHuntHistory]   = useState(() => saved?.huntHistory   || [])
+  const [huntPrefs,     setHuntPrefs]     = useState(() => saved?.huntPrefs     || { hideSlayer: false, sort: 'tier' })
 
   const combatLevel = calcCombatLevel(realLevels)
   const activeMission = pickedId ? MISSIONS.find(m => m.id === pickedId) : null
@@ -72,9 +74,10 @@ export default function App() {
       options,
       unlocked: [...unlocked], completed: [...completed],
       history, pickedId, mode, hunt, huntUnlocked: [...huntUnlocked],
+      huntHistory, huntPrefs,
       ...overrides,
     })
-  }, [username, realLevels, pamCoins, options, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked])
+  }, [username, realLevels, pamCoins, options, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked, huntHistory, huntPrefs])
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
@@ -163,9 +166,15 @@ export default function App() {
     persist({ mode: m })
   }
 
-  function handleHuntUpdate(newHunt) {
+  function handleHuntUpdate(newHunt, finishedHunt = null) {
     setHunt(newHunt)
-    persist({ hunt: newHunt, huntUnlocked: [...huntUnlocked] })
+    if (finishedHunt) {
+      const newHH = [finishedHunt, ...huntHistory]
+      setHuntHistory(newHH)
+      persist({ hunt: newHunt, huntHistory: newHH })
+    } else {
+      persist({ hunt: newHunt, huntHistory })
+    }
   }
 
   function handleHuntUnlockedChange(newSet) {
@@ -176,7 +185,12 @@ export default function App() {
   function handleHuntCoins(amount) {
     const newCoins = pamCoins + amount
     setPamCoins(newCoins)
-    persist({ pamCoins: newCoins, huntUnlocked: [...huntUnlocked] })
+    persist({ pamCoins: newCoins })
+  }
+
+  function handleHuntPrefs(newPrefs) {
+    setHuntPrefs(newPrefs)
+    persist({ huntPrefs: newPrefs })
   }
 
   function handleReset() {
@@ -185,7 +199,7 @@ export default function App() {
     setUnlocked(u); setCompleted(c); setHistory(h)
     setPickedId(null); setShowReward(false); setPamCoins(0)
     setOptions(drawOptions(u, c, mode))
-    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null, huntUnlocked: [] })
+    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null, huntUnlocked: [], huntHistory: [], huntPrefs: { hideSlayer: false, sort: 'tier' } })
   }
 
   function handleChangeUser() {
@@ -205,7 +219,7 @@ export default function App() {
     { id: 'hunt',    label: hunt ? 'Hunt 🎯' : 'Hunt' },
     { id: 'shop',    label: 'Loja' },
     { id: 'unlocks', label: `Desbloqueios (${unlocked.size})` },
-    { id: 'history', label: `Histórico (${history.length})` },
+    { id: 'history', label: `Histórico (${history.length + huntHistory.length})` },
     { id: 'config',  label: 'Config' },
   ]
 
@@ -311,6 +325,8 @@ export default function App() {
           onCoinsChange={handleHuntCoins}
           huntUnlocked={huntUnlocked}
           onHuntUnlockedChange={handleHuntUnlockedChange}
+          huntPrefs={huntPrefs}
+          onHuntPrefsChange={handleHuntPrefs}
         />
       )}
       {tab === 'shop'    && (
@@ -323,7 +339,7 @@ export default function App() {
         />
       )}
       {tab === 'unlocks' && <UnlocksTab unlocked={unlocked} realLevels={realLevels} />}
-      {tab === 'history' && <HistoryTab history={history} />}
+      {tab === 'history' && <HistoryTab history={history} huntHistory={huntHistory} />}
       {tab === 'config'  && (
         <ConfigTab mode={mode} modes={MODES} onChange={handleModeChange}
           username={username} onRefresh={handleRefreshLevels} onChangeUser={handleChangeUser} />
