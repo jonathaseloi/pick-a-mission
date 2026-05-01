@@ -32,6 +32,7 @@ const SKILL_ORDER = [
   'Runecraft',    // 21
   'Hunter',       // 22
   'Construction', // 23
+  'Sailing',      // 24
 ]
 
 /**
