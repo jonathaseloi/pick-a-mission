@@ -19,7 +19,7 @@ export const TIERS = [
 ]
 
 export const BOSS_TIER = {
-  id: 'boss', label: 'Boss', unlockCost: 500,
+  id: 'boss', label: 'Boss', unlockCost: 500, minCB: 40,
   color: '#1a1a1a', bg: '#f0f0f0', border: '#888',
 }
 

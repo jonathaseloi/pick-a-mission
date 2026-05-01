@@ -76,12 +76,12 @@ export default function App() {
   const persist = useCallback((overrides = {}) => {
     saveState({
       username, realLevels, pamCoins,
-      options: next,
+      options,
       unlocked: [...unlocked], completed: [...completed],
       history, pickedId, mode, hunt, huntUnlocked: [...huntUnlocked],
       ...overrides,
     })
-  }, [username, realLevels, pamCoins, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked])
+  }, [username, realLevels, pamCoins, options, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked])
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
