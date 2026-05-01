@@ -1,4 +1,4 @@
-import { DIFF } from '../App.jsx'
+import { DIFF } from '../constants.js'
 
 export const TYPE_ICON = {
   Skilling: '⛏', Boss: '💀', Quest: '📜', Dungeon: '🏰',

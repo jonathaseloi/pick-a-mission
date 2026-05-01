@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { parchment } from '../App.jsx'
+import { parchment } from '../constants.js'
 
 export default function ConfigTab({ mode, modes, onChange, username, onRefresh, onChangeUser }) {
   const [refreshing, setRefreshing] = useState(false)

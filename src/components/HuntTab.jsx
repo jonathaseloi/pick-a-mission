@@ -3,7 +3,7 @@ import {
   MONSTERS, TIERS, BOSS_TIER, TIER_META,
   getActiveTiers, drawTierStarters, getBuyableMonsters, getTierCost
 } from '../data/monsters.js'
-import { parchment } from '../App.jsx'
+import { parchment } from '../constants.js'
 
 const parch = parchment
 
