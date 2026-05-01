@@ -89,10 +89,10 @@ function SkillsTab({ unlocked, realLevels }) {
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
-          const cap     = unlockedCaps[sk.name]
+          const cap     = unlockedCaps[sk.name] ?? 1
           const real    = realLevels?.[sk.name]
           const hasReal = real != null && real > 0
-          const hasCap  = cap != null
+          const hasCap  = true
           const overCap = hasCap && hasReal && real > cap
 
           return (

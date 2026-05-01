@@ -275,8 +275,8 @@ export default function App() {
                   style={{ padding: '11px 18px', fontSize: 13, borderRadius: 8,
                     border: 'none', fontWeight: 500, fontFamily: 'inherit',
                     cursor: pamCoins >= 15 ? 'pointer' : 'not-allowed',
-                    background: pamCoins >= 15 ? '#2c1a00' : '#2a1a0a',
-                    color: pamCoins >= 15 ? '#f5ead0' : '#5a3a0e' }}>
+                    background: pamCoins >= 15 ? '#2c1a00' : '#3a2a0a',
+                    color: '#f5ead0' }}>
                   Pular 15🪙
                 </button>
               </div>
