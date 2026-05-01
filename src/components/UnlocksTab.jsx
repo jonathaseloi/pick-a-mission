@@ -70,7 +70,7 @@ const subTabBtn = (id, active, label, onChange) => (
 )
 
 // ── Skills sub-tab ─────────────────────────────────────────────────────────
-function SkillsTab({ unlocked, realLevels }) {
+function SkillsTab({ unlocked }) {
   // Build map: skillName → highest unlocked level
   const skillLevels = {}
   for (const [id, u] of Object.entries(UNLOCKS)) {
@@ -173,7 +173,7 @@ function EquipmentTab({ unlocked }) {
                   width: 56, height: 56,
                   border: `2px solid ${item ? styleColors[style] : '#3a2a0a'}`,
                   borderRadius: 8,
-                  background: item ? '#1e1005' : '#d4a96a',
+                  background: item ? '#1e1005' : '#2a1a0a',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: item ? 'pointer' : 'default',
                   position: 'relative',
@@ -184,7 +184,7 @@ function EquipmentTab({ unlocked }) {
                   <img src={item.image} alt={item.name}
                     style={{ width: 40, height: 40, objectFit: 'contain', imageRendering: 'pixelated' }} />
                 ) : (
-                  <span style={{ fontSize: 9, color: '#2c1a00', textAlign: 'center', lineHeight: 1.3,
+                  <span style={{ fontSize: 9, color: '#c8a96e88', textAlign: 'center', lineHeight: 1.3,
                     fontFamily: 'system-ui, sans-serif' }}>
                     {SLOT_LABELS[slot]}
                   </span>
@@ -325,7 +325,7 @@ export default function UnlocksTab({ unlocked, realLevels }) {
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '1rem' }}>
         {SUB_TABS.map(t => subTabBtn(t.id, sub, t.label, setSub))}
       </div>
-      {sub === 'skills'    && <SkillsTab unlocked={unlocked} realLevels={realLevels} />}
+      {sub === 'skills'    && <SkillsTab    unlocked={unlocked} realLevels={realLevels} />}
       {sub === 'equipment' && <EquipmentTab unlocked={unlocked} />}
       {sub === 'others'    && <OthersTab    unlocked={unlocked} />}
       {sub === 'general'   && <GeneralTab   unlocked={unlocked} />}

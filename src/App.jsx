@@ -61,7 +61,7 @@ export default function App() {
   const [completed,  setCompleted]  = useState(() => new Set(saved?.completed || []))
   const [history,    setHistory]    = useState(() => saved?.history    || [])
   const [mode,       setMode]       = useState(() => saved?.mode       || 'mixed')
-  const [options,    setOptions]    = useState([])
+  const [options,    setOptions]    = useState(() => saved?.options || [])
   const [pickedId,   setPickedId]   = useState(() => saved?.pickedId   || null)
   const [showReward, setShowReward] = useState(false)
   const [tab,        setTab]        = useState('board')
@@ -73,6 +73,7 @@ export default function App() {
   const persist = useCallback((overrides = {}) => {
     saveState({
       username, realLevels, pamCoins,
+      options: next,
       unlocked: [...unlocked], completed: [...completed],
       history, pickedId, mode,
       ...overrides,
@@ -81,6 +82,8 @@ export default function App() {
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
+    // se tinha missão ativa e options vazias, restaura do pool
+    else if (options.length === 0) setOptions(drawOptions(unlocked, completed, mode))
   }, [])
 
   // ── Setup ──────────────────────────────────────────────────────────────────
@@ -272,8 +275,8 @@ export default function App() {
                   style={{ padding: '11px 18px', fontSize: 13, borderRadius: 8,
                     border: 'none', fontWeight: 500, fontFamily: 'inherit',
                     cursor: pamCoins >= 15 ? 'pointer' : 'not-allowed',
-                    background: pamCoins >= 15 ? '#2c1a00' : '#3a2a0a',
-                    color: '#f5ead0' }}>
+                    background: pamCoins >= 15 ? '#2c1a00' : '#2a1a0a',
+                    color: pamCoins >= 15 ? '#f5ead0' : '#5a3a0e' }}>
                   Pular 15🪙
                 </button>
               </div>
