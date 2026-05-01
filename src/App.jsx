@@ -9,6 +9,7 @@ import HistoryTab from './components/HistoryTab.jsx'
 import ConfigTab from './components/ConfigTab.jsx'
 import SetupScreen from './components/SetupScreen.jsx'
 import HuntTab from './components/HuntTab.jsx'
+import ShopTab from './components/ShopTab.jsx'
 import { loadState, saveState } from './hooks/useSave.js'
 import { fetchPlayerLevels, calcCombatLevel } from './hooks/useOSRSApi.js'
 import { parchment, DIFF } from './constants.js'
@@ -201,7 +202,8 @@ export default function App() {
 
   const TABS = [
     { id: 'board',   label: 'Missões' },
-    { id: 'hunt',    label: hunt ? `Hunt 🎯` : 'Hunt' },
+    { id: 'hunt',    label: hunt ? 'Hunt 🎯' : 'Hunt' },
+    { id: 'shop',    label: 'Loja' },
     { id: 'unlocks', label: `Desbloqueios (${unlocked.size})` },
     { id: 'history', label: `Histórico (${history.length})` },
     { id: 'config',  label: 'Config' },
@@ -306,10 +308,18 @@ export default function App() {
           combatLevel={combatLevel}
           hunt={hunt}
           onHuntUpdate={handleHuntUpdate}
-          pamCoins={pamCoins}
           onCoinsChange={handleHuntCoins}
           huntUnlocked={huntUnlocked}
           onHuntUnlockedChange={handleHuntUnlockedChange}
+        />
+      )}
+      {tab === 'shop'    && (
+        <ShopTab
+          combatLevel={combatLevel}
+          pamCoins={pamCoins}
+          huntUnlocked={huntUnlocked}
+          onHuntUnlockedChange={handleHuntUnlockedChange}
+          onCoinsChange={handleHuntCoins}
         />
       )}
       {tab === 'unlocks' && <UnlocksTab unlocked={unlocked} realLevels={realLevels} />}

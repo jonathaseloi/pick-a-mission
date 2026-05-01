@@ -3,614 +3,128 @@
 //
 // SISTEMA DE DESBLOQUEIO:
 //   - Ao atingir o minCB de um tier, 2 monstros aleatórios desse tier são
-//     liberados automaticamente (sorteados na primeira vez que o CB é atingido)
-//   - Os demais são comprados com PAM Coins (preço por tier)
-//   - Monstros comprados ficam permanentemente na lista
-//   - slayerReq: true = jogo bloqueia o ataque sem estar em task
+//     liberados automaticamente
+//   - Boss nunca é liberado automaticamente — comprado na Loja
+//   - Os demais são comprados na aba Loja com PAM Coins
+//   - slayerReq: true = jogo bloqueia o ataque sem task ativa
 // ─────────────────────────────────────────────────────────────────────────────
 
-const WIKI = 'https://oldschool.runescape.wiki/images'
+const WIKI_IMG  = 'https://oldschool.runescape.wiki/images'
+const WIKI_PAGE = 'https://oldschool.runescape.wiki/w'
 
 export const TIERS = [
-  { id: 'turael',   label: 'Turael',   minCB: 1,  maxCB: 39,   unlockCost: 80,  color: '#3B6D11', bg: '#EAF3DE', border: '#97C459' },
-  { id: 'mazchna',  label: 'Mazchna',  minCB: 40, maxCB: 69,   unlockCost: 200, color: '#854F0B', bg: '#FAEEDA', border: '#EF9F27' },
-  { id: 'vannaka',  label: 'Vannaka',  minCB: 70, maxCB: 89,   unlockCost: 400, color: '#7A1F1F', bg: '#FAECE7', border: '#D85A30' },
-  { id: 'chaeldar', label: 'Chaeldar', minCB: 90, maxCB: 9999, unlockCost: 700, color: '#2a1a6e', bg: '#ede8ff', border: '#8B6BD4' },
+  { id: 'cb1',  label: 'CB 1–39',  minCB: 1,  maxCB: 39,   unlockCost: 80,  color: '#3B6D11', bg: '#EAF3DE', border: '#97C459' },
+  { id: 'cb40', label: 'CB 40–69', minCB: 40, maxCB: 69,   unlockCost: 200, color: '#854F0B', bg: '#FAEEDA', border: '#EF9F27' },
+  { id: 'cb70', label: 'CB 70–89', minCB: 70, maxCB: 89,   unlockCost: 400, color: '#7A1F1F', bg: '#FAECE7', border: '#D85A30' },
+  { id: 'cb90', label: 'CB 90+',   minCB: 90, maxCB: 9999, unlockCost: 700, color: '#2a1a6e', bg: '#ede8ff', border: '#8B6BD4' },
 ]
 
 export const BOSS_TIER = {
-  id: 'boss', label: 'Boss', unlockCost: 500, minCB: 40,
-  color: '#1a1a1a', bg: '#f0f0f0', border: '#888',
+  id: 'boss', label: 'Boss', unlockCost: 500, minCB: 1,
+  color: '#5a3a0e', bg: '#fdf3e0', border: '#c8a96e',
 }
 
 export const MONSTERS = [
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // TURAEL — CB 1–39  (18 monstros)
+  // CB 1–39  (18 monstros)
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'chickens', name: 'Chickens', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 10,
-    location: 'Lumbridge Farm',
-    desc: 'Pega feathers para flechas. Starter clássico.',
-    img: `${WIKI}/Chicken.png`, slayerReq: false,
-  },
-  {
-    id: 'cows', name: 'Cows', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10,
-    location: 'Lumbridge Cow Field',
-    desc: 'Cowhide para Crafting, carne para comida.',
-    img: `${WIKI}/Cow.png`, slayerReq: false,
-  },
-  {
-    id: 'rats', name: 'Giant Rats', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 250, bonusAmount: 8,
-    location: 'Lumbridge Cellar / Varrock Sewers',
-    desc: 'Os mais fáceis do jogo. Rápidos para initicar.',
-    img: `${WIKI}/Giant_rat.png`, slayerReq: false,
-  },
-  {
-    id: 'goblins', name: 'Goblins', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,
-    location: 'Lumbridge / Goblin Village',
-    desc: 'Drops moedas e goblin armor.',
-    img: `${WIKI}/Goblin.png`, slayerReq: false,
-  },
-  {
-    id: 'bats', name: 'Bats', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,
-    location: 'Lumbridge Swamp Caves',
-    desc: 'Fáceis e acessíveis.',
-    img: `${WIKI}/Bat.png`, slayerReq: false,
-  },
-  {
-    id: 'wolves', name: 'Wolves', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,
-    location: 'White Wolf Mountain / Taverley',
-    desc: 'Drops wolf bones para Prayer.',
-    img: `${WIKI}/Wolf.png`, slayerReq: false,
-  },
-  {
-    id: 'scorpions', name: 'Scorpions', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,
-    location: 'Dwarven Mine / Al Kharid',
-    desc: 'Drops uncut gems raramente.',
-    img: `${WIKI}/Scorpion.png`, slayerReq: false,
-  },
-  {
-    id: 'skeletons', name: 'Skeletons', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 9,
-    location: 'Edgeville Dungeon / Stronghold',
-    desc: 'Drops coins e bones para Prayer.',
-    img: `${WIKI}/Skeleton_(large).png`, slayerReq: false,
-  },
-  {
-    id: 'ghosts', name: 'Ghosts', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 175, bonusAmount: 8,
-    location: 'Port Phasmatys / Draynor Manor',
-    desc: 'Drops various loot. Requer Ghostspeak amulet.',
-    img: `${WIKI}/Ghost.png`, slayerReq: false,
-  },
-  {
-    id: 'bears', name: 'Bears', tier: 'turael', minCB: 8,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10,
-    location: 'East of Varrock / Ranging Guild',
-    desc: 'Drops bear fur para Crafting.',
-    img: `${WIKI}/Bear.png`, slayerReq: false,
-  },
-  {
-    id: 'dogs', name: 'Dogs', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,
-    location: 'Stronghold of Security',
-    desc: 'Drops bones e coins.',
-    img: `${WIKI}/Dog.png`, slayerReq: false,
-  },
-  {
-    id: 'minotaurs', name: 'Minotaurs', tier: 'turael', minCB: 10,
-    coinsPerKill: 1, bonusEvery: 100, bonusAmount: 12,
-    location: 'Stronghold of Security (Anarchy)',
-    desc: 'Dropam iron arrows — ótimo para Ranged iron.',
-    img: `${WIKI}/Minotaur.png`, slayerReq: false,
-  },
-  {
-    id: 'giant_spiders', name: 'Giant Spiders', tier: 'turael', minCB: 3,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 8,
-    location: 'Stronghold of Security',
-    desc: 'Rápidos de matar, boa exp.',
-    img: `${WIKI}/Giant_spider_(level_2).png`, slayerReq: false,
-  },
-  {
-    id: 'monkeys', name: 'Monkeys', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,
-    location: 'Ape Atoll / Karamja',
-    desc: 'Drops bones e monkey bones para Prayer.',
-    img: `${WIKI}/Monkey.png`, slayerReq: false,
-  },
-  {
-    id: 'cave_bugs', name: 'Cave Bugs', tier: 'turael', minCB: 1,
-    coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,
-    location: 'Lumbridge Swamp Caves',
-    desc: 'Requer 7 Slayer. Drops herbs.',
-    img: `${WIKI}/Cave_bug.png`, slayerReq: true,
-  },
-  {
-    id: 'crawling_hands', name: 'Crawling Hands', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10,
-    location: 'Slayer Tower (ground floor)',
-    desc: 'Requer 5 Slayer. Drops ruby e diamond rings.',
-    img: `${WIKI}/Crawling_hand.png`, slayerReq: true,
-  },
-  {
-    id: 'lizards', name: 'Lizards', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 150, bonusAmount: 9,
-    location: 'Kharidian Desert',
-    desc: 'Requer 22 Slayer. Precisam de ice cooler para matar.',
-    img: `${WIKI}/Desert_lizard.png`, slayerReq: true,
-  },
-  {
-    id: 'dwarves', name: 'Dwarves', tier: 'turael', minCB: 5,
-    coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,
-    location: 'Dwarven Mine / Ice Mountain',
-    desc: 'Drops pickaxes e mithril ores raramente.',
-    img: `${WIKI}/Dwarf.png`, slayerReq: false,
-  },
+  { id: 'chickens',      name: 'Chickens',      tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 10, img: `${WIKI_IMG}/Chicken.png`,                slayerReq: false, wiki: `${WIKI_PAGE}/Chicken` },
+  { id: 'cows',          name: 'Cows',           tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10, img: `${WIKI_IMG}/Cow.png`,                    slayerReq: false, wiki: `${WIKI_PAGE}/Cow` },
+  { id: 'rats',          name: 'Giant Rats',     tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 250, bonusAmount: 8,  img: `${WIKI_IMG}/Giant_rat.png`,              slayerReq: false, wiki: `${WIKI_PAGE}/Giant_rat` },
+  { id: 'goblins',       name: 'Goblins',        tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,  img: `${WIKI_IMG}/Goblin.png`,                 slayerReq: false, wiki: `${WIKI_PAGE}/Goblin` },
+  { id: 'bats',          name: 'Bats',           tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,  img: `${WIKI_IMG}/Bat.png`,                    slayerReq: false, wiki: `${WIKI_PAGE}/Bat` },
+  { id: 'wolves',        name: 'Wolves',         tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,  img: `${WIKI_IMG}/Wolf.png`,                   slayerReq: false, wiki: `${WIKI_PAGE}/Wolf` },
+  { id: 'scorpions',     name: 'Scorpions',      tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,  img: `${WIKI_IMG}/Scorpion.png`,               slayerReq: false, wiki: `${WIKI_PAGE}/Scorpion` },
+  { id: 'skeletons',     name: 'Skeletons',      tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 9,  img: `${WIKI_IMG}/Skeleton_(large).png`,       slayerReq: false, wiki: `${WIKI_PAGE}/Skeleton` },
+  { id: 'ghosts',        name: 'Ghosts',         tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 175, bonusAmount: 8,  img: `${WIKI_IMG}/Ghost.png`,                  slayerReq: false, wiki: `${WIKI_PAGE}/Ghost` },
+  { id: 'bears',         name: 'Bears',          tier: 'cb1',  minCB: 8,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10, img: `${WIKI_IMG}/Bear.png`,                   slayerReq: false, wiki: `${WIKI_PAGE}/Bear` },
+  { id: 'dogs',          name: 'Dogs',           tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,  img: `${WIKI_IMG}/Dog.png`,                    slayerReq: false, wiki: `${WIKI_PAGE}/Dog` },
+  { id: 'minotaurs',     name: 'Minotaurs',      tier: 'cb1',  minCB: 10, coinsPerKill: 1, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Minotaur.png`,               slayerReq: false, wiki: `${WIKI_PAGE}/Minotaur` },
+  { id: 'giant_spiders', name: 'Giant Spiders',  tier: 'cb1',  minCB: 3,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 8,  img: `${WIKI_IMG}/Giant_spider_(level_2).png`, slayerReq: false, wiki: `${WIKI_PAGE}/Giant_spider` },
+  { id: 'monkeys',       name: 'Monkeys',        tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,  img: `${WIKI_IMG}/Monkey.png`,                 slayerReq: false, wiki: `${WIKI_PAGE}/Monkey` },
+  { id: 'cave_bugs',     name: 'Cave Bugs',      tier: 'cb1',  minCB: 1,  coinsPerKill: 1, bonusEvery: 200, bonusAmount: 8,  img: `${WIKI_IMG}/Cave_bug.png`,               slayerReq: true,  wiki: `${WIKI_PAGE}/Cave_bug` },
+  { id: 'crawling_hands',name: 'Crawling Hands', tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 10, img: `${WIKI_IMG}/Crawling_hand.png`,          slayerReq: true,  wiki: `${WIKI_PAGE}/Crawling_Hand` },
+  { id: 'lizards',       name: 'Lizards',        tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 150, bonusAmount: 9,  img: `${WIKI_IMG}/Desert_lizard.png`,          slayerReq: true,  wiki: `${WIKI_PAGE}/Desert_Lizard` },
+  { id: 'dwarves',       name: 'Dwarves',        tier: 'cb1',  minCB: 5,  coinsPerKill: 1, bonusEvery: 175, bonusAmount: 9,  img: `${WIKI_IMG}/Dwarf.png`,                  slayerReq: false, wiki: `${WIKI_PAGE}/Dwarf` },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // MAZCHNA — CB 40–69  (16 monstros)
+  // CB 40–69  (16 monstros)
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'hill_giants', name: 'Hill Giants', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 15,
-    location: 'Edgeville Dungeon',
-    desc: 'Big bones para Prayer. Ótimo para iron.',
-    img: `${WIKI}/Hill_giant.png`, slayerReq: false,
-  },
-  {
-    id: 'hobgoblins', name: 'Hobgoblins', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Taverley Dungeon / Crafting Guild',
-    desc: 'Drops uncut gems e limpet cords.',
-    img: `${WIKI}/Hobgoblin.png`, slayerReq: false,
-  },
-  {
-    id: 'moss_giants', name: 'Moss Giants', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 3, bonusEvery: 50, bonusAmount: 20,
-    location: 'Varrock Sewers / Crandor',
-    desc: 'Drops ranarr seeds ocasionalmente.',
-    img: `${WIKI}/Moss_giant.png`, slayerReq: false,
-  },
-  {
-    id: 'ice_giants', name: 'Ice Giants', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Asgarnian Ice Dungeon / White Wolf Mountain',
-    desc: 'Drops big bones e rune items raramente.',
-    img: `${WIKI}/Ice_giant.png`, slayerReq: false,
-  },
-  {
-    id: 'ice_warriors', name: 'Ice Warriors', tier: 'mazchna', minCB: 45,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Asgarnian Ice Dungeon',
-    desc: 'Drops mithril items.',
-    img: `${WIKI}/Ice_warrior.png`, slayerReq: false,
-  },
-  {
-    id: 'zombies_mid', name: 'Zombies', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Stronghold of Security / Draynor Sewers',
-    desc: 'Drops rune items raramente.',
-    img: `${WIKI}/Zombie_(blue).png`, slayerReq: false,
-  },
-  {
-    id: 'ogres', name: 'Ogres', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 13,
-    location: 'Gu\'Tanoth / Jiggig',
-    desc: 'Drops big bones e coins.',
-    img: `${WIKI}/Ogre.png`, slayerReq: false,
-  },
-  {
-    id: 'bandits', name: 'Bandits', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Kharidian Desert Bandit Camp',
-    desc: 'AFK infinito com Zamorak/Saradomin item equipado.',
-    img: `${WIKI}/Bandit_(Kharidian_Desert).png`, slayerReq: false,
-  },
-  {
-    id: 'lesser_demons', name: 'Lesser Demons', tier: 'mazchna', minCB: 50,
-    coinsPerKill: 3, bonusEvery: 50, bonusAmount: 20,
-    location: 'Karamja Volcano / Catacombs',
-    desc: 'Drops rune med helm. Excelente para iron.',
-    img: `${WIKI}/Lesser_demon.png`, slayerReq: false,
-  },
-  {
-    id: 'banshees', name: 'Banshees', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Slayer Tower (ground floor)',
-    desc: 'Requer 15 Slayer. Requer earplugs/muffs.',
-    img: `${WIKI}/Banshee.png`, slayerReq: true,
-  },
-  {
-    id: 'cave_crawlers', name: 'Cave Crawlers', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 10 Slayer. Drops herbs e poison.',
-    img: `${WIKI}/Cave_crawler.png`, slayerReq: true,
-  },
-  {
-    id: 'wall_beasts', name: 'Wall Beasts', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Lumbridge Swamp Caves',
-    desc: 'Requer 35 Slayer. Requer lantern.',
-    img: `${WIKI}/Wall_beast.png`, slayerReq: true,
-  },
-  {
-    id: 'rock_crabs', name: 'Rock Crabs', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Rellekka Coast',
-    desc: 'Alta HP, baixo nível efetivo. Ótimo para AFK combat.',
-    img: `${WIKI}/Rock_crab.png`, slayerReq: false,
-  },
-  {
-    id: 'flesh_crawlers', name: 'Flesh Crawlers', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 13,
-    location: 'Stronghold of Security (Catacomb of Famine)',
-    desc: 'Drops herbs incluindo ranarr.',
-    img: `${WIKI}/Flesh_crawler.png`, slayerReq: false,
-  },
-  {
-    id: 'pirates', name: 'Pirates', tier: 'mazchna', minCB: 40,
-    coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12,
-    location: 'Brimhaven / Karamja',
-    desc: 'Drops coins e black items.',
-    img: `${WIKI}/Pirate.png`, slayerReq: false,
-  },
-  {
-    id: 'kalphite_workers', name: 'Kalphite Workers', tier: 'mazchna', minCB: 45,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Kalphite Lair',
-    desc: 'Drops herbs e seeds.',
-    img: `${WIKI}/Kalphite_Worker.png`, slayerReq: false,
-  },
-  {
-    id: 'jungle_horrors', name: 'Jungle Horrors', tier: 'mazchna', minCB: 45,
-    coinsPerKill: 2, bonusEvery: 75, bonusAmount: 15,
-    location: 'Ape Atoll',
-    desc: 'Requer Cabin Fever. Drops various items.',
-    img: `${WIKI}/Jungle_horror.png`, slayerReq: false,
-  },
+  { id: 'hill_giants',      name: 'Hill Giants',      tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 15, img: `${WIKI_IMG}/Hill_giant.png`,                    slayerReq: false, wiki: `${WIKI_PAGE}/Hill_giant` },
+  { id: 'hobgoblins',       name: 'Hobgoblins',       tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Hobgoblin.png`,                     slayerReq: false, wiki: `${WIKI_PAGE}/Hobgoblin` },
+  { id: 'moss_giants',      name: 'Moss Giants',      tier: 'cb40', minCB: 40, coinsPerKill: 3, bonusEvery: 50,  bonusAmount: 20, img: `${WIKI_IMG}/Moss_giant.png`,                    slayerReq: false, wiki: `${WIKI_PAGE}/Moss_giant` },
+  { id: 'ice_giants',       name: 'Ice Giants',       tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Ice_giant.png`,                     slayerReq: false, wiki: `${WIKI_PAGE}/Ice_giant` },
+  { id: 'ice_warriors',     name: 'Ice Warriors',     tier: 'cb40', minCB: 45, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Ice_warrior.png`,                   slayerReq: false, wiki: `${WIKI_PAGE}/Ice_warrior` },
+  { id: 'zombies_mid',      name: 'Zombies',          tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Zombie_(blue).png`,                 slayerReq: false, wiki: `${WIKI_PAGE}/Zombie` },
+  { id: 'ogres',            name: 'Ogres',            tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 13, img: `${WIKI_IMG}/Ogre.png`,                          slayerReq: false, wiki: `${WIKI_PAGE}/Ogre` },
+  { id: 'bandits',          name: 'Bandits',          tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Bandit_(Kharidian_Desert).png`,     slayerReq: false, wiki: `${WIKI_PAGE}/Bandit_(Kharidian_Desert)` },
+  { id: 'lesser_demons',    name: 'Lesser Demons',    tier: 'cb40', minCB: 50, coinsPerKill: 3, bonusEvery: 50,  bonusAmount: 20, img: `${WIKI_IMG}/Lesser_demon.png`,                  slayerReq: false, wiki: `${WIKI_PAGE}/Lesser_demon` },
+  { id: 'banshees',         name: 'Banshees',         tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Banshee.png`,                       slayerReq: true,  wiki: `${WIKI_PAGE}/Banshee` },
+  { id: 'cave_crawlers',    name: 'Cave Crawlers',    tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Cave_crawler.png`,                  slayerReq: true,  wiki: `${WIKI_PAGE}/Cave_crawler` },
+  { id: 'wall_beasts',      name: 'Wall Beasts',      tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Wall_beast.png`,                    slayerReq: true,  wiki: `${WIKI_PAGE}/Wall_beast` },
+  { id: 'rock_crabs',       name: 'Rock Crabs',       tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 12, img: `${WIKI_IMG}/Rock_crab.png`,                     slayerReq: false, wiki: `${WIKI_PAGE}/Rock_crab` },
+  { id: 'flesh_crawlers',   name: 'Flesh Crawlers',   tier: 'cb40', minCB: 40, coinsPerKill: 2, bonusEvery: 100, bonusAmount: 13, img: `${WIKI_IMG}/Flesh_crawler.png`,                 slayerReq: false, wiki: `${WIKI_PAGE}/Flesh_crawler` },
+  { id: 'kalphite_workers', name: 'Kalphite Workers', tier: 'cb40', minCB: 45, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Kalphite_Worker.png`,               slayerReq: false, wiki: `${WIKI_PAGE}/Kalphite_Worker` },
+  { id: 'jungle_horrors',   name: 'Jungle Horrors',   tier: 'cb40', minCB: 45, coinsPerKill: 2, bonusEvery: 75,  bonusAmount: 15, img: `${WIKI_IMG}/Jungle_horror.png`,                 slayerReq: false, wiki: `${WIKI_PAGE}/Jungle_horror` },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // VANNAKA — CB 70–89  (16 monstros)
+  // CB 70–89  (16 monstros)
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'fire_giants', name: 'Fire Giants', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25,
-    location: 'Waterfall Dungeon / Catacombs',
-    desc: 'Rune drops + seeds. Um dos melhores para iron.',
-    img: `${WIKI}/Fire_giant.png`, slayerReq: false,
-  },
-  {
-    id: 'blue_dragons', name: 'Blue Dragons', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 5, bonusEvery: 25, bonusAmount: 30,
-    location: 'Taverley Dungeon / Heroes Guild',
-    desc: 'Dragon bones + Blue dragonhide. Essencial para Crafting.',
-    img: `${WIKI}/Blue_dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'greater_demons', name: 'Greater Demons', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 25, bonusAmount: 25,
-    location: 'Brimhaven / Catacombs',
-    desc: 'Drops rune full helm e clue scrolls.',
-    img: `${WIKI}/Greater_demon.png`, slayerReq: false,
-  },
-  {
-    id: 'black_demons', name: 'Black Demons', tier: 'vannaka', minCB: 75,
-    coinsPerKill: 4, bonusEvery: 25, bonusAmount: 25,
-    location: 'Taverley Dungeon / Catacombs',
-    desc: 'Drops brimstone keys nos Catacombs.',
-    img: `${WIKI}/Black_demon.png`, slayerReq: false,
-  },
-  {
-    id: 'iron_dragons', name: 'Iron Dragons', tier: 'vannaka', minCB: 75,
-    coinsPerKill: 5, bonusEvery: 20, bonusAmount: 30,
-    location: 'Brimhaven Dungeon / Catacombs',
-    desc: 'Dragon items e dragonhide.',
-    img: `${WIKI}/Iron_dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'steel_dragons', name: 'Steel Dragons', tier: 'vannaka', minCB: 75,
-    coinsPerKill: 5, bonusEvery: 20, bonusAmount: 30,
-    location: 'Brimhaven Dungeon / Catacombs',
-    desc: 'Drops draconic visage raramente.',
-    img: `${WIKI}/Steel_dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'dagannoths_cave', name: 'Dagannoths', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25,
-    location: 'Waterbirth Island / Catacombs',
-    desc: 'Drops dagannoth bones e various items.',
-    img: `${WIKI}/Dagannoth_(Waterbirth_Island).png`, slayerReq: false,
-  },
-  {
-    id: 'hellhounds', name: 'Hellhounds', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25,
-    location: 'Taverley Dungeon / Catacombs',
-    desc: 'Drops clue scrolls (hard). Slayer exp excelente.',
-    img: `${WIKI}/Hellhound.png`, slayerReq: false,
-  },
-  {
-    id: 'cave_horrors', name: 'Cave Horrors', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 40, bonusAmount: 28,
-    location: 'Mos Le\'Harmless',
-    desc: 'Requer 58 Slayer. Drops Black Mask!',
-    img: `${WIKI}/Cave_horror.png`, slayerReq: true,
-  },
-  {
-    id: 'bloodvelds', name: 'Bloodvelds', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25,
-    location: 'Slayer Tower / Catacombs',
-    desc: 'Requer 50 Slayer. Drops blood runes.',
-    img: `${WIKI}/Bloodveld.png`, slayerReq: true,
-  },
-  {
-    id: 'basilisks', name: 'Basilisks', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 40, bonusAmount: 25,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 40 Slayer + mirror shield. Drops Basilisk jaw!',
-    img: `${WIKI}/Basilisk.png`, slayerReq: true,
-  },
-  {
-    id: 'cockatrices', name: 'Cockatrices', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 3, bonusEvery: 50, bonusAmount: 22,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 25 Slayer + mirror shield.',
-    img: `${WIKI}/Cockatrice.png`, slayerReq: true,
-  },
-  {
-    id: 'jellies', name: 'Jellies', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 52 Slayer. Drops rune items.',
-    img: `${WIKI}/Jelly.png`, slayerReq: true,
-  },
-  {
-    id: 'turoth', name: 'Turoth', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 4, bonusEvery: 40, bonusAmount: 26,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 55 Slayer + leaf-bladed weapon.',
-    img: `${WIKI}/Turoth.png`, slayerReq: true,
-  },
-  {
-    id: 'kurask', name: 'Kurask', tier: 'vannaka', minCB: 75,
-    coinsPerKill: 5, bonusEvery: 30, bonusAmount: 30,
-    location: 'Fremennik Slayer Dungeon',
-    desc: 'Requer 70 Slayer + leaf-bladed weapon. Drops leaf-bladed sword.',
-    img: `${WIKI}/Kurask.png`, slayerReq: true,
-  },
-  {
-    id: 'trolls', name: 'Mountain Trolls', tier: 'vannaka', minCB: 70,
-    coinsPerKill: 3, bonusEvery: 50, bonusAmount: 22,
-    location: 'Death Plateau / Troll Stronghold',
-    desc: 'Drops big bones e clue scrolls.',
-    img: `${WIKI}/Mountain_troll.png`, slayerReq: false,
-  },
+  { id: 'fire_giants',    name: 'Fire Giants',    tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25, img: `${WIKI_IMG}/Fire_giant.png`,               slayerReq: false, wiki: `${WIKI_PAGE}/Fire_giant` },
+  { id: 'blue_dragons',   name: 'Blue Dragons',   tier: 'cb70', minCB: 70, coinsPerKill: 5, bonusEvery: 25, bonusAmount: 30, img: `${WIKI_IMG}/Blue_dragon.png`,              slayerReq: false, wiki: `${WIKI_PAGE}/Blue_dragon` },
+  { id: 'greater_demons', name: 'Greater Demons', tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 25, bonusAmount: 25, img: `${WIKI_IMG}/Greater_demon.png`,            slayerReq: false, wiki: `${WIKI_PAGE}/Greater_demon` },
+  { id: 'black_demons',   name: 'Black Demons',   tier: 'cb70', minCB: 75, coinsPerKill: 4, bonusEvery: 25, bonusAmount: 25, img: `${WIKI_IMG}/Black_demon.png`,              slayerReq: false, wiki: `${WIKI_PAGE}/Black_demon` },
+  { id: 'iron_dragons',   name: 'Iron Dragons',   tier: 'cb70', minCB: 75, coinsPerKill: 5, bonusEvery: 20, bonusAmount: 30, img: `${WIKI_IMG}/Iron_dragon.png`,              slayerReq: false, wiki: `${WIKI_PAGE}/Iron_dragon` },
+  { id: 'steel_dragons',  name: 'Steel Dragons',  tier: 'cb70', minCB: 75, coinsPerKill: 5, bonusEvery: 20, bonusAmount: 30, img: `${WIKI_IMG}/Steel_dragon.png`,             slayerReq: false, wiki: `${WIKI_PAGE}/Steel_dragon` },
+  { id: 'dagannoths',     name: 'Dagannoths',     tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25, img: `${WIKI_IMG}/Dagannoth_(Waterbirth_Island).png`, slayerReq: false, wiki: `${WIKI_PAGE}/Dagannoth` },
+  { id: 'hellhounds',     name: 'Hellhounds',     tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25, img: `${WIKI_IMG}/Hellhound.png`,                slayerReq: false, wiki: `${WIKI_PAGE}/Hellhound` },
+  { id: 'cave_horrors',   name: 'Cave Horrors',   tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 40, bonusAmount: 28, img: `${WIKI_IMG}/Cave_horror.png`,              slayerReq: true,  wiki: `${WIKI_PAGE}/Cave_horror` },
+  { id: 'bloodvelds',     name: 'Bloodvelds',     tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25, img: `${WIKI_IMG}/Bloodveld.png`,                slayerReq: true,  wiki: `${WIKI_PAGE}/Bloodveld` },
+  { id: 'basilisks',      name: 'Basilisks',      tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 40, bonusAmount: 25, img: `${WIKI_IMG}/Basilisk.png`,                 slayerReq: true,  wiki: `${WIKI_PAGE}/Basilisk` },
+  { id: 'cockatrices',    name: 'Cockatrices',    tier: 'cb70', minCB: 70, coinsPerKill: 3, bonusEvery: 50, bonusAmount: 22, img: `${WIKI_IMG}/Cockatrice.png`,               slayerReq: true,  wiki: `${WIKI_PAGE}/Cockatrice` },
+  { id: 'jellies',        name: 'Jellies',        tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 50, bonusAmount: 25, img: `${WIKI_IMG}/Jelly.png`,                    slayerReq: true,  wiki: `${WIKI_PAGE}/Jelly` },
+  { id: 'turoth',         name: 'Turoth',         tier: 'cb70', minCB: 70, coinsPerKill: 4, bonusEvery: 40, bonusAmount: 26, img: `${WIKI_IMG}/Turoth.png`,                   slayerReq: true,  wiki: `${WIKI_PAGE}/Turoth` },
+  { id: 'kurask',         name: 'Kurask',         tier: 'cb70', minCB: 75, coinsPerKill: 5, bonusEvery: 30, bonusAmount: 30, img: `${WIKI_IMG}/Kurask.png`,                   slayerReq: true,  wiki: `${WIKI_PAGE}/Kurask` },
+  { id: 'trolls',         name: 'Mountain Trolls',tier: 'cb70', minCB: 70, coinsPerKill: 3, bonusEvery: 50, bonusAmount: 22, img: `${WIKI_IMG}/Mountain_troll.png`,           slayerReq: false, wiki: `${WIKI_PAGE}/Mountain_Troll` },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // CHAELDAR — CB 90+  (14 monstros)
+  // CB 90+  (14 monstros)
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'abyssal_demons', name: 'Abyssal Demons', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 6, bonusEvery: 25, bonusAmount: 40,
-    location: 'Slayer Tower / Catacombs',
-    desc: 'Requer 85 Slayer. Dropam Abyssal Whip e Abyssal Dagger!',
-    img: `${WIKI}/Abyssal_demon.png`, slayerReq: true,
-  },
-  {
-    id: 'brutal_black_dragons', name: 'Brutal Black Dragons', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 7, bonusEvery: 15, bonusAmount: 40,
-    location: 'Catacombs of Kourend',
-    desc: 'Drops Dragon full helm + Dragon platelegs.',
-    img: `${WIKI}/Brutal_black_dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'nechryaels', name: 'Nechryaels', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 5, bonusEvery: 25, bonusAmount: 35,
-    location: 'Slayer Tower / Catacombs',
-    desc: 'Requer 80 Slayer. Drops death runes em massa.',
-    img: `${WIKI}/Nechryael.png`, slayerReq: true,
-  },
-  {
-    id: 'dust_devils', name: 'Dust Devils', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 5, bonusEvery: 25, bonusAmount: 30,
-    location: 'Smoke Dungeon / Catacombs',
-    desc: 'Requer 65 Slayer. Drops Smoke Battlestaff.',
-    img: `${WIKI}/Dust_devil.png`, slayerReq: true,
-  },
-  {
-    id: 'gargoyles', name: 'Gargoyles', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 6, bonusEvery: 20, bonusAmount: 35,
-    location: 'Slayer Tower',
-    desc: 'Requer 75 Slayer + rock hammer. Drops granite maul.',
-    img: `${WIKI}/Gargoyle.png`, slayerReq: true,
-  },
-  {
-    id: 'dark_beasts', name: 'Dark Beasts', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 7, bonusEvery: 15, bonusAmount: 45,
-    location: 'Mourner Tunnels / Catacombs',
-    desc: 'Requer 90 Slayer. Drops Dragon 2h e Dark bow.',
-    img: `${WIKI}/Dark_beast.png`, slayerReq: true,
-  },
-  {
-    id: 'smoke_devils', name: 'Smoke Devils', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 6, bonusEvery: 20, bonusAmount: 38,
-    location: 'Smoke Devil Dungeon',
-    desc: 'Requer 93 Slayer. Drops Occult Necklace!',
-    img: `${WIKI}/Smoke_devil.png`, slayerReq: true,
-  },
-  {
-    id: 'wyrms', name: 'Wyrms', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 6, bonusEvery: 25, bonusAmount: 35,
-    location: 'Karuulm Slayer Dungeon',
-    desc: 'Requer 62 Slayer. Drops Dragon sword e harpoon.',
-    img: `${WIKI}/Wyrm.png`, slayerReq: true,
-  },
-  {
-    id: 'drakes', name: 'Drakes', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 7, bonusEvery: 20, bonusAmount: 40,
-    location: 'Karuulm Slayer Dungeon',
-    desc: 'Requer 84 Slayer. Drops Drake tooth e boots.',
-    img: `${WIKI}/Drake.png`, slayerReq: true,
-  },
-  {
-    id: 'hydras', name: 'Hydras', tier: 'chaeldar', minCB: 95,
-    coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50,
-    location: 'Karuulm Slayer Dungeon',
-    desc: 'Requer 95 Slayer. Drops Hydra leather e tail.',
-    img: `${WIKI}/Hydra.png`, slayerReq: true,
-  },
-  {
-    id: 'demonic_gorillas', name: 'Demonic Gorillas', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50,
-    location: 'Crash Site Cavern',
-    desc: 'Drops Ballista components. Requer Monkey Madness II.',
-    img: `${WIKI}/Demonic_gorilla.png`, slayerReq: false,
-  },
-  {
-    id: 'rune_dragons', name: 'Rune Dragons', tier: 'chaeldar', minCB: 95,
-    coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50,
-    location: 'Mount Karuulm',
-    desc: 'Drops Draconic visage e rune items. Requer Dragon Slayer II.',
-    img: `${WIKI}/Rune_dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'spiritual_mages', name: 'Spiritual Mages', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 7, bonusEvery: 20, bonusAmount: 42,
-    location: 'God Wars Dungeon',
-    desc: 'Requer 83 Slayer. Drops dragon boots!',
-    img: `${WIKI}/Spiritual_mage_(Zamorak).png`, slayerReq: true,
-  },
-  {
-    id: 'aviansies', name: 'Aviansies', tier: 'chaeldar', minCB: 90,
-    coinsPerKill: 6, bonusEvery: 25, bonusAmount: 38,
-    location: 'God Wars Dungeon (Armadyl)',
-    desc: 'Drops adamantite bars e Armadyl components.',
-    img: `${WIKI}/Aviansie.png`, slayerReq: false,
-  },
+  { id: 'abyssal_demons',       name: 'Abyssal Demons',       tier: 'cb90', minCB: 90, coinsPerKill: 6, bonusEvery: 25, bonusAmount: 40, img: `${WIKI_IMG}/Abyssal_demon.png`,        slayerReq: true,  wiki: `${WIKI_PAGE}/Abyssal_demon` },
+  { id: 'brutal_black_dragons', name: 'Brutal Black Dragons', tier: 'cb90', minCB: 90, coinsPerKill: 7, bonusEvery: 15, bonusAmount: 40, img: `${WIKI_IMG}/Brutal_black_dragon.png`,  slayerReq: false, wiki: `${WIKI_PAGE}/Brutal_black_dragon` },
+  { id: 'nechryaels',           name: 'Nechryaels',           tier: 'cb90', minCB: 90, coinsPerKill: 5, bonusEvery: 25, bonusAmount: 35, img: `${WIKI_IMG}/Nechryael.png`,            slayerReq: true,  wiki: `${WIKI_PAGE}/Nechryael` },
+  { id: 'dust_devils',          name: 'Dust Devils',          tier: 'cb90', minCB: 90, coinsPerKill: 5, bonusEvery: 25, bonusAmount: 30, img: `${WIKI_IMG}/Dust_devil.png`,           slayerReq: true,  wiki: `${WIKI_PAGE}/Dust_devil` },
+  { id: 'gargoyles',            name: 'Gargoyles',            tier: 'cb90', minCB: 90, coinsPerKill: 6, bonusEvery: 20, bonusAmount: 35, img: `${WIKI_IMG}/Gargoyle.png`,             slayerReq: true,  wiki: `${WIKI_PAGE}/Gargoyle` },
+  { id: 'dark_beasts',          name: 'Dark Beasts',          tier: 'cb90', minCB: 90, coinsPerKill: 7, bonusEvery: 15, bonusAmount: 45, img: `${WIKI_IMG}/Dark_beast.png`,           slayerReq: true,  wiki: `${WIKI_PAGE}/Dark_beast` },
+  { id: 'smoke_devils',         name: 'Smoke Devils',         tier: 'cb90', minCB: 90, coinsPerKill: 6, bonusEvery: 20, bonusAmount: 38, img: `${WIKI_IMG}/Smoke_devil.png`,          slayerReq: true,  wiki: `${WIKI_PAGE}/Smoke_devil` },
+  { id: 'wyrms',                name: 'Wyrms',                tier: 'cb90', minCB: 90, coinsPerKill: 6, bonusEvery: 25, bonusAmount: 35, img: `${WIKI_IMG}/Wyrm.png`,                 slayerReq: true,  wiki: `${WIKI_PAGE}/Wyrm` },
+  { id: 'drakes',               name: 'Drakes',               tier: 'cb90', minCB: 90, coinsPerKill: 7, bonusEvery: 20, bonusAmount: 40, img: `${WIKI_IMG}/Drake.png`,                slayerReq: true,  wiki: `${WIKI_PAGE}/Drake` },
+  { id: 'hydras',               name: 'Hydras',               tier: 'cb90', minCB: 95, coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50, img: `${WIKI_IMG}/Hydra.png`,                slayerReq: true,  wiki: `${WIKI_PAGE}/Hydra` },
+  { id: 'demonic_gorillas',     name: 'Demonic Gorillas',     tier: 'cb90', minCB: 90, coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50, img: `${WIKI_IMG}/Demonic_gorilla.png`,      slayerReq: false, wiki: `${WIKI_PAGE}/Demonic_gorilla` },
+  { id: 'rune_dragons',         name: 'Rune Dragons',         tier: 'cb90', minCB: 95, coinsPerKill: 8, bonusEvery: 15, bonusAmount: 50, img: `${WIKI_IMG}/Rune_dragon.png`,          slayerReq: false, wiki: `${WIKI_PAGE}/Rune_dragon` },
+  { id: 'spiritual_mages',      name: 'Spiritual Mages',      tier: 'cb90', minCB: 90, coinsPerKill: 7, bonusEvery: 20, bonusAmount: 42, img: `${WIKI_IMG}/Spiritual_mage_(Zamorak).png`, slayerReq: true, wiki: `${WIKI_PAGE}/Spiritual_mage` },
+  { id: 'aviansies',            name: 'Aviansies',            tier: 'cb90', minCB: 90, coinsPerKill: 6, bonusEvery: 25, bonusAmount: 38, img: `${WIKI_IMG}/Aviansie.png`,             slayerReq: false, wiki: `${WIKI_PAGE}/Aviansie` },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // BOSSES  (16 bosses)
+  // BOSSES  (16 bosses — todos comprados na Loja)
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'obor', name: 'Obor', tier: 'boss', minCB: 40,
-    coinsPerKill: 20, bonusEvery: 5, bonusAmount: 40,
-    location: 'Stronghold of Security',
-    desc: 'Boss iniciante. Drops Hill Giant Club.',
-    img: `${WIKI}/Obor.png`, slayerReq: false,
-  },
-  {
-    id: 'bryophyta', name: 'Bryophyta', tier: 'boss', minCB: 40,
-    coinsPerKill: 20, bonusEvery: 5, bonusAmount: 40,
-    location: 'Varrock Sewers',
-    desc: 'Drops Staff of Nature e Nature Rune tome.',
-    img: `${WIKI}/Bryophyta.png`, slayerReq: false,
-  },
-  {
-    id: 'mimic', name: 'The Mimic', tier: 'boss', minCB: 50,
-    coinsPerKill: 25, bonusEvery: 3, bonusAmount: 50,
-    location: 'Clue Scroll (elite/master)',
-    desc: 'Drops Mimic pet e clue loot. Raro de encontrar.',
-    img: `${WIKI}/The_Mimic.png`, slayerReq: false,
-  },
-  {
-    id: 'skotizo', name: 'Skotizo', tier: 'boss', minCB: 60,
-    coinsPerKill: 40, bonusEvery: 3, bonusAmount: 80,
-    location: 'Catacombs of Kourend',
-    desc: 'Drops Uncut Onyx e Dark Totem pets.',
-    img: `${WIKI}/Skotizo.png`, slayerReq: false,
-  },
-  {
-    id: 'giant_mole', name: 'Giant Mole', tier: 'boss', minCB: 60,
-    coinsPerKill: 25, bonusEvery: 10, bonusAmount: 60,
-    location: 'Falador Mole Lair',
-    desc: 'Drops mole claws/skin → troca por birdhouses.',
-    img: `${WIKI}/Giant_Mole.png`, slayerReq: false,
-  },
-  {
-    id: 'barrows', name: 'Barrows Brothers', tier: 'boss', minCB: 70,
-    coinsPerKill: 35, bonusEvery: 5, bonusAmount: 80,
-    location: 'Barrows, Morytania',
-    desc: 'Drops barrows equipment. Ótimo para iron mid-game.',
-    img: `${WIKI}/Dharok_the_Wretched.png`, slayerReq: false,
-  },
-  {
-    id: 'kbd', name: 'King Black Dragon', tier: 'boss', minCB: 70,
-    coinsPerKill: 30, bonusEvery: 5, bonusAmount: 70,
-    location: 'Wilderness (Deep)',
-    desc: 'Drops Dragon 2h e Draconic visage. Cuidado com PKers.',
-    img: `${WIKI}/King_Black_Dragon.png`, slayerReq: false,
-  },
-  {
-    id: 'sarachnis', name: 'Sarachnis', tier: 'boss', minCB: 70,
-    coinsPerKill: 30, bonusEvery: 5, bonusAmount: 80,
-    location: 'Forthos Dungeon',
-    desc: 'Drops Sarachnis Cudgel + herb seeds em massa.',
-    img: `${WIKI}/Sarachnis.png`, slayerReq: false,
-  },
-  {
-    id: 'deranged_archaeologist', name: 'Deranged Archaeologist', tier: 'boss', minCB: 70,
-    coinsPerKill: 25, bonusEvery: 5, bonusAmount: 60,
-    location: 'Fossil Island',
-    desc: 'Drops Brimstone ring components.',
-    img: `${WIKI}/Deranged_archaeologist.png`, slayerReq: false,
-  },
-  {
-    id: 'dagannoth_rex', name: 'Dagannoth Rex', tier: 'boss', minCB: 80,
-    coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100,
-    location: 'Waterbirth Island',
-    desc: 'Drops Berserker Ring. Um dos melhores para iron.',
-    img: `${WIKI}/Dagannoth_Rex.png`, slayerReq: false,
-  },
-  {
-    id: 'dagannoth_prime', name: 'Dagannoth Prime', tier: 'boss', minCB: 80,
-    coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100,
-    location: 'Waterbirth Island',
-    desc: 'Drops Seers Ring.',
-    img: `${WIKI}/Dagannoth_Prime.png`, slayerReq: false,
-  },
-  {
-    id: 'dagannoth_supreme', name: 'Dagannoth Supreme', tier: 'boss', minCB: 80,
-    coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100,
-    location: 'Waterbirth Island',
-    desc: 'Drops Archer Ring.',
-    img: `${WIKI}/Dagannoth_Supreme.png`, slayerReq: false,
-  },
-  {
-    id: 'kalphite_queen', name: 'Kalphite Queen', tier: 'boss', minCB: 90,
-    coinsPerKill: 35, bonusEvery: 5, bonusAmount: 120,
-    location: 'Kalphite Lair',
-    desc: 'Drops Dragon 2h e Dragon Chainbody.',
-    img: `${WIKI}/Kalphite_Queen.png`, slayerReq: false,
-  },
-  {
-    id: 'zulrah', name: 'Zulrah', tier: 'boss', minCB: 90,
-    coinsPerKill: 40, bonusEvery: 5, bonusAmount: 130,
-    location: 'Zul-Andra',
-    desc: 'Drops Tanzanite fang, Magic fang, Serp helm. Top money maker.',
-    img: `${WIKI}/Zulrah.png`, slayerReq: false,
-  },
-  {
-    id: 'vorkath', name: 'Vorkath', tier: 'boss', minCB: 90,
-    coinsPerKill: 40, bonusEvery: 5, bonusAmount: 130,
-    location: 'Ungael',
-    desc: 'Drops Dragonbone necklace e Vorki pet. Requer Dragon Slayer II.',
-    img: `${WIKI}/Vorkath.png`, slayerReq: false,
-  },
-  {
-    id: 'alchemical_hydra', name: 'Alchemical Hydra', tier: 'boss', minCB: 95,
-    coinsPerKill: 45, bonusEvery: 5, bonusAmount: 150,
-    location: 'Karuulm Slayer Dungeon',
-    desc: 'Requer 95 Slayer. Drops Hydra\'s claw → Brimstone ring.',
-    img: `${WIKI}/Alchemical_Hydra.png`, slayerReq: true,
-  },
+  { id: 'obor',                  name: 'Obor',                  tier: 'boss', minCB: 40, coinsPerKill: 20, bonusEvery: 5, bonusAmount: 40,  img: `${WIKI_IMG}/Obor.png`,                     slayerReq: false, wiki: `${WIKI_PAGE}/Obor` },
+  { id: 'bryophyta',             name: 'Bryophyta',             tier: 'boss', minCB: 40, coinsPerKill: 20, bonusEvery: 5, bonusAmount: 40,  img: `${WIKI_IMG}/Bryophyta.png`,                slayerReq: false, wiki: `${WIKI_PAGE}/Bryophyta` },
+  { id: 'mimic',                 name: 'The Mimic',             tier: 'boss', minCB: 50, coinsPerKill: 25, bonusEvery: 3, bonusAmount: 50,  img: `${WIKI_IMG}/The_Mimic.png`,                slayerReq: false, wiki: `${WIKI_PAGE}/The_Mimic` },
+  { id: 'skotizo',               name: 'Skotizo',               tier: 'boss', minCB: 60, coinsPerKill: 40, bonusEvery: 3, bonusAmount: 80,  img: `${WIKI_IMG}/Skotizo.png`,                  slayerReq: false, wiki: `${WIKI_PAGE}/Skotizo` },
+  { id: 'giant_mole',            name: 'Giant Mole',            tier: 'boss', minCB: 60, coinsPerKill: 25, bonusEvery: 10, bonusAmount: 60, img: `${WIKI_IMG}/Giant_Mole.png`,               slayerReq: false, wiki: `${WIKI_PAGE}/Giant_Mole` },
+  { id: 'barrows',               name: 'Barrows Brothers',      tier: 'boss', minCB: 70, coinsPerKill: 35, bonusEvery: 5, bonusAmount: 80,  img: `${WIKI_IMG}/Dharok_the_Wretched.png`,      slayerReq: false, wiki: `${WIKI_PAGE}/Barrows` },
+  { id: 'kbd',                   name: 'King Black Dragon',     tier: 'boss', minCB: 70, coinsPerKill: 30, bonusEvery: 5, bonusAmount: 70,  img: `${WIKI_IMG}/King_Black_Dragon.png`,         slayerReq: false, wiki: `${WIKI_PAGE}/King_Black_Dragon` },
+  { id: 'sarachnis',             name: 'Sarachnis',             tier: 'boss', minCB: 70, coinsPerKill: 30, bonusEvery: 5, bonusAmount: 80,  img: `${WIKI_IMG}/Sarachnis.png`,                slayerReq: false, wiki: `${WIKI_PAGE}/Sarachnis` },
+  { id: 'deranged_archaeologist',name: 'Deranged Archaeologist',tier: 'boss', minCB: 70, coinsPerKill: 25, bonusEvery: 5, bonusAmount: 60,  img: `${WIKI_IMG}/Deranged_archaeologist.png`,   slayerReq: false, wiki: `${WIKI_PAGE}/Deranged_archaeologist` },
+  { id: 'dagannoth_rex',         name: 'Dagannoth Rex',         tier: 'boss', minCB: 80, coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100, img: `${WIKI_IMG}/Dagannoth_Rex.png`,             slayerReq: false, wiki: `${WIKI_PAGE}/Dagannoth_Rex` },
+  { id: 'dagannoth_prime',       name: 'Dagannoth Prime',       tier: 'boss', minCB: 80, coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100, img: `${WIKI_IMG}/Dagannoth_Prime.png`,           slayerReq: false, wiki: `${WIKI_PAGE}/Dagannoth_Prime` },
+  { id: 'dagannoth_supreme',     name: 'Dagannoth Supreme',     tier: 'boss', minCB: 80, coinsPerKill: 30, bonusEvery: 5, bonusAmount: 100, img: `${WIKI_IMG}/Dagannoth_Supreme.png`,         slayerReq: false, wiki: `${WIKI_PAGE}/Dagannoth_Supreme` },
+  { id: 'kalphite_queen',        name: 'Kalphite Queen',        tier: 'boss', minCB: 90, coinsPerKill: 35, bonusEvery: 5, bonusAmount: 120, img: `${WIKI_IMG}/Kalphite_Queen.png`,            slayerReq: false, wiki: `${WIKI_PAGE}/Kalphite_Queen` },
+  { id: 'zulrah',                name: 'Zulrah',                tier: 'boss', minCB: 90, coinsPerKill: 40, bonusEvery: 5, bonusAmount: 130, img: `${WIKI_IMG}/Zulrah.png`,                   slayerReq: false, wiki: `${WIKI_PAGE}/Zulrah` },
+  { id: 'vorkath',               name: 'Vorkath',               tier: 'boss', minCB: 90, coinsPerKill: 40, bonusEvery: 5, bonusAmount: 130, img: `${WIKI_IMG}/Vorkath.png`,                  slayerReq: false, wiki: `${WIKI_PAGE}/Vorkath` },
+  { id: 'alchemical_hydra',      name: 'Alchemical Hydra',      tier: 'boss', minCB: 95, coinsPerKill: 45, bonusEvery: 5, bonusAmount: 150, img: `${WIKI_IMG}/Alchemical_Hydra.png`,          slayerReq: true,  wiki: `${WIKI_PAGE}/Alchemical_Hydra` },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -619,34 +133,22 @@ export function getActiveTiers(combatLevel) {
   return TIERS.filter(t => combatLevel >= t.minCB)
 }
 
-/**
- * Dado um CB, retorna quais tiers ficaram NOVOS (não estavam antes de subir 1 nível).
- * Usado para disparar o sorteio de 2 monstros ao mudar de tier.
- */
-export function getNewlyUnlockedTiers(prevCB, newCB) {
-  return TIERS.filter(t => prevCB < t.minCB && newCB >= t.minCB)
-}
-
-/**
- * Sorteia N monstros aleatórios de um tier para dar ao jogador ao entrar nele.
- * Exclui os que já estão desbloqueados.
- */
+/** Sorteia N monstros de um tier para liberar automaticamente ao atingir CB */
 export function drawTierStarters(tierId, combatLevel, alreadyUnlocked, count = 2) {
   const pool = MONSTERS.filter(
     m => m.tier === tierId && combatLevel >= m.minCB && !alreadyUnlocked.has(m.id)
   )
-  const shuffled = [...pool].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, count).map(m => m.id)
+  return [...pool].sort(() => Math.random() - 0.5).slice(0, count).map(m => m.id)
 }
 
-/** Monstros compráveis: tier acessível, CB suficiente, não desbloqueado */
+/** Monstros compráveis na loja: tier acessível, CB suficiente, não desbloqueado */
 export function getBuyableMonsters(combatLevel, unlockedIds) {
-  const activeTierIds = new Set([...getActiveTiers(combatLevel).map(t => t.id), 'boss'])
-  return MONSTERS.filter(m =>
-    activeTierIds.has(m.tier) &&
-    combatLevel >= m.minCB &&
-    !unlockedIds.has(m.id)
-  )
+  const activeTierIds = new Set(getActiveTiers(combatLevel).map(t => t.id))
+  // Boss sempre aparece na loja (sem auto-unlock), filtrado por minCB do monstro
+  return MONSTERS.filter(m => {
+    if (m.tier === 'boss') return combatLevel >= m.minCB && !unlockedIds.has(m.id)
+    return activeTierIds.has(m.tier) && combatLevel >= m.minCB && !unlockedIds.has(m.id)
+  })
 }
 
 export function getTierCost(tierId) {
@@ -655,9 +157,9 @@ export function getTierCost(tierId) {
 }
 
 export const TIER_META = {
-  turael:   TIERS[0],
-  mazchna:  TIERS[1],
-  vannaka:  TIERS[2],
-  chaeldar: TIERS[3],
-  boss:     BOSS_TIER,
+  cb1:  TIERS[0],
+  cb40: TIERS[1],
+  cb70: TIERS[2],
+  cb90: TIERS[3],
+  boss: BOSS_TIER,
 }
