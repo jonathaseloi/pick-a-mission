@@ -3,7 +3,7 @@
 // Proxy público para evitar CORS
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PROXY = 'https://api.osrsproxy.com/hiscores/ironman'
+const PROXY = 'https://pam-proxy.jonathaseloi.workers.dev'
 
 // Ordem das skills no retorno da API (formato CSV da Jagex)
 const SKILL_ORDER = [
