@@ -309,7 +309,7 @@ function GeneralTab({ unlocked }) {
 }
 
 // ── Main export ────────────────────────────────────────────────────────────
-export default function UnlocksTab({ unlocked }) {
+export default function UnlocksTab({ unlocked, realLevels }) {
   const [sub, setSub] = useState('skills')
 
   const SUB_TABS = [
@@ -324,7 +324,7 @@ export default function UnlocksTab({ unlocked }) {
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '1rem' }}>
         {SUB_TABS.map(t => subTabBtn(t.id, sub, t.label, setSub))}
       </div>
-      {sub === 'skills'    && <SkillsTab    unlocked={unlocked} />}
+      {sub === 'skills'    && <SkillsTab    unlocked={unlocked} realLevels={realLevels} />}
       {sub === 'equipment' && <EquipmentTab unlocked={unlocked} />}
       {sub === 'others'    && <OthersTab    unlocked={unlocked} />}
       {sub === 'general'   && <GeneralTab   unlocked={unlocked} />}
