@@ -13,6 +13,7 @@ import ShopTab from './components/ShopTab.jsx'
 import { loadState, saveState } from './hooks/useSave.js'
 import { fetchPlayerLevels, calcCombatLevel } from './hooks/useOSRSApi.js'
 import { parchment, DIFF } from './constants.js'
+import { TIERS, BOSS_TIER, drawTierStarters } from './data/monsters.js'
 
 export { parchment, DIFF }
 
@@ -79,9 +80,35 @@ export default function App() {
     })
   }, [username, realLevels, pamCoins, options, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked, huntHistory, huntPrefs])
 
+  // ── Seed hunt starters on mount (runs once after username is set) ──────────
+  useEffect(() => {
+    if (!username) return
+    const cb = calcCombatLevel(realLevels)
+    const allTiers = [...TIERS, BOSS_TIER]
+    let newSet = new Set(huntUnlocked)
+    let changed = false
+    for (const tier of TIERS) { // bosses nunca são auto-desbloqueados
+      if (cb >= tier.minCB) {
+        const drawn = drawTierStarters(tier.id, cb, newSet, 2)
+        if (drawn.length > 0) {
+          drawn.forEach(id => newSet.add(id))
+          changed = true
+        }
+      }
+    }
+    if (changed) {
+      setHuntUnlocked(newSet)
+      saveState({
+        username, realLevels, pamCoins, options,
+        unlocked: [...unlocked], completed: [...completed],
+        history, pickedId, mode, hunt, huntUnlocked: [...newSet],
+        huntHistory, huntPrefs,
+      })
+    }
+  }, [username])
+
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
-    // se tinha missão ativa e options vazias, restaura do pool
     else if (options.length === 0) setOptions(drawOptions(unlocked, completed, mode))
   }, [])
 
@@ -194,10 +221,11 @@ export default function App() {
   }
 
   function handleReset() {
-    if (!window.confirm('Tem certeza? Todo o progresso será perdido.')) return
     const u = new Set(), c = new Set(), h = []
     setUnlocked(u); setCompleted(c); setHistory(h)
     setPickedId(null); setShowReward(false); setPamCoins(0)
+    setHunt(null); setHuntHistory([]); setHuntUnlocked(new Set())
+    setHuntPrefs({ hideSlayer: false, sort: 'tier' })
     setOptions(drawOptions(u, c, mode))
     saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null, huntUnlocked: [], huntHistory: [], huntPrefs: { hideSlayer: false, sort: 'tier' } })
   }
@@ -238,20 +266,13 @@ export default function App() {
           </p>
         </div>
         {/* PAM Coins */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6,
-            background: '#2c1a00', borderRadius: 8, padding: '4px 12px' }}>
-            <span style={{ fontSize: 14 }}>🪙</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#f5d78e', fontFamily: 'system-ui, sans-serif' }}>
-              {pamCoins.toLocaleString()}
-            </span>
-            <span style={{ fontSize: 10, color: '#8B6914' }}>PAM</span>
-          </div>
-          <button onClick={handleReset}
-            style={{ fontSize: 10, color: '#8B6914', background: 'transparent',
-              border: 'none', cursor: 'pointer', padding: 0 }}>
-            Resetar
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6,
+          background: '#2c1a00', borderRadius: 8, padding: '4px 12px' }}>
+          <span style={{ fontSize: 20 }}>🪙</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: '#f5d78e', fontFamily: 'system-ui, sans-serif' }}>
+            {pamCoins.toLocaleString()}
+          </span>
+          <span style={{ fontSize: 13, color: '#8B6914' }}>PAM</span>
         </div>
       </div>
 
@@ -342,7 +363,8 @@ export default function App() {
       {tab === 'history' && <HistoryTab history={history} huntHistory={huntHistory} />}
       {tab === 'config'  && (
         <ConfigTab mode={mode} modes={MODES} onChange={handleModeChange}
-          username={username} onRefresh={handleRefreshLevels} onChangeUser={handleChangeUser} />
+          username={username} onRefresh={handleRefreshLevels}
+          onChangeUser={handleChangeUser} onReset={handleReset} />
       )}
     </div>
   )

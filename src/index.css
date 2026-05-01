@@ -7,6 +7,7 @@ body {
     radial-gradient(ellipse at 80% 80%, #0f1a0a 0%, transparent 60%);
   min-height: 100vh;
   font-family: 'Crimson Text', Georgia, serif;
+  font-size: 17px;
   color: #2c1a00;
 }
 
@@ -17,6 +18,9 @@ body {
 }
 
 button { font-family: inherit; cursor: pointer; }
+
+/* PAM coin icon larger everywhere */
+.pam-coin { font-size: 18px; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f5ead0; }

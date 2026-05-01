@@ -54,7 +54,17 @@ function UnlockReveal({ monster, onClose }) {
         transform: visible ? 'scale(1) translateY(0)' : 'scale(0.85) translateY(20px)',
         opacity: visible ? 1 : 0,
         transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        position: 'relative',
       }}>
+        {/* X close */}
+        <button onClick={onClose} style={{
+          position: 'absolute', top: 12, right: 12,
+          background: 'transparent', border: '1px solid #c8a96e',
+          borderRadius: '50%', width: 28, height: 28,
+          cursor: 'pointer', fontSize: 14, color: '#8B6914',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          lineHeight: 1,
+        }}>✕</button>
         {/* Brilho no topo */}
         <div style={{
           fontSize: 26, marginBottom: 6,
@@ -106,11 +116,10 @@ function UnlockReveal({ monster, onClose }) {
 
         <button onClick={onClose} style={{
           width: '100%', padding: '12px', fontSize: 14, borderRadius: 10,
-          border: 'none', background: '#2c1a00', color: '#f5d78e',
-          fontFamily: 'inherit', cursor: 'pointer', fontWeight: 700,
-          letterSpacing: '0.03em',
+          border: '1px solid #c8a96e', background: 'transparent', color: '#8B6914',
+          fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
         }}>
-          Ir Huntar! 🎯
+          Fechar
         </button>
       </div>
     </div>
@@ -316,7 +325,7 @@ export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onHuntUnl
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {/* Header */}
       <div style={{ ...parch, borderRadius: 12, padding: '1rem 1.25rem' }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: '0 0 4px' }}>🏪 Loja</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: '0 0 4px' }}>Loja</h2>
         <p style={{ fontSize: 12, color: '#8B6914', margin: 0 }}>
           Compre monstros aleatórios para huntar. Bosses precisam ser comprados aqui.
         </p>

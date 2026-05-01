@@ -50,7 +50,7 @@ function MonsterCard({ monster, onSelect }) {
         </div>
         <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#8B6914' }}>
           <span>🪙 {monster.coinsPerKill}/kill</span>
-          <span>+{monster.bonusAmount} a cada {monster.bonusEvery}k</span>
+          <span>+{monster.bonusAmount} a cada {monster.bonusEvery}kc</span>
         </div>
       </div>
       <a href={monster.wiki} target="_blank" rel="noopener noreferrer"
@@ -118,8 +118,8 @@ function ActiveHunt({ hunt, onAddKills, onAbandon, onFinish }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
         {[
           { label: '🪙 Total ganho', value: `${(hunt.totalCoinsEarned || 0).toLocaleString()} PAM` },
-          { label: '🏆 Marcos',      value: `${totalMilestones}x` },
-          { label: '⏭️ Próx. bônus', value: `${toNext} kills` },
+          { label: 'Marcos',      value: `${totalMilestones}x` },
+          { label: 'Próx. bônus', value: `${toNext} kills` },
         ].map(({ label, value }) => (
           <div key={label} style={{ ...parch, borderRadius: 8, padding: '8px 10px', textAlign: 'center' }}>
             <div style={{ fontSize: 10, color: '#8B6914' }}>{label}</div>
@@ -213,7 +213,7 @@ function ConfirmModal({ monster, onConfirm, onCancel }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
           {[
             { label: '🪙 Coins/kill', value: monster.coinsPerKill },
-            { label: '🏆 Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}k` },
+            { label: 'Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}kc` },
           ].map(({ label, value }) => (
             <div key={label} style={{ background: '#f5ead0', borderRadius: 6, padding: '6px 10px', border: '1px solid #e0c88a' }}>
               <div style={{ fontSize: 10, color: '#8B6914' }}>{label}</div>
@@ -408,7 +408,7 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
   return (
     <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: 0 }}>🎯 Hunt</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: 0 }}>Hunt</h2>
         <span style={{ fontSize: 11, color: '#8B6914' }}>CB {combatLevel} · {MONSTERS.filter(m => huntUnlocked.has(m.id)).length} monstros</span>
       </div>
 
