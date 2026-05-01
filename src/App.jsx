@@ -80,14 +80,12 @@ export default function App() {
     })
   }, [username, realLevels, pamCoins, options, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked, huntHistory, huntPrefs])
 
-  // ── Seed hunt starters on mount (runs once after username is set) ──────────
-  useEffect(() => {
-    if (!username) return
-    const cb = calcCombatLevel(realLevels)
-    const allTiers = [...TIERS, BOSS_TIER]
-    let newSet = new Set(huntUnlocked)
+  // ── Seed hunt starters (called once on load and on new setup) ─────────────
+  function seedHuntStarters(levels, existingUnlocked) {
+    const cb = calcCombatLevel(levels)
+    let newSet = new Set(existingUnlocked)
     let changed = false
-    for (const tier of TIERS) { // bosses nunca são auto-desbloqueados
+    for (const tier of TIERS) {
       if (cb >= tier.minCB) {
         const drawn = drawTierStarters(tier.id, cb, newSet, 2)
         if (drawn.length > 0) {
@@ -96,6 +94,13 @@ export default function App() {
         }
       }
     }
+    return { newSet, changed }
+  }
+
+  // Run once on mount if user already exists (returning visitor)
+  useEffect(() => {
+    if (!username) return
+    const { newSet, changed } = seedHuntStarters(realLevels, huntUnlocked)
     if (changed) {
       setHuntUnlocked(newSet)
       saveState({
@@ -105,7 +110,7 @@ export default function App() {
         huntHistory, huntPrefs,
       })
     }
-  }, [username])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- intentionally runs once
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
@@ -118,10 +123,14 @@ export default function App() {
     setRealLevels(levels)
     const next = drawOptions(unlocked, completed, mode)
     setOptions(next)
+    // Seed starters immediately with the new player's levels
+    const { newSet } = seedHuntStarters(levels, huntUnlocked)
+    setHuntUnlocked(newSet)
     saveState({
       username: name, realLevels: levels, pamCoins,
       unlocked: [...unlocked], completed: [...completed],
       history, pickedId: null, mode, hunt,
+      huntUnlocked: [...newSet], huntHistory, huntPrefs,
     })
   }
 

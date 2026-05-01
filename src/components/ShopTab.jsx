@@ -56,21 +56,6 @@ function UnlockReveal({ monster, onClose }) {
         transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         position: 'relative',
       }}>
-        {/* X close */}
-        <button onClick={onClose} style={{
-          position: 'absolute', top: 12, right: 12,
-          background: 'transparent', border: '1px solid #c8a96e',
-          borderRadius: '50%', width: 28, height: 28,
-          cursor: 'pointer', fontSize: 14, color: '#8B6914',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          lineHeight: 1,
-        }}>✕</button>
-        {/* Brilho no topo */}
-        <div style={{
-          fontSize: 26, marginBottom: 6,
-          filter: 'drop-shadow(0 0 8px gold)',
-        }}>✨</div>
-
         <p style={{ fontSize: 11, color: meta.color, fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 14px' }}>
           MONSTRO DESBLOQUEADO
         </p>
@@ -95,9 +80,9 @@ function UnlockReveal({ monster, onClose }) {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
           {[
-            { label: '🪙 Por kill',  value: `${monster.coinsPerKill}` },
-            { label: '🏆 Bônus',     value: `+${monster.bonusAmount}` },
-            { label: '⏱️ A cada',    value: `${monster.bonusEvery}k` },
+            { label: '🪙 Por kill', value: `${monster.coinsPerKill}` },
+            { label: 'Bônus',       value: `+${monster.bonusAmount}` },
+            { label: 'A cada',      value: `${monster.bonusEvery}kc` },
           ].map(({ label, value }) => (
             <div key={label} style={{
               background: meta.bg, borderRadius: 8, padding: '8px 6px',

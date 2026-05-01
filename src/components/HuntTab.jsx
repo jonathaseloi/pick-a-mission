@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { MONSTERS, TIERS, BOSS_TIER, TIER_META, getActiveTiers, drawTierStarters } from '../data/monsters.js'
+import { useState } from 'react'
+import { MONSTERS, TIERS, TIER_META } from '../data/monsters.js'
 import { parchment } from '../constants.js'
 
 const parch = parchment
@@ -302,9 +302,7 @@ function KillFeed({ events, onDismiss }) {
 export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange, huntUnlocked, onHuntUnlockedChange, huntPrefs, onHuntPrefsChange }) {
   const [pendingMonster, setPendingMonster] = useState(null)
   const [feedEvents, setFeedEvents]         = useState([])
-  const [tierBanners, setTierBanners]       = useState([])
   const [search, setSearch]                 = useState('')
-  const prevCBRef = useRef(combatLevel)
 
   const hideSlayer = huntPrefs?.hideSlayer ?? false
   const sortOrder  = huntPrefs?.sort ?? 'tier'
@@ -315,30 +313,6 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
   function setSortOrder(val) {
     onHuntPrefsChange({ ...huntPrefs, sort: val })
   }
-
-  // Detect tier unlocks on CB change (never bosses)
-  useEffect(() => {
-    const prevCB = prevCBRef.current
-    prevCBRef.current = combatLevel
-
-    const newBanners = []
-    for (const tier of TIERS) {
-      const justUnlocked = prevCB < tier.minCB && combatLevel >= tier.minCB
-      const neverSeeded  = !MONSTERS.some(m => m.tier === tier.id && huntUnlocked.has(m.id))
-
-      if (justUnlocked || (neverSeeded && combatLevel >= tier.minCB)) {
-        const drawn = drawTierStarters(tier.id, combatLevel, huntUnlocked, 2)
-        if (drawn.length > 0) {
-          const newSet = new Set([...huntUnlocked, ...drawn])
-          onHuntUnlockedChange(newSet)
-          if (justUnlocked) {
-            newBanners.push({ tier, monsters: drawn.map(id => MONSTERS.find(m => m.id === id)).filter(Boolean) })
-          }
-        }
-      }
-    }
-    if (newBanners.length) setTierBanners(prev => [...prev, ...newBanners])
-  }, [combatLevel])
 
   function addFeed(type, title, desc) {
     const id = Date.now() + Math.random()
@@ -411,11 +385,6 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
         <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: 0 }}>Hunt</h2>
         <span style={{ fontSize: 11, color: '#8B6914' }}>CB {combatLevel} · {MONSTERS.filter(m => huntUnlocked.has(m.id)).length} monstros</span>
       </div>
-
-      {tierBanners.map((b, i) => (
-        <TierUnlockBanner key={i} tier={b.tier} newMonsters={b.monsters}
-          onDismiss={() => setTierBanners(prev => prev.filter((_, j) => j !== i))} />
-      ))}
 
       {/* Active hunt */}
       {hunt && (
