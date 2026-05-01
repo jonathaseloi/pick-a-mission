@@ -6,11 +6,32 @@
 const PROXY = 'https://pam-proxy.jonathaseloi.workers.dev'
 
 // Ordem das skills no retorno da API (formato CSV da Jagex)
+// Linha 0 = Overall, linhas 1-23 = skills
 const SKILL_ORDER = [
-  'Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints', 'Ranged',
-  'Prayer', 'Magic', 'Cooking', 'Woodcutting', 'Fletching', 'Fishing',
-  'Firemaking', 'Crafting', 'Smithing', 'Mining', 'Herblore', 'Agility',
-  'Thieving', 'Slayer', 'Farming', 'Runecraft', 'Hunter', 'Construction',
+  'Overall',      // 0 — ignorado
+  'Attack',       // 1
+  'Defence',      // 2
+  'Strength',     // 3
+  'Hitpoints',    // 4
+  'Ranged',       // 5
+  'Prayer',       // 6
+  'Magic',        // 7
+  'Cooking',      // 8
+  'Woodcutting',  // 9
+  'Fletching',    // 10
+  'Fishing',      // 11
+  'Firemaking',   // 12
+  'Crafting',     // 13
+  'Smithing',     // 14
+  'Mining',       // 15
+  'Herblore',     // 16
+  'Agility',      // 17
+  'Thieving',     // 18
+  'Slayer',       // 19
+  'Farming',      // 20
+  'Runecraft',    // 21
+  'Hunter',       // 22
+  'Construction', // 23
 ]
 
 /**
@@ -25,15 +46,16 @@ export async function fetchPlayerLevels(username) {
 
   const text = await res.text()
 
-  // Formato CSV: rank,level,xp por linha, uma skill por linha
+  // Formato CSV: rank,level,xp por linha
+  // Linha 0 = Overall, 1-23 = skills
   const lines = text.trim().split('\n')
   const levels = {}
 
   lines.forEach((line, i) => {
-    if (i >= SKILL_ORDER.length) return
+    if (i === 0 || i >= SKILL_ORDER.length) return // pula Overall e linhas extras
     const parts = line.split(',')
     const level = parseInt(parts[1], 10)
-    if (!isNaN(level) && SKILL_ORDER[i]) {
+    if (!isNaN(level) && level > 0) {
       levels[SKILL_ORDER[i]] = level
     }
   })

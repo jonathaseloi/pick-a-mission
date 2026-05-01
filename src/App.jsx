@@ -269,12 +269,12 @@ export default function App() {
                 </button>
                 <button onClick={handleSkip} disabled={pamCoins < 15}
                   title={pamCoins < 15 ? 'Precisa de 15 PAM Coins' : 'Pular missão (15 🪙)'}
-                  style={{ padding: '11px 14px', fontSize: 12, borderRadius: 8,
-                    border: '1px solid #c8a96e', fontWeight: 500, fontFamily: 'inherit',
+                  style={{ padding: '11px 18px', fontSize: 13, borderRadius: 8,
+                    border: 'none', fontWeight: 500, fontFamily: 'inherit',
                     cursor: pamCoins >= 15 ? 'pointer' : 'not-allowed',
-                    background: pamCoins >= 15 ? '#fffdf4' : '#2a1a0a',
-                    color: pamCoins >= 15 ? '#8B6914' : '#5a3a0e' }}>
-                  Skip 15🪙
+                    background: pamCoins >= 15 ? '#2c1a00' : '#2a1a0a',
+                    color: pamCoins >= 15 ? '#f5ead0' : '#5a3a0e' }}>
+                  Pular 15🪙
                 </button>
               </div>
             </>
