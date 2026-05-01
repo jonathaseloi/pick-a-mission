@@ -103,7 +103,7 @@ function SkillsTab({ unlocked, realLevels }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
           const isCombat  = COMBAT_SKILLS.has(sk.name)
-          const cap       = isCombat ? null : (unlockedCaps[sk.name] ?? null)
+          const cap       = isCombat ? null : (unlockedCaps[sk.name] ?? 1)
           const real      = realLevels?.[sk.name]
           const hasReal   = real != null && real > 0
           const overCap   = !isCombat && cap != null && hasReal && real > cap

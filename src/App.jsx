@@ -67,7 +67,8 @@ export default function App() {
   const [showReward, setShowReward] = useState(false)
   const [tab,        setTab]        = useState('board')
   const [pamCoins,   setPamCoins]   = useState(() => saved?.pamCoins   || 0)
-  const [hunt,       setHunt]       = useState(() => saved?.hunt       || null)
+  const [hunt,          setHunt]          = useState(() => saved?.hunt          || null)
+  const [huntUnlocked,  setHuntUnlocked]  = useState(() => new Set(saved?.huntUnlocked || []))
 
   const combatLevel = calcCombatLevel(realLevels)
   const activeMission = pickedId ? MISSIONS.find(m => m.id === pickedId) : null
@@ -77,10 +78,10 @@ export default function App() {
       username, realLevels, pamCoins,
       options: next,
       unlocked: [...unlocked], completed: [...completed],
-      history, pickedId, mode, hunt,
+      history, pickedId, mode, hunt, huntUnlocked: [...huntUnlocked],
       ...overrides,
     })
-  }, [username, realLevels, pamCoins, unlocked, completed, history, pickedId, mode, hunt])
+  }, [username, realLevels, pamCoins, unlocked, completed, history, pickedId, mode, hunt, huntUnlocked])
 
   useEffect(() => {
     if (!pickedId) setOptions(drawOptions(unlocked, completed, mode))
@@ -110,7 +111,7 @@ export default function App() {
       saveState({
         username, realLevels: levels, pamCoins,
         unlocked: [...unlocked], completed: [...completed],
-        history, pickedId, mode, hunt,
+        history, pickedId, mode, hunt, huntUnlocked: [...huntUnlocked],
       })
       return true
     } catch {
@@ -171,13 +172,18 @@ export default function App() {
 
   function handleHuntUpdate(newHunt) {
     setHunt(newHunt)
-    persist({ hunt: newHunt })
+    persist({ hunt: newHunt, huntUnlocked: [...huntUnlocked] })
+  }
+
+  function handleHuntUnlockedChange(newSet) {
+    setHuntUnlocked(newSet)
+    persist({ hunt, huntUnlocked: [...newSet] })
   }
 
   function handleHuntCoins(amount) {
     const newCoins = pamCoins + amount
     setPamCoins(newCoins)
-    persist({ pamCoins: newCoins })
+    persist({ pamCoins: newCoins, huntUnlocked: [...huntUnlocked] })
   }
 
   function handleReset() {
@@ -186,7 +192,7 @@ export default function App() {
     setUnlocked(u); setCompleted(c); setHistory(h)
     setPickedId(null); setShowReward(false); setPamCoins(0)
     setOptions(drawOptions(u, c, mode))
-    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null })
+    saveState({ username, realLevels, pamCoins: 0, unlocked: [], completed: [], history: [], pickedId: null, mode, hunt: null, huntUnlocked: [] })
   }
 
   function handleChangeUser() {
@@ -310,6 +316,8 @@ export default function App() {
           onHuntUpdate={handleHuntUpdate}
           pamCoins={pamCoins}
           onCoinsChange={handleHuntCoins}
+          huntUnlocked={huntUnlocked}
+          onHuntUnlockedChange={handleHuntUnlockedChange}
         />
       )}
       {tab === 'unlocks' && <UnlocksTab unlocked={unlocked} realLevels={realLevels} />}
