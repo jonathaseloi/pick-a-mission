@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:i.ytimg.com)",
+      "WebFetch(domain:oldschool.runescape.wiki)",
+      "WebSearch",
+      "Bash(grep -n -i \"\\\\[\\\\[.*[Bb]oss\\\\|Zulrah\\\\|Vorkath\\\\|Cerberus\\\\|Hydra\\\\|Araxxor\\\\|Barrows\\\\|Dagannoth\\\\|Kraken\\\\|Callisto\\\\|Scorpia\\\\|Vet'ion\\\\|Venenatis\\\\|Sarachnis\\\\|Muspah\\\\|Inferno\\\\|Fight Cave\\\\|Moons of Peril\\\\|Tormented Demon\\\\|Gauntlet\\\\|Nightmare\\\\|Nex\\\\|Corporeal Beast\\\\|Giant Mole\\\\|Scurrius\\\\|Duke Sucellus\\\\|Leviathan\\\\|Whisperer\\\\|Vardorvis\\\\|Skeletal Wyvern\\\\|Thermonuclear\\\\|Chambers of Xeric\\\\|Theatre of Blood\\\\|Tombs of Amascut\\\\|God Wars\\\\|K'ril\\\\|Graardor\\\\|Zilyana\\\\|Kree'arra\\\\|Demonic gorilla\\\\|Dagannoth Rex\\\\|Dagannoth Prime\\\\|Dagannoth Supreme\\\\|Chaos Elemental\\\\|Crazy archaeologist\\\\|Calvar'ion\\\\|Artio\\\\|Spindel\\\\|Calisto\" \"C:/Users/Jonathas/Desktop/b0aty_wikitext.txt\" | head -80)",
+      "Read(//c/Users/Jonathas/Desktop/**)",
+      "Bash(node --input-type=module)",
+      "Bash(npm run *)",
+      "Bash(curl -s \"https://api.runeprofile.com/profiles/DiouDiou\" -H \"User-Agent: Mozilla/5.0\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"https://www.runeprofile.com/assets/index-BnGIfkly.js\")"
+    ]
+  }
+}

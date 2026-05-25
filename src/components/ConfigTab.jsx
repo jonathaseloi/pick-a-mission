@@ -1,20 +1,19 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { parchment } from '../constants.js'
 
 const parch = parchment
 
-// ─── Reset confirmation modal ─────────────────────────────────────────────────
 function ResetModal({ onConfirm, onCancel }) {
   const [typed, setTyped] = useState('')
   const confirmed = typed.trim().toLowerCase() === 'resetar'
 
   const items = [
-    { icon: '🪙', label: 'PAM Coins — zerados' },
-    { icon: '📋', label: 'Missões concluídas — apagadas' },
-    { icon: '🔓', label: 'Desbloqueios de skills e itens — perdidos' },
-    { icon: '🎯', label: 'Hunt ativo — cancelado' },
-    { icon: '🐉', label: 'Monstros desbloqueados — removidos' },
-    { icon: '📜', label: 'Histórico de missões e hunts — apagado' },
+    'PAM Coins — zerados',
+    'Missões concluídas — apagadas',
+    'Desbloqueios de skills e itens — perdidos',
+    'Hunt ativo — cancelado',
+    'Monstros desbloqueados — removidos',
+    'Histórico de missões e hunts — apagado',
   ]
 
   return (
@@ -23,83 +22,61 @@ function ResetModal({ onConfirm, onCancel }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 1000, padding: '1rem',
     }}>
-      <div style={{
-        ...parch, borderRadius: 14, padding: '1.5rem',
-        maxWidth: 400, width: '100%',
-        boxShadow: '0 0 40px rgba(216,90,48,0.3), 0 20px 60px rgba(0,0,0,0.5)',
-        border: '2px solid #D85A30',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>⚠️</div>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#7A1F1F', margin: '0 0 6px' }}>
-            Resetar tudo?
-          </h2>
-          <p style={{ fontSize: 12, color: '#5a3a0e', margin: 0 }}>
-            Esta ação é irreversível. O seguinte será perdido:
-          </p>
-        </div>
+      <div style={{ ...parch, padding: '1.5rem', maxWidth: 400, width: '100%',
+        boxShadow: '0 0 40px rgba(216,90,48,0.2), 0 20px 60px rgba(0,0,0,0.5)' }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#7A1F1F', margin: '0 0 4px' }}>
+          Resetar tudo?
+        </p>
+        <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: '0 0 14px', fontFamily: 'system-ui' }}>
+          Esta ação é irreversível. O seguinte será perdido:
+        </p>
 
-        {/* What gets lost */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
-          {items.map(({ icon, label }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+          {items.map(label => (
             <div key={label} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '7px 12px', borderRadius: 8,
-              background: '#FAECE7', border: '1px solid #D85A3044',
-            }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
-              <span style={{ fontSize: 12, color: '#7A1F1F' }}>{label}</span>
-            </div>
+              fontSize: 12, color: '#7A1F1F', fontFamily: 'system-ui',
+              padding: '5px 10px', background: 'var(--c-mid)', border: '1px solid #D85A3044',
+            }}>{label}</div>
           ))}
         </div>
 
-        {/* O que NÃO é perdido */}
-        <div style={{
-          padding: '8px 12px', borderRadius: 8, marginBottom: 16,
-          background: '#EAF3DE', border: '1px solid #97C45944',
-        }}>
-          <p style={{ fontSize: 11, color: '#3B6D11', margin: 0 }}>
-            ✓ Usuário e níveis do personagem são mantidos
+        <div style={{ padding: '6px 10px', background: 'var(--c-mid)', border: '1px solid var(--c-accent)',
+          marginBottom: 14 }}>
+          <p style={{ fontSize: 11, color: '#3B6D11', margin: 0, fontFamily: 'system-ui' }}>
+            Usuario e niveis do personagem sao mantidos
           </p>
         </div>
 
-        {/* Confirm by typing */}
-        <div style={{ marginBottom: 14 }}>
-          <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 6px' }}>
-            Digite <strong>resetar</strong> para confirmar:
-          </p>
-          <input
-            type="text"
-            value={typed}
-            onChange={e => setTyped(e.target.value)}
-            placeholder="resetar"
-            autoFocus
-            style={{
-              width: '100%', padding: '9px 12px', fontSize: 13,
-              borderRadius: 8, border: `1px solid ${confirmed ? '#97C459' : '#c8a96e'}`,
-              background: '#fffdf4', color: '#2c1a00',
-              fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
-            }}
-          />
-        </div>
+        <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: '0 0 6px', fontFamily: 'system-ui' }}>
+          Digite <strong>resetar</strong> para confirmar:
+        </p>
+        <input
+          type="text"
+          value={typed}
+          onChange={e => setTyped(e.target.value)}
+          placeholder="resetar"
+          autoFocus
+          style={{
+            width: '100%', padding: '9px 12px', fontSize: 13, marginBottom: 14,
+            borderRadius: 0, border: `1px solid ${confirmed ? '#97C459' : 'var(--c-accent)'}`,
+            background: 'var(--c-panel)', color: 'var(--c-text)',
+            fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+          }}
+        />
 
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={onCancel} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 8,
-            border: '1px solid #c8a96e', background: 'transparent',
-            color: '#8B6914', fontFamily: 'inherit', cursor: 'pointer',
+            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
+            border: '1px solid var(--c-accent)', background: 'transparent',
+            color: 'var(--c-muted)', fontFamily: 'inherit', cursor: 'pointer',
           }}>Cancelar</button>
-          <button
-            onClick={onConfirm}
-            disabled={!confirmed}
-            style={{
-              flex: 1, padding: '10px', fontSize: 13, borderRadius: 8,
-              border: 'none', fontFamily: 'inherit', fontWeight: 600,
-              cursor: confirmed ? 'pointer' : 'not-allowed',
-              background: confirmed ? '#7A1F1F' : '#3a1010',
-              color: confirmed ? '#faeae7' : '#8B6914',
-              transition: 'all 0.15s',
-            }}>
+          <button onClick={onConfirm} disabled={!confirmed} style={{
+            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
+            border: 'none', fontFamily: 'inherit', fontWeight: 600,
+            cursor: confirmed ? 'pointer' : 'not-allowed',
+            background: confirmed ? '#7A1F1F' : 'var(--c-mid)',
+            color: confirmed ? '#faeae7' : 'var(--c-muted)',
+          }}>
             Resetar tudo
           </button>
         </div>
@@ -108,17 +85,22 @@ function ResetModal({ onConfirm, onCancel }) {
   )
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
-export default function ConfigTab({ mode, modes, onChange, username, onRefresh, onChangeUser, onReset }) {
-  const [refreshing,  setRefreshing]  = useState(false)
-  const [msg,         setMsg]         = useState(null)
-  const [showReset,   setShowReset]   = useState(false)
+export default function ConfigTab({ username, onRefresh, onChangeUser, onReset }) {
+  const [refreshing, setRefreshing] = useState(false)
+  const [msg,        setMsg]        = useState(null)
+  const [showReset,  setShowReset]  = useState(false)
+  const [section,    setSection]    = useState('player')
+
+  const SECTIONS = [
+    { id: 'player', label: 'Personagem' },
+    { id: 'danger', label: 'Zona de Perigo' },
+  ]
 
   async function handleRefresh() {
     setRefreshing(true)
     setMsg(null)
     const ok = await onRefresh()
-    setMsg(ok ? '✓ Níveis atualizados!' : '✗ Erro ao buscar. Tente novamente.')
+    setMsg(ok ? 'Niveis atualizados!' : 'Erro ao buscar. Tente novamente.')
     setRefreshing(false)
     setTimeout(() => setMsg(null), 3000)
   }
@@ -129,84 +111,82 @@ export default function ConfigTab({ mode, modes, onChange, username, onRefresh, 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-
-      {/* Player */}
-      <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-        <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 12px', letterSpacing: '0.06em' }}>
-          PERSONAGEM
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#2c1a00', margin: '0 0 2px' }}>{username}</p>
-            <p style={{ fontSize: 11, color: '#8B6914', margin: 0 }}>Ironman</p>
-          </div>
-          <button onClick={handleRefresh} disabled={refreshing}
-            style={{ padding: '7px 14px', fontSize: 12, borderRadius: 8, cursor: 'pointer',
-              fontFamily: 'inherit', border: '1px solid #c8a96e',
-              background: '#2c1a00', color: '#f5ead0', fontWeight: 500 }}>
-            {refreshing ? 'Atualizando...' : '↻ Atualizar níveis'}
-          </button>
-        </div>
-        {msg && (
-          <p style={{ fontSize: 12, margin: '0 0 8px', padding: '6px 10px', borderRadius: 6,
-            background: msg.startsWith('✓') ? '#EAF3DE' : '#FAECE7',
-            color: msg.startsWith('✓') ? '#3B6D11' : '#993C1D' }}>
-            {msg}
-          </p>
-        )}
-        <button onClick={onChangeUser}
-          style={{ fontSize: 11, color: '#993C1D', background: 'transparent',
-            border: '1px solid #D85A3066', padding: '5px 12px', borderRadius: 6,
-            cursor: 'pointer', fontFamily: 'inherit' }}>
-          Trocar de usuário (reseta progresso)
-        </button>
-      </div>
-
-      {/* Draw mode */}
-      <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-        <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 12px', letterSpacing: '0.06em' }}>
-          MODO DE SORTEIO
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {modes.map(m => (
-            <div key={m.id} onClick={() => onChange(m.id)}
-              style={{ cursor: 'pointer', padding: '12px 14px', borderRadius: 10,
-                border: mode === m.id ? '2px solid #3B6D11' : '1px solid #c8a96e66',
-                background: mode === m.id ? '#EAF3DE' : '#fffdf4' }}>
-              <p style={{ fontWeight: 500, fontSize: 13, margin: '0 0 2px',
-                color: mode === m.id ? '#3B6D11' : '#2c1a00' }}>{m.label}</p>
-              <p style={{ fontSize: 11, color: '#8B6914', margin: 0 }}>{m.desc}</p>
-            </div>
+    <>
+      <div style={{ ...parch, padding: 0, overflow: 'hidden' }}>
+        {/* Tab bar */}
+        <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', borderBottom: '2px solid var(--c-border)' }}>
+          {SECTIONS.map((s, i) => (
+            <Fragment key={s.id}>
+              {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
+              <button onClick={() => setSection(s.id)} style={{
+                padding: '8px 16px', fontSize: 11, border: 'none', borderRadius: 0,
+                fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap',
+                background: section === s.id ? 'var(--c-panel)' : 'transparent',
+                color: section === s.id ? 'var(--c-text)' : 'var(--c-panel)',
+                fontWeight: section === s.id ? 700 : 400,
+              }}>{s.label}</button>
+            </Fragment>
           ))}
         </div>
-        <p style={{ fontSize: 11, color: '#8B6914', marginTop: '1rem' }}>
-          Mudanças valem a partir do próximo sorteio.
-        </p>
+
+        <div style={{ padding: '1.25rem' }}>
+          {section === 'player' && (
+            <>
+              <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: '0 0 12px', letterSpacing: '0.06em', fontFamily: 'system-ui' }}>
+                PERSONAGEM
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--c-text)', margin: '0 0 2px' }}>{username}</p>
+                  <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: 0, fontFamily: 'system-ui' }}>Ironman</p>
+                </div>
+                <button onClick={handleRefresh} disabled={refreshing}
+                  style={{ padding: '7px 14px', fontSize: 12, borderRadius: 0,
+                    cursor: refreshing ? 'default' : 'pointer', fontFamily: 'inherit',
+                    border: '2px solid var(--btn-bd)', background: 'var(--btn-bg)', color: 'var(--btn-fg)',
+                    fontWeight: 600, boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)' }}>
+                  {refreshing ? 'Atualizando...' : 'Atualizar niveis'}
+                </button>
+              </div>
+              {msg && (
+                <p style={{ fontSize: 12, margin: '0 0 10px', padding: '6px 10px', fontFamily: 'system-ui',
+                  background: msg.includes('Erro') ? 'var(--c-mid)' : 'var(--c-mid)',
+                  color: msg.includes('Erro') ? '#993C1D' : '#3B6D11',
+                  border: `1px solid ${msg.includes('Erro') ? '#D85A30' : '#97C459'}` }}>
+                  {msg}
+                </p>
+              )}
+              <button onClick={onChangeUser}
+                style={{ fontSize: 11, color: '#993C1D', background: 'transparent',
+                  border: '1px solid #D85A3066', padding: '5px 12px', borderRadius: 0,
+                  cursor: 'pointer', fontFamily: 'inherit' }}>
+                Trocar de usuario (reseta progresso)
+              </button>
+            </>
+          )}
+
+          {section === 'danger' && (
+            <>
+              <p style={{ fontSize: 11, color: '#993C1D', margin: '0 0 10px', letterSpacing: '0.06em', fontFamily: 'system-ui' }}>
+                ZONA DE PERIGO
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: '0 0 14px', fontFamily: 'system-ui' }}>
+                Reseta todo o progresso — missoes, hunts, coins e desboqueios. O personagem e mantido.
+              </p>
+              <button onClick={() => setShowReset(true)}
+                style={{
+                  width: '100%', padding: '10px', fontSize: 13, borderRadius: 0,
+                  border: '1px solid #D85A30', background: 'transparent',
+                  color: '#993C1D', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
+                }}>
+                Resetar todo o progresso
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Danger zone */}
-      <div style={{ ...parch, borderRadius: 12, padding: '1.25rem', borderColor: '#D85A3066' }}>
-        <p style={{ fontSize: 11, color: '#993C1D', margin: '0 0 10px', letterSpacing: '0.06em' }}>
-          ZONA DE PERIGO
-        </p>
-        <p style={{ fontSize: 12, color: '#8B6914', margin: '0 0 12px' }}>
-          Reseta todo o progresso do jogo — missões, hunts, coins e desbloqueios.
-          O personagem é mantido.
-        </p>
-        <button onClick={() => setShowReset(true)}
-          style={{
-            width: '100%', padding: '10px', fontSize: 13, borderRadius: 8,
-            border: '1px solid #D85A30', background: 'transparent',
-            color: '#993C1D', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
-          }}>
-          🗑️ Resetar todo o progresso
-        </button>
-      </div>
-
-      {showReset && (
-        <ResetModal onConfirm={handleConfirmReset} onCancel={() => setShowReset(false)} />
-      )}
-    </div>
+      {showReset && <ResetModal onConfirm={handleConfirmReset} onCancel={() => setShowReset(false)} />}
+    </>
   )
 }

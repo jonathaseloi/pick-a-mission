@@ -1,20 +1,12 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { UNLOCKS } from '../data/unlocks.js'
-import { getBIS } from '../data/bis.js'
+import { getBIS, getIdealBIS } from '../data/bis.js'
+import { EQUIPMENT, getEquipmentCost } from '../data/equipment.js'
+import { MONSTERS } from '../data/monsters.js'
+import { parchment as parch } from '../constants.js'
 
-// ── Skill metadata ─────────────────────────────────────────────────────────
-// Ordem idêntica ao grid do jogo (3 colunas, lido linha a linha):
-// Attack      Hitpoints   Mining
-// Strength    Agility     Smithing
-// Defence     Herblore    Fishing
-// Ranged      Thieving    Cooking
-// Prayer      Crafting    Firemaking
-// Magic       Fletching   Woodcutting
-// Runecraft   Slayer      Farming
-// Construction Hunter     Sailing
-const COMBAT_SKILLS = new Set([
-  'Attack','Strength','Defence','Ranged','Prayer','Magic','Hitpoints','Slayer'
-])
+const EQUIPMENT_MAP = new Map(EQUIPMENT.map(e => [e.id, e]))
+const MONSTERS_MAP_BIS = new Map(MONSTERS.map(m => [m.id, m]))
 
 const ALL_SKILLS = [
   { name: 'Attack',       img: 'https://oldschool.runescape.wiki/images/Attack_icon.png' },
@@ -49,8 +41,6 @@ const SLOT_LABELS = {
   weapon:'Arma', body:'Peitoral', shield:'Escudo', legs:'Calças',
   hands:'Luvas', feet:'Botas', ring:'Anel',
 }
-
-// Grid positions mirroring OSRS equipment screen
 const SLOT_POS = {
   head:   { col: 2, row: 1 },
   cape:   { col: 1, row: 2 },
@@ -65,115 +55,164 @@ const SLOT_POS = {
   ring:   { col: 3, row: 5 },
 }
 
-const parch = {
-  background: 'linear-gradient(160deg,#fffdf4 0%,#f5ead0 100%)',
-  border: '1px solid #c8a96e',
-}
-
-const subTabBtn = (id, active, label, onChange) => (
-  <button key={id} onClick={() => onChange(id)}
-    style={{
-      padding: '5px 14px', fontSize: 11, borderRadius: 20, cursor: 'pointer',
-      fontFamily: 'inherit', border: '1px solid',
-      borderColor: active === id ? '#c8a96e' : '#5a3a0e',
-      background:  active === id ? '#c8a96e' : '#2a1a0a',
-      color:       active === id ? '#1a0f00' : '#c8a96e',
-      fontWeight:  active === id ? 600 : 400,
-    }}>{label}</button>
-)
-
 // ── Skills sub-tab ─────────────────────────────────────────────────────────
-function SkillsTab({ unlocked, realLevels }) {
-  const unlockedCaps = {}
-  for (const [id, u] of Object.entries(UNLOCKS)) {
-    if (u.category === 'skill' && unlocked.has(id)) {
-      const cur = unlockedCaps[u.skill] ?? 0
-      if (u.level > cur) unlockedCaps[u.skill] = u.level
-    }
+function SkillsTab({ realLevels, onRefresh }) {
+  const [refreshing, setRefreshing] = useState(false)
+  const [refreshOk,  setRefreshOk]  = useState(null)
+
+  async function handleRefresh() {
+    setRefreshing(true)
+    setRefreshOk(null)
+    const ok = await onRefresh()
+    setRefreshOk(ok)
+    setRefreshing(false)
+    if (ok) setTimeout(() => setRefreshOk(null), 2000)
   }
 
   return (
-    <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-      <p style={{ fontSize: 11, color: '#5a3e1b', margin: '0 0 4px', letterSpacing: '0.06em' }}>
-        SKILLS
-      </p>
-      <p style={{ fontSize: 10, color: '#8B6914', margin: '0 0 14px', fontStyle: 'italic' }}>
-        Skills de combate sem bloqueio · Vermelho = passou do cap liberado
-      </p>
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <p style={{ fontSize: 11, color: '#5a3e1b', margin: 0, letterSpacing: '0.06em' }}>SKILLS</p>
+        <button onClick={handleRefresh} disabled={refreshing}
+          style={{
+            padding: '4px 10px', fontSize: 11, borderRadius: 0, cursor: refreshing ? 'default' : 'pointer',
+            fontFamily: 'inherit', border: '2px solid var(--btn-bd)',
+            background: refreshOk === false ? '#2a0a00' : 'var(--btn-bg)',
+            color: refreshOk === false ? '#ff6040' : 'var(--btn-fg)',
+            boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
+          }}>
+          {refreshing ? 'Atualizando...' : refreshOk === true ? 'Atualizado!' : refreshOk === false ? 'Erro' : 'Atualizar níveis'}
+        </button>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
-          const isCombat  = COMBAT_SKILLS.has(sk.name)
-          const cap       = isCombat ? null : (unlockedCaps[sk.name] ?? 1)
-          const real      = realLevels?.[sk.name]
-          const hasReal   = real != null && real > 0
-          const overCap   = !isCombat && cap != null && hasReal && real > cap
-
+          const real    = realLevels?.[sk.name]
+          const hasReal = real != null && real > 0
           return (
             <div key={sk.name} style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '6px 8px', borderRadius: 8,
-              border: `1px solid ${overCap ? '#D85A30' : hasReal ? '#c8a96e' : '#c8a96e66'}`,
-              background: overCap ? '#FAECE7' : hasReal ? '#fffdf4' : '#f5ead0',
+              border: '1px solid var(--c-accent)',
+              background: 'var(--c-mid)',
               opacity: hasReal ? 1 : 0.4,
             }}>
               <img src={sk.img} alt={sk.name}
                 style={{ width: 20, height: 20, objectFit: 'contain', imageRendering: 'pixelated',
                   filter: hasReal ? 'none' : 'grayscale(1)' }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 9, color: '#5a3e1b', margin: 0, lineHeight: 1 }}>{sk.name}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                  <p style={{
-                    fontSize: 13, fontWeight: 700, margin: 0, lineHeight: 1.3,
-                    fontFamily: 'system-ui, sans-serif',
-                    color: overCap ? '#D85A30' : hasReal ? '#2c1a00' : '#5a3a0e',
-                  }}>
-                    {hasReal ? real : '—'}
-                  </p>
-                  {!isCombat && cap != null && (
-                    <p style={{ fontSize: 9, color: '#8B6914', margin: 0,
-                      fontFamily: 'system-ui, sans-serif' }}>
-                      /{cap}
-                    </p>
-                  )}
-                </div>
+                <p style={{ fontSize: 10, color: '#5a3e1b', margin: 0, lineHeight: 1 }}>{sk.name}</p>
+                <p style={{
+                  fontSize: 13, fontWeight: 700, margin: 0, lineHeight: 1.3,
+                  fontFamily: 'system-ui, sans-serif',
+                  color: hasReal ? 'var(--c-text)' : '#5a3a0e',
+                }}>
+                  {hasReal ? real : '—'}
+                </p>
               </div>
             </div>
           )
         })}
       </div>
-    </div>
+    </>
   )
 }
 
 // ── Equipment sub-tab ──────────────────────────────────────────────────────
-function EquipmentTab({ unlocked }) {
+function EquipmentTab({ unlocked, obtainedEquipment, realLevels }) {
   const [style, setStyle] = useState('melee')
+  const [ammoFilter, setAmmoFilter] = useState(null)
   const [tooltip, setTooltip] = useState(null)
-  const bis = getBIS(style, unlocked)
+  const [checkBIS, setCheckBIS] = useState(false)
+
+  const currentBIS = getBIS(style, unlocked, obtainedEquipment, realLevels, ammoFilter)
+  const idealBIS   = getIdealBIS(style, realLevels, ammoFilter)
+  const displayBIS = checkBIS ? idealBIS : currentBIS
+
+  const hasLevels = Object.keys(realLevels ?? {}).length > 0
+
+  function isOwned(item) {
+    if (!item) return false
+    const equipId   = item._equipmentId
+    const unlockRef = item._unlockRef ?? item.unlockKey
+    if (equipId   && obtainedEquipment.has(equipId))  return true
+    if (unlockRef && unlocked.has(unlockRef))          return true
+    return false
+  }
 
   const styleColors = {
-    melee:  '#c8a96e',
+    melee:  'var(--c-accent)',
     ranged: '#7acc6e',
     mage:   '#6ea8cc',
   }
 
   return (
-    <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-      {/* Style selector */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: '1.25rem', justifyContent: 'center' }}>
-        {['melee','ranged','mage'].map(s => (
-          <button key={s} onClick={() => setStyle(s)}
-            style={{
-              padding: '5px 18px', fontSize: 12, borderRadius: 20, cursor: 'pointer',
-              fontFamily: 'inherit', border: '1px solid',
-              borderColor: style === s ? styleColors[s] : '#5a3a0e',
-              background:  style === s ? styleColors[s] + '33' : '#2a1a0a',
-              color:       style === s ? styleColors[s] : '#c8a96e',
-              fontWeight:  style === s ? 600 : 400,
-              textTransform: 'capitalize',
-            }}>{s}</button>
-        ))}
+    <>
+      {/* Style selector + Check BIS toggle on the same row */}
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 8, marginBottom: style === 'ranged' ? 8 : '1.25rem' }}>
+        <div style={{ display: 'flex', flex: 1, alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)' }}>
+          {['melee','ranged','mage'].map((s, i) => (
+            <Fragment key={s}>
+              {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 14, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
+              <button onClick={() => { setStyle(s); setAmmoFilter(null) }} style={{
+                flex: 1, padding: '7px 10px', fontSize: 12, border: 'none', borderRadius: 0,
+                fontFamily: 'inherit', cursor: 'pointer', textTransform: 'capitalize',
+                background: style === s ? 'var(--c-panel)' : 'transparent',
+                color: style === s ? 'var(--c-text)' : 'var(--c-panel)',
+                fontWeight: style === s ? 700 : 400,
+              }}>{s}</button>
+            </Fragment>
+          ))}
+        </div>
+        <button onClick={() => setCheckBIS(b => !b)} style={{
+          padding: '6px 10px', fontSize: 10, borderRadius: 0, cursor: 'pointer',
+          fontFamily: 'inherit', border: '2px solid var(--btn-bd)', whiteSpace: 'nowrap',
+          background: checkBIS ? '#1a3a10' : 'var(--btn-bg)',
+          color: checkBIS ? '#90d060' : 'var(--btn-fg)',
+          boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
+          fontWeight: checkBIS ? 700 : 400,
+        }}>
+          {checkBIS ? '✓ BIS Check' : 'Check BIS'}
+        </button>
       </div>
+
+      {/* Ammo type filter — only for ranged */}
+      {style === 'ranged' && (
+        <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)', borderTop: 'none', marginBottom: '1.25rem' }}>
+          {[
+            { id: null,     label: 'Todos' },
+            { id: 'arrow',  label: 'Arrows' },
+            { id: 'bolt',   label: 'Bolts' },
+            { id: 'dart',   label: 'Darts' },
+          ].map((a, i) => (
+            <Fragment key={String(a.id)}>
+              {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 14, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
+              <button onClick={() => setAmmoFilter(a.id)} style={{
+                flex: 1, padding: '5px 8px', fontSize: 10, border: 'none', borderRadius: 0,
+                fontFamily: 'inherit', cursor: 'pointer',
+                background: ammoFilter === a.id ? 'var(--c-mid)' : 'transparent',
+                color: ammoFilter === a.id ? 'var(--c-text)' : 'var(--c-panel)',
+                fontWeight: ammoFilter === a.id ? 700 : 400,
+              }}>{a.label}</button>
+            </Fragment>
+          ))}
+        </div>
+      )}
+
+      {/* Warning when no level data in check BIS mode */}
+      {checkBIS && !hasLevels && (
+        <p style={{ fontSize: 11, color: '#7a5000', fontFamily: 'system-ui', fontStyle: 'italic',
+          marginBottom: 12, textAlign: 'center' }}>
+          Sincronize seus níveis para uma análise completa.
+        </p>
+      )}
+
+      {/* Legend for check BIS mode */}
+      {checkBIS && (
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 10, color: '#7ddc4f', fontFamily: 'system-ui' }}>✓ Já possui</span>
+          <span style={{ fontSize: 10, color: 'var(--c-muted)', fontFamily: 'system-ui' }}>🔒 Ainda não possui</span>
+        </div>
+      )}
 
       {/* Equipment grid */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -185,9 +224,16 @@ function EquipmentTab({ unlocked }) {
           position: 'relative',
         }}>
           {EQ_SLOTS.map(slot => {
-            const pos = SLOT_POS[slot]
-            const item = bis[slot]
+            const pos  = SLOT_POS[slot]
+            const item = displayBIS[slot]
+            const owned = !checkBIS || isOwned(item)
             const isTooltipVisible = tooltip === slot
+
+            const borderColor = item
+              ? (checkBIS
+                  ? (owned ? styleColors[style] : '#5a3a10')
+                  : styleColors[style])
+              : '#3a2a0a'
 
             return (
               <div key={slot}
@@ -197,9 +243,9 @@ function EquipmentTab({ unlocked }) {
                   gridColumn: pos.col,
                   gridRow: pos.row,
                   width: 56, height: 56,
-                  border: `2px solid ${item ? styleColors[style] : '#3a2a0a'}`,
+                  border: `2px solid ${borderColor}`,
                   borderRadius: 8,
-                  background: item ? '#1e1005' : '#e8d5a3',
+                  background: 'var(--c-mid)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: item ? 'pointer' : 'default',
                   position: 'relative',
@@ -208,47 +254,92 @@ function EquipmentTab({ unlocked }) {
 
                 {item ? (
                   <img src={item.image} alt={item.name}
-                    style={{ width: 40, height: 40, objectFit: 'contain', imageRendering: 'pixelated' }} />
+                    style={{
+                      width: 40, height: 40, objectFit: 'contain', imageRendering: 'pixelated',
+                      filter: checkBIS && !owned ? 'grayscale(0.6) brightness(0.8)' : 'none',
+                    }} />
                 ) : (
-                  <span style={{ fontSize: 9, color: '#2c1a00', textAlign: 'center', lineHeight: 1.3,
+                  <span style={{ fontSize: 9, color: 'var(--c-text)', textAlign: 'center', lineHeight: 1.3,
                     fontFamily: 'system-ui, sans-serif' }}>
                     {SLOT_LABELS[slot]}
                   </span>
                 )}
 
-                {isTooltipVisible && item && (
+                {/* Lock overlay — item ideal mas não obtido */}
+                {checkBIS && item && !owned && (
                   <div style={{
-                    position: 'absolute',
-                    bottom: 62, left: '50%', transform: 'translateX(-50%)',
-                    background: '#2a1a0a', border: '1px solid #c8a96e',
-                    color: '#f5d78e', fontSize: 10, whiteSpace: 'nowrap',
-                    padding: '4px 8px', borderRadius: 4, zIndex: 20,
-                    fontFamily: 'system-ui, sans-serif', pointerEvents: 'none',
-                  }}>
-                    {item.name}
-                    <div style={{
-                      position: 'absolute', top: '100%', left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 0, height: 0,
-                      borderLeft: '5px solid transparent',
-                      borderRight: '5px solid transparent',
-                      borderTop: '5px solid #c8a96e',
-                    }} />
-                  </div>
+                    position: 'absolute', inset: 0, borderRadius: 8,
+                    background: 'rgba(15,5,0,0.45)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 15, pointerEvents: 'none',
+                  }}>🔒</div>
                 )}
+
+                {/* Checkmark badge — item ideal já possuído */}
+                {checkBIS && item && owned && (
+                  <div style={{
+                    position: 'absolute', top: 2, right: 2,
+                    fontSize: 8, background: '#1a4a0a', color: '#7ddc4f',
+                    borderRadius: '50%', width: 13, height: 13,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'system-ui', fontWeight: 700, pointerEvents: 'none',
+                  }}>✓</div>
+                )}
+
+                {isTooltipVisible && item && (() => {
+                  const equipData = item._equipmentId
+                    ? EQUIPMENT_MAP.get(item._equipmentId)
+                    : EQUIPMENT_MAP.get(item.unlockKey) ?? EQUIPMENT_MAP.get(item._unlockRef)
+                  const tooltipMonster = equipData?.monsterId ? MONSTERS_MAP_BIS.get(equipData.monsterId) : null
+                  const tooltipSource = tooltipMonster
+                    ? `Drop: ${tooltipMonster.name}`
+                    : equipData?.source === 'shop' ? 'Loja PAM' : null
+                  const tooltipCost = equipData ? getEquipmentCost(equipData) : null
+                  const tooltipRarity = equipData?.rarity ?? null
+                  return (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 62, left: '50%', transform: 'translateX(-50%)',
+                      background: '#2a1a0a', border: '1px solid var(--c-accent)',
+                      color: '#f5d78e', fontSize: 10, minWidth: 140,
+                      padding: '6px 8px', borderRadius: 4, zIndex: 20,
+                      fontFamily: 'system-ui, sans-serif', pointerEvents: 'none',
+                    }}>
+                      <div style={{ fontWeight: 700, marginBottom: 4 }}>{item.name}</div>
+                      {checkBIS && (
+                        <div style={{ marginBottom: 4, color: owned ? '#7ddc4f' : '#e08040' }}>
+                          {owned ? '✓ Já possui' : '🔒 Não possui ainda'}
+                        </div>
+                      )}
+                      {tooltipSource && <div style={{ color: 'var(--c-muted)', marginBottom: 2 }}>{tooltipSource}</div>}
+                      {tooltipRarity && <div style={{ color: 'var(--c-muted)', marginBottom: 2 }}>{tooltipRarity}</div>}
+                      {tooltipCost && <div>{tooltipCost} 🪙</div>}
+                      <div style={{
+                        position: 'absolute', top: '100%', left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 0, height: 0,
+                        borderLeft: '5px solid transparent',
+                        borderRight: '5px solid transparent',
+                        borderTop: '5px solid var(--c-accent)',
+                      }} />
+                    </div>
+                  )
+                })()}
               </div>
             )
           })}
         </div>
       </div>
 
-      {Object.values(bis).every(v => v === null) && (
-        <p style={{ textAlign: 'center', color: '#8B6914', fontSize: 12,
+      {Object.values(displayBIS).every(v => v === null) && (
+        <p style={{ textAlign: 'center', color: 'var(--c-muted)', fontSize: 12,
           marginTop: '1rem', fontStyle: 'italic' }}>
-          Nenhum equipamento desbloqueado para este estilo ainda.
+          {checkBIS
+            ? 'Nenhum item encontrado para este estilo com seus níveis atuais.'
+            : 'Nenhum equipamento desbloqueado para este estilo ainda.'}
         </p>
       )}
-    </div>
+    </>
   )
 }
 
@@ -269,26 +360,22 @@ function OthersTab({ unlocked }) {
   const hasAny = cats.some(c => grouped[c].length > 0)
 
   if (!hasAny)
-    return (
-      <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-        <p style={{ color: '#8B6914', fontSize: 13 }}>Nenhum desbloqueio nessa categoria ainda.</p>
-      </div>
-    )
+    return <p style={{ color: 'var(--c-muted)', fontSize: 13 }}>Nenhum desbloqueio nessa categoria ainda.</p>
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {cats.map(cat => {
         if (!grouped[cat].length) return null
         return (
-          <div key={cat} style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-            <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 10px', letterSpacing: '0.06em' }}>
+          <div key={cat}>
+            <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: '0 0 8px', letterSpacing: '0.06em' }}>
               {catLabels[cat].toUpperCase()} ({grouped[cat].length})
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {grouped[cat].map(([id, u]) => (
                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10,
                   padding: '7px 10px', borderRadius: 8,
-                  border: '1px solid #c8a96e55', background: '#1e1005' }}>
+                  border: '1px solid var(--c-accent)', background: 'var(--c-mid)' }}>
                   <span style={{ fontSize: 14 }}>{u.icon}</span>
                   <span style={{ fontSize: 12, color: '#f5d78e', fontFamily: 'system-ui, sans-serif' }}>
                     {u.label}
@@ -308,22 +395,18 @@ function GeneralTab({ unlocked }) {
   const items = [...unlocked].map(id => ({ id, ...UNLOCKS[id] })).filter(u => u.label)
 
   if (!items.length)
-    return (
-      <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-        <p style={{ color: '#8B6914', fontSize: 13 }}>Nenhum desbloqueio ainda.</p>
-      </div>
-    )
+    return <p style={{ color: 'var(--c-muted)', fontSize: 13 }}>Nenhum desbloqueio ainda.</p>
 
   return (
-    <div style={{ ...parch, borderRadius: 12, padding: '1.25rem' }}>
-      <p style={{ fontSize: 11, color: '#8B6914', margin: '0 0 10px', letterSpacing: '0.06em' }}>
+    <>
+      <p style={{ fontSize: 11, color: 'var(--c-muted)', margin: '0 0 10px', letterSpacing: '0.06em' }}>
         TODOS OS DESBLOQUEIOS ({items.length})
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
         {items.map(u => (
           <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10,
             padding: '6px 10px', borderRadius: 8,
-            border: '1px solid #c8a96e33', background: '#1e100588' }}>
+            border: '1px solid var(--c-accent)', background: 'var(--c-mid)' }}>
             <span style={{ fontSize: 13 }}>{u.icon}</span>
             <span style={{ fontSize: 12, color: '#5a3e1b', fontFamily: 'system-ui, sans-serif' }}>
               {u.label}
@@ -331,12 +414,12 @@ function GeneralTab({ unlocked }) {
           </div>
         ))}
       </div>
-    </div>
+    </>
   )
 }
 
 // ── Main export ────────────────────────────────────────────────────────────
-export default function UnlocksTab({ unlocked, realLevels }) {
+export default function UnlocksTab({ unlocked, realLevels, onRefresh, obtainedEquipment }) {
   const [sub, setSub] = useState('skills')
 
   const SUB_TABS = [
@@ -347,14 +430,30 @@ export default function UnlocksTab({ unlocked, realLevels }) {
   ]
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '1rem' }}>
-        {SUB_TABS.map(t => subTabBtn(t.id, sub, t.label, setSub))}
+    <div style={{ ...parch, padding: 0, overflow: 'hidden' }}>
+      {/* Tab bar inside the card */}
+      <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', borderBottom: '2px solid var(--c-border)' }}>
+        {SUB_TABS.map((t, i) => (
+          <Fragment key={t.id}>
+            {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
+            <button onClick={() => setSub(t.id)} style={{
+              padding: '8px 12px', fontSize: 11, border: 'none', borderRadius: 0,
+              fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+              background: sub === t.id ? 'var(--c-panel)' : 'transparent',
+              color: sub === t.id ? 'var(--c-text)' : 'var(--c-panel)',
+              fontWeight: sub === t.id ? 700 : 400,
+            }}>{t.label}</button>
+          </Fragment>
+        ))}
       </div>
-      {sub === 'skills'    && <SkillsTab    unlocked={unlocked} realLevels={realLevels} />}
-      {sub === 'equipment' && <EquipmentTab unlocked={unlocked} />}
-      {sub === 'others'    && <OthersTab    unlocked={unlocked} />}
-      {sub === 'general'   && <GeneralTab   unlocked={unlocked} />}
+
+      {/* Content area */}
+      <div style={{ padding: '1.25rem' }}>
+        {sub === 'skills'    && <SkillsTab    realLevels={realLevels} onRefresh={onRefresh} />}
+        {sub === 'equipment' && <EquipmentTab unlocked={unlocked} obtainedEquipment={obtainedEquipment} realLevels={realLevels} />}
+        {sub === 'others'    && <OthersTab    unlocked={unlocked} />}
+        {sub === 'general'   && <GeneralTab   unlocked={unlocked} />}
+      </div>
     </div>
   )
 }

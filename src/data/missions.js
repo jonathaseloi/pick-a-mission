@@ -1,504 +1,1324 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// MISSIONS — Ironman padrão, early → raids prep
+// MISSIONS — Fase 4 — baseadas nos guias de Ironman (Oziris/Settled)
 //
-// priority: número de 1–10 usado para destacar a carta "recomendada"
-//           seguindo o caminho eficiente de ironman (guia Oziris/Settled)
-//           10 = absolutamente crítico no caminho, 1 = side content
-//
-// diff:   "easy" | "normal" | "hard"
-// type:   Skilling | Quest | Boss | Dungeon | Diary | Grind | Slayer
-//         | Combat Achievement | Minigame | Farming
-// req:    IDs de UNLOCKS necessários para a missão aparecer no sorteio
-// reward: ID de um UNLOCK desbloqueado ao completar
+// chapter:  1–6  (progressão do Ironman)
+// path:     'main' | 'side'
+//           main = caminho crítico do capítulo (avança o jogo)
+//           side = conteúdo paralelo útil mas não bloqueante
+// category: Quest | Skilling | Boss | Slayer | Minigame | Farming | Dungeon
+//           | Combat Achievement | Diary
+// req:      IDs de unlock OU 'skill_nivel' checado vs realLevels do OSRS API
+//           ex: 'q_ds1' = completou missão DS1 no PAM
+//               'prayer_43' = Prayer >= 43 no jogo (auto via API)
+// reward:   unlock concedido ao completar (null para missões de farm puro)
+// coins:    PAM coins ganhos
+// huntUnlock: ID de monstro desbloqueado gratuitamente para huntar
+// reroll:   tokens de re-roll ganhos
+// priority: 1–10 — define a ordem da carta "principal" (card1)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const MISSIONS = [
 
-  // ════════════════════════════════════════════════════════════════════════════
-  // EARLY GAME — primeiros passos
-  // ════════════════════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 1 — PRIMEIROS PASSOS
+  // Meta: sobreviver, completar quests iniciais, desbloquear Slayer e DS I
+  // ══════════════════════════════════════════════════════════════════════════
 
+  // ── Main ──────────────────────────────────────────────────────────────────
   {
-    id: 'm01', title: 'Primeiro Passo', diff: 'easy', type: 'Skilling', priority: 3,
-    desc: 'Roubar um Homem (Man) 10 vezes em Lumbridge.',
+    id: 'm1_01', chapter: 1, path: 'main', category: 'Quest', priority: 10,
+    title: 'Waterfall Quest',
+    desc: '13.750 XP de Attack e Strength instantâneos.',
     req: [],
-    reward: 'bronze_sword',
-    flavor: 'Um ferreiro se impressiona com sua coragem e te entrega uma espada.',
+    reward: 'q_waterfall',
+    coins: 80,
   },
   {
-    id: 'm02', title: 'Corpo Robusto', diff: 'easy', type: 'Skilling', priority: 4,
-    desc: 'Atingir nível 10 de Defence.',
+    id: 'm1_02', chapter: 1, path: 'main', category: 'Minigame', priority: 9,
+    title: 'Wintertodt',
+    desc: 'Firemaking 50 e completar 10 runs de Wintertodt.',
     req: [],
-    reward: 'leather_armor',
-    flavor: 'Com treino suficiente você aprende a se proteger com couro.',
+    reward: 'a_wintertodt',
+    coins: 30,
   },
   {
-    id: 'm03', title: 'Olho de Arqueiro', diff: 'easy', type: 'Skilling', priority: 3,
-    desc: 'Atingir nível 5 de Ranged.',
+    id: 'm1_03', chapter: 1, path: 'main', category: 'Slayer', priority: 8,
+    title: 'Slayer',
+    desc: '20 tarefas com Turael ou Spria.',
     req: [],
-    reward: 'shortbow',
-    flavor: 'Você acha um arco curto abandonado na floresta.',
+    reward: 'a_slayer',
+    coins: 25,
+    huntUnlock: 'bryophyta',
   },
   {
-    id: 'm04', title: 'Das Águas', diff: 'easy', type: 'Skilling', priority: 5,
-    desc: 'Pescar e cozinhar 20 Shrimps.',
+    id: 'm1_04', chapter: 1, path: 'main', category: 'Quest', priority: 9,
+    title: 'Priest in Peril',
+    desc: 'Completar Priest in Peril — acesso a Morytania e Ectofuntus.',
+    req: ['q_waterfall'],
+    reward: 'q_priest_peril',
+    coins: 35,
+  },
+  {
+    id: 'm1_05', chapter: 1, path: 'main', category: 'Quest', priority: 10, chapterFinal: true,
+    title: 'Dragon Slayer I',
+    desc: 'Completar Dragon Slayer I (~32 Quest Points necessários).',
+    req: ['q_waterfall', 'q_cooks_assistant'],
+    reward: 'q_ds1',
+    coins: 50,
+    reroll: 1,
+  },
+
+  // ── Side ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm1_06', chapter: 1, path: 'side', category: 'Quest', priority: 5,
+    title: "Cook's Assistant",
+    desc: "Completar Cook's Assistant.",
+    req: [],
+    reward: 'q_cooks_assistant',
+    coins: 50,
+  },
+  {
+    id: 'm1_07', chapter: 1, path: 'side', category: 'Quest', priority: 4,
+    title: 'Rune Mysteries',
+    desc: 'Completar Rune Mysteries e Sheep Shearer.',
+    req: [],
+    reward: 'q_rune_mysteries',
+    coins: 20,
+  },
+  {
+    id: 'm1_08', chapter: 1, path: 'side', category: 'Quest', priority: 3,
+    title: "Doric's Quest",
+    desc: "Completar Doric's Quest.",
+    req: [],
+    reward: 'q_dorics',
+    coins: 50,
+  },
+  {
+    id: 'm1_09', chapter: 1, path: 'side', category: 'Dungeon', priority: 5,
+    title: 'Stronghold of Security',
+    desc: 'Completar os 4 andares — 10.000 gp e Climbing Boots.',
+    req: [],
+    reward: 'q_stronghold',
+    coins: 60,
+  },
+  {
+    id: 'm1_10', chapter: 1, path: 'side', category: 'Quest', priority: 7,
+    title: "Knight's Sword",
+    desc: "Completar Knight's Sword — 12.725 XP de Smithing.",
+    req: [],
+    reward: 'q_knights_sword',
+    coins: 70,
+  },
+  {
+    id: 'm1_11', chapter: 1, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Fishing',
+    desc: 'Atingir Fishing 40 (Shrimps → Sardines → Trout).',
     req: [],
     reward: 'fishing_40',
-    flavor: 'Um pescador veterano te ensina técnicas avançadas.',
+    coins: 20,
   },
   {
-    id: 'm05', title: 'Serviço à Coroa', diff: 'easy', type: 'Quest', priority: 6,
-    desc: "Completar a quest Cook's Assistant.",
+    id: 'm1_12', chapter: 1, path: 'side', category: 'Quest', priority: 8,
+    title: 'Druidic Ritual',
+    desc: 'Completar Druidic Ritual.',
     req: [],
-    reward: 'attack_30',
-    flavor: 'O Duque de Lumbridge te treina pessoalmente como recompensa.',
+    reward: 'q_druidic',
+    coins: 20,
   },
   {
-    id: 'm06', title: 'Forja Simples', diff: 'easy', type: 'Quest', priority: 5,
-    desc: "Completar a quest Doric's Quest.",
+    id: 'm1_13', chapter: 1, path: 'side', category: 'Farming', priority: 5,
+    title: 'Bird House Runs',
+    desc: 'Configurar Bird House runs no Fossil Island (Hunter 5, Crafting 5).',
     req: [],
-    reward: 'mining_60',
-    flavor: 'Doric te ensina o básico da mineração.',
+    reward: 'a_birdhouse',
+    coins: 20,
   },
   {
-    id: 'm07', title: 'Flecha Reta', diff: 'easy', type: 'Skilling', priority: 3,
-    desc: 'Atingir nível 20 de Ranged.',
-    req: ['shortbow'],
-    reward: 'oak_shortbow',
-    flavor: 'Você talha seu próprio arco de carvalho.',
+    id: 'm1_14', chapter: 1, path: 'side', category: 'Quest', priority: 8,
+    title: 'Fairytale Part I',
+    desc: 'Completar Fairytale Pt. I — Growing Pains.',
+    req: ['q_priest_peril'],
+    reward: 'q_fairytale1',
+    coins: 30,
   },
   {
-    id: 'm08', title: 'Corredor de Lumbridge', diff: 'easy', type: 'Quest', priority: 7,
-    desc: 'Completar as quests Sheep Shearer e Rune Mysteries.',
+    id: 'm1_15', chapter: 1, path: 'side', category: 'Quest', priority: 4,
+    title: 'Plague City / Biohazard',
+    desc: 'Completar Plague City e Biohazard.',
+    req: ['q_priest_peril'],
+    reward: 'q_biohazard',
+    coins: 25,
+  },
+  {
+    id: 'm1_16', chapter: 1, path: 'side', category: 'Skilling', priority: 4,
+    title: 'Mining',
+    desc: 'Atingir Mining 40 em iron e coal.',
     req: [],
-    reward: 'magic_teleport',
-    flavor: 'O Arquimago de Lumbridge te ensina a teletransportar.',
+    reward: 'mining_40',
+    coins: 20,
   },
   {
-    id: 'm09', title: 'Acólito da Chama', diff: 'easy', type: 'Skilling', priority: 8,
-    desc: 'Atingir nível 50 de Firemaking.',
+    id: 'm1_17', chapter: 1, path: 'side', category: 'Skilling', priority: 5,
+    title: 'Thieving',
+    desc: 'Atingir Thieving 38 com Men e Master Farmers.',
     req: [],
-    reward: 'firemaking_50',
-    flavor: 'As chamas obedecem seus comandos — o Wintertodt treme.',
-  },
-  {
-    id: 'm10', title: 'Ladrão Habilidoso', diff: 'easy', type: 'Skilling', priority: 5,
-    desc: 'Roubar Mestres do Pão (Master Farmers) até nível 38 de Thieving.',
-    req: [],
-    reward: 'farming_35',
-    flavor: 'As sementes roubadas ensinam os segredos do cultivo.',
-  },
-  {
-    id: 'm11', title: 'Pequeno Fazendeiro', diff: 'easy', type: 'Farming', priority: 7,
-    desc: 'Plantar e colher 10 herb patches com qualquer erva.',
-    req: ['farming_35'],
-    reward: 'birdhouse',
-    flavor: 'A terra te recompensa — você descobre as Bird House runs.',
-  },
-  {
-    id: 'm12', title: 'Lenhador Iniciante', diff: 'easy', type: 'Skilling', priority: 4,
-    desc: 'Cortar 50 troncos de Willow.',
-    req: [],
-    reward: 'woodcut_60',
-    flavor: 'Suas mãos ficam calejadas, mas o machado obedece.',
+    reward: 'thieving_38',
+    coins: 25,
   },
 
-  // ── Normal — early ────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 2 — FUNDAÇÃO DO IRONMAN
+  // Meta: Dragon Scim, Prayer 43, Blowpipe, Barrows
+  // ══════════════════════════════════════════════════════════════════════════
 
+  // ── Main ──────────────────────────────────────────────────────────────────
   {
-    id: 'm13', title: 'Mestre do Frio', diff: 'normal', type: 'Minigame', priority: 9,
-    desc: 'Completar 10 runs de Wintertodt e atingir 60 de Firemaking.',
-    req: ['firemaking_50'],
-    reward: 'firemaking_60',
-    flavor: 'O espírito do frio é domado — sua fogueira nunca mais apaga.',
+    id: 'm2_01', chapter: 2, path: 'main', category: 'Quest', priority: 10,
+    title: 'Monkey Madness I',
+    desc: 'Completar Monkey Madness I — Dragon Scimitar desbloqueada.',
+    req: ['q_ds1', 'q_fairytale1'],
+    reward: 'q_mm1',
+    coins: 60,
+    reroll: 1,
+    huntUnlock: 'demonic_gorillas',
   },
   {
-    id: 'm14', title: 'Guerreiro de Ferro', diff: 'normal', type: 'Dungeon', priority: 5,
-    desc: 'Completar o Stronghold of Security (todos os andares).',
-    req: ['bronze_sword', 'leather_armor'],
-    reward: 'iron_sword',
-    flavor: 'Nas profundezas do Stronghold você acha uma espada de ferro.',
-  },
-  {
-    id: 'm15', title: 'Armadura Sólida', diff: 'normal', type: 'Quest', priority: 6,
-    desc: "Atingir nível 20 de Defence e completar Knight's Sword.",
-    req: ['leather_armor'],
-    reward: 'iron_armor',
-    flavor: 'Sir Vyvin te recompensa com armadura de ferro.',
-  },
-  {
-    id: 'm16', title: 'Pescador de Lagostas', diff: 'normal', type: 'Skilling', priority: 7,
-    desc: 'Pescar e cozinhar 100 Lobsters em Catherby.',
-    req: ['fishing_40'],
-    reward: 'lobster',
-    flavor: 'Sua técnica de pesca evolui — lagostas viram seu combustível.',
-  },
-  {
-    id: 'm17', title: 'Bênção Divina', diff: 'normal', type: 'Quest', priority: 8,
-    desc: 'Atingir nível 37 de Prayer e completar Priest in Peril.',
-    req: ['iron_armor'],
-    reward: 'prayer_pot',
-    flavor: 'O Padre Drezel te ensina a preparar poções de oração.',
-  },
-  {
-    id: 'm18', title: 'Alquimista', diff: 'normal', type: 'Skilling', priority: 8,
-    desc: 'Atingir nível 55 de Magic treinando com Fire Strike.',
-    req: ['magic_teleport'],
-    reward: 'alch',
-    flavor: 'Você descobre o segredo de transformar itens em ouro.',
-  },
-  {
-    id: 'm19', title: 'Pescador das Tempestades', diff: 'normal', type: 'Minigame', priority: 9,
-    desc: 'Atingir nível 62 de Fishing via Tempoross.',
-    req: ['fishing_40'],
-    reward: 'fishing_62',
-    flavor: 'O Tempoross é domado — você emerge como mestre das águas.',
-  },
-  {
-    id: 'm20', title: 'Mãos Ágeis', diff: 'normal', type: 'Skilling', priority: 7,
-    desc: 'Atingir nível 50 de Agility no Gnome Stronghold.',
-    req: [],
-    reward: 'agility_50',
-    flavor: 'Seu corpo fica mais leve — energia nunca mais é problema.',
-  },
-  {
-    id: 'm21', title: 'Artesão', diff: 'normal', type: 'Skilling', priority: 6,
-    desc: 'Atingir nível 40 de Crafting fazendo leather items.',
-    req: [],
-    reward: 'crafting_40',
-    flavor: 'Suas mãos aprendem a moldar couro e metal.',
-  },
-  {
-    id: 'm22', title: 'Aprendiz de Herblore', diff: 'normal', type: 'Quest', priority: 8,
-    desc: 'Completar Druidic Ritual e atingir 45 de Herblore.',
-    req: [],
-    reward: 'herblore_45',
-    flavor: 'Os druidas te ensinam os segredos das ervas sagradas.',
-  },
-
-  // ── Hard — early ──────────────────────────────────────────────────────────
-
-  {
-    id: 'm23', title: 'Gigante das Cavernas', diff: 'hard', type: 'Boss', priority: 6,
-    desc: 'Matar Obor 3 vezes (Hill Giant Boss).',
-    req: ['iron_sword', 'iron_armor', 'lobster'],
-    reward: 'giant_club',
-    flavor: 'Você derrota o Rei dos Gigantes e saqueia seu clube.',
-  },
-  {
-    id: 'm24', title: 'Sangue de Dragão', diff: 'hard', type: 'Quest', priority: 8,
-    desc: 'Completar Dragon Slayer I.',
-    req: ['iron_sword', 'iron_armor', 'lobster'],
-    reward: 'mithril_armor',
-    flavor: 'As escamas de Elvarg se transformam numa armadura de mithril.',
-  },
-  {
-    id: 'm25', title: 'Caçador Iniciante', diff: 'hard', type: 'Slayer', priority: 9,
-    desc: 'Completar 50 tarefas de Slayer com Turael/Spria.',
-    req: ['iron_sword', 'iron_armor', 'lobster'],
-    reward: 'slayer_access',
-    flavor: 'Turael te reconhece como um verdadeiro caçador de monstros.',
-  },
-  {
-    id: 'm26', title: 'Fé Inabalável', diff: 'hard', type: 'Quest', priority: 9,
-    desc: 'Atingir 43 de Prayer e completar Priest in Peril + Mountain Daughter.',
-    req: ['prayer_pot', 'iron_armor'],
+    id: 'm2_02', chapter: 2, path: 'main', category: 'Skilling', priority: 10,
+    title: 'Prayer',
+    desc: 'Atingir Prayer 43 via Ectofuntus com Dragon Bones.',
+    req: ['q_priest_peril'],
     reward: 'prayer_43',
-    flavor: 'Os deuses te concedem proteção contra as lâminas inimigas.',
+    coins: 50,
   },
   {
-    id: 'm27', title: 'Descendente do Macaco', diff: 'hard', type: 'Quest', priority: 8,
-    desc: 'Completar Monkey Madness I.',
-    req: ['mithril_armor', 'prayer_43', 'lobster'],
-    reward: 'd_scimitar',
-    flavor: 'Os gnomos te concedem uma lâmina de dragão como recompensa.',
+    id: 'm2_03', chapter: 2, path: 'main', category: 'Minigame', priority: 9,
+    title: 'Barbarian Assault',
+    desc: 'Completar Barbarian Assault — Fighter Torso.',
+    req: ['q_mm1'],
+    reward: 'i_fighter_torso',
+    coins: 60,
+  },
+  {
+    id: 'm2_04', chapter: 2, path: 'main', category: 'Quest', priority: 9,
+    title: 'Regicide',
+    desc: 'Completar Regicide.',
+    req: ['q_mm1', 'prayer_43', 'q_biohazard'],
+    reward: 'q_regicide',
+    coins: 55,
+    huntUnlock: 'zulrah',
+  },
+  {
+    id: 'm2_05', chapter: 2, path: 'main', category: 'Quest', priority: 8,
+    title: 'Recipe for Disaster',
+    desc: 'Completar Recipe for Disaster (subquests iniciais) — Mithril Gloves.',
+    req: ['q_cooks_assistant', 'q_waterfall'],
+    reward: 'q_rfd',
+    coins: 50,
+  },
+  {
+    id: 'm2_06', chapter: 2, path: 'main', category: 'Boss', priority: 10, chapterFinal: true,
+    title: 'Zulrah',
+    desc: 'Matar Zulrah até obter Tanzanite Fang e criar Toxic Blowpipe.',
+    req: ['q_regicide', 'prayer_43', 'ranging_pot'],
+    reward: 'i_blowpipe',
+    coins: 80,
+    reroll: 1,
   },
 
-  // ════════════════════════════════════════════════════════════════════════════
-  // MID GAME — construindo o personagem
-  // ════════════════════════════════════════════════════════════════════════════
-
+  // ── Side ──────────────────────────────────────────────────────────────────
   {
-    id: 'm28', title: 'Runa nas Mãos', diff: 'easy', type: 'Quest', priority: 7,
-    desc: 'Completar Dragon Slayer II (pré-req: DS1, MM2, Legends Quest).',
-    req: ['d_scimitar', 'mithril_armor', 'prayer_43'],
-    reward: 'rune_armor',
-    flavor: 'Galvek cai — e com ele, a armadura de runa se torna sua.',
+    id: 'm2_07', chapter: 2, path: 'side', category: 'Minigame', priority: 7,
+    title: 'Tempoross',
+    desc: 'Treinar Fishing até 62 via Tempoross.',
+    req: ['fishing_35'],
+    reward: 'a_tempoross',
+    coins: 40,
   },
   {
-    id: 'm29', title: 'Pesca Profunda', diff: 'easy', type: 'Skilling', priority: 6,
-    desc: 'Atingir nível 76 de Fishing para pescar Dark Crabs.',
-    req: ['fishing_62'],
-    reward: 'fishing_76',
-    flavor: 'Nas águas mais profundas vivem os melhores alimentos.',
+    id: 'm2_08', chapter: 2, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Herblore',
+    desc: 'Atingir Herblore 45 com Strength Potions.',
+    req: ['q_druidic', 'farming_35'],
+    reward: 'herblore_45',
+    coins: 35,
   },
   {
-    id: 'm30', title: 'Carapaça das Trevas', diff: 'easy', type: 'Skilling', priority: 6,
-    desc: 'Pescar e cozinhar 100 Dark Crabs no Resource Area.',
-    req: ['fishing_76'],
-    reward: 'dark_crab',
-    flavor: 'O alimento das trevas fortalece seu corpo além do normal.',
-  },
-  {
-    id: 'm31', title: 'Ervas do Caos', diff: 'easy', type: 'Skilling', priority: 8,
-    desc: 'Atingir 55 de Herblore para fazer Super Restore e Anti-veneno.',
-    req: ['herblore_45', 'farming_35'],
-    reward: 'herblore_55',
-    flavor: 'Suas poções ficam cada vez mais potentes.',
-  },
-  {
-    id: 'm32', title: 'Construtor do Lar', diff: 'easy', type: 'Skilling', priority: 7,
-    desc: 'Atingir 50 de Construction e construir uma POH básica.',
+    id: 'm2_09', chapter: 2, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Construction',
+    desc: 'Atingir Construction 50 e construir POH básica.',
     req: [],
     reward: 'construction_50',
-    flavor: 'Sua casa começa a tomar forma — o banco de runes está próximo.',
+    coins: 40,
   },
   {
-    id: 'm33', title: 'Mestre Ladrão', diff: 'easy', type: 'Skilling', priority: 6,
-    desc: 'Atingir 55 de Thieving roubando Paladins em Ardougne.',
+    id: 'm2_10', chapter: 2, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Agility',
+    desc: 'Atingir Agility 50 no Gnome Stronghold Course.',
     req: [],
+    reward: 'agility_50',
+    coins: 35,
+  },
+  {
+    id: 'm2_11', chapter: 2, path: 'side', category: 'Skilling', priority: 8,
+    title: 'Magic',
+    desc: 'Atingir Magic 55.',
+    req: ['q_rune_mysteries'],
+    reward: 'magic_55',
+    coins: 35,
+  },
+  {
+    id: 'm2_12', chapter: 2, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Fishing',
+    desc: 'Pescar e cozinhar 200 Lobsters em Catherby.',
+    req: ['fishing_40'],
+    reward: 'lobster',
+    coins: 30,
+  },
+  {
+    id: 'm2_13', chapter: 2, path: 'side', category: 'Farming', priority: 7,
+    title: 'Farming',
+    desc: 'Atingir Farming 35 e iniciar herb patches diárias.',
+    req: ['q_fairytale1', 'q_druidic'],
+    reward: 'a_farming_runs',
+    coins: 30,
+  },
+  {
+    id: 'm2_14', chapter: 2, path: 'side', category: 'Skilling', priority: 5,
+    title: 'Thieving',
+    desc: 'Atingir Thieving 55 roubando Paladins em Ardougne.',
+    req: ['thieving_38'],
     reward: 'thieving_55',
-    flavor: 'Suas mãos se tornam fantasmas — ninguém percebe o furto.',
+    coins: 35,
   },
   {
-    id: 'm34', title: 'Senhor da Runas', diff: 'easy', type: 'Skilling', priority: 7,
-    desc: 'Atingir 44 de Runecraft fazendo Nature Runes.',
-    req: ['magic_55'],
-    reward: 'runecraft_44',
-    flavor: 'Você aprende a criar as runas mais valiosas do mundo.',
+    id: 'm2_15', chapter: 2, path: 'side', category: 'Slayer', priority: 7,
+    title: 'Slayer',
+    desc: '50 tarefas de Slayer com Mazchna.',
+    req: ['a_slayer', 'q_ds1'],
+    reward: 'slayer_30',
+    coins: 40,
+  },
+  {
+    id: 'm2_16', chapter: 2, path: 'side', category: 'Boss', priority: 8,
+    title: 'Barrows',
+    desc: '15 runs de Barrows.',
+    req: ['q_priest_peril', 'prayer_43', 'magic_55'],
+    reward: 'a_barrows',
+    coins: 60,
+    huntUnlock: 'barrows',
+  },
+  {
+    id: 'm2_17', chapter: 2, path: 'side', category: 'Skilling', priority: 5,
+    title: 'Crafting',
+    desc: 'Atingir Crafting 40 com leather items.',
+    req: [],
+    reward: 'crafting_40',
+    coins: 25,
+  },
+  {
+    id: 'm2_18', chapter: 2, path: 'side', category: 'Skilling', priority: 4,
+    title: 'Woodcutting',
+    desc: 'Atingir Woodcutting 60 cortando Willows e Yews.',
+    req: [],
+    reward: 'woodcut_60',
+    coins: 25,
   },
 
-  // ── Normal — mid ──────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 3 — CONSTRUINDO O PERSONAGEM
+  // Meta: Abyssal Whip, Dragon Boots, Fire Cape, Dragon Defender
+  // ══════════════════════════════════════════════════════════════════════════
 
+  // ── Main ──────────────────────────────────────────────────────────────────
   {
-    id: 'm35', title: 'Veneno da Serpente', diff: 'normal', type: 'Boss', priority: 9,
-    desc: 'Completar Regicide e fazer 10 kills de Zulrah.',
-    req: ['d_scimitar', 'mithril_armor', 'prayer_43', 'prayer_pot', 'lobster'],
-    reward: 'zulrah_access',
-    flavor: 'A serpente sagrada cai — e seus drops mudam seu jogo.',
+    id: 'm3_01', chapter: 3, path: 'main', category: 'Quest', priority: 9,
+    title: 'Monkey Madness II',
+    desc: 'Completar Monkey Madness II (Slayer 69, Agility 70, Crafting 70, Hunter 70).',
+    req: ['q_mm1', 'slayer_70', 'agility_70'],
+    reward: 'q_mm2',
+    coins: 80,
+    reroll: 1,
   },
   {
-    id: 'm36', title: 'Maestro do Combate', diff: 'normal', type: 'Minigame', priority: 8,
-    desc: 'Atingir 70 de Strength e completar o Fighter Torso no Barbarian Assault.',
-    req: ['d_scimitar', 'mithril_armor', 'prayer_43'],
-    reward: 'fighter_torso',
-    flavor: 'A tribo bárbara reconhece seu valor e te entrega o torso.',
+    id: 'm3_02', chapter: 3, path: 'main', category: 'Slayer', priority: 9,
+    title: 'Dragon Boots',
+    desc: 'Slayer 60 e matar Spiritual Mages no GWD até dropar Dragon Boots.',
+    req: ['q_mm1', 'prayer_43', 'slayer_55'],
+    reward: 'i_d_boots',
+    coins: 70,
+    huntUnlock: 'spiritual_mages',
   },
   {
-    id: 'm37', title: 'Pesadelo da Zona', diff: 'normal', type: 'Minigame', priority: 8,
-    desc: 'Completar quests suficientes e fazer 5h de NMZ para Overloads.',
-    req: ['rune_scimitar', 'prayer_43', 'prayer_pot'],
-    reward: 'nmz_access',
-    flavor: 'O Nightmare Zone te absorve — e você sai muito mais forte.',
+    id: 'm3_03', chapter: 3, path: 'main', category: 'Slayer', priority: 10,
+    title: 'Abyssal Whip',
+    desc: 'Slayer 85 e matar Abyssal Demons até obter Abyssal Whip.',
+    req: ['slayer_70', 'i_d_boots'],
+    reward: 'i_whip',
+    coins: 90,
+    reroll: 1,
+    huntUnlock: 'abyssal_sire',
   },
   {
-    id: 'm38', title: 'Cavaleiro Ágil', diff: 'normal', type: 'Skilling', priority: 7,
-    desc: 'Atingir 70 de Agility no Seers Village Rooftop.',
-    req: ['agility_50'],
-    reward: 'agility_70',
-    flavor: 'Você percorre os telhados como uma sombra.',
+    id: 'm3_04', chapter: 3, path: 'main', category: 'Boss', priority: 9, chapterFinal: true,
+    title: 'Fire Cape',
+    desc: 'Completar Fight Caves e derrotar TzTok-Jad.',
+    req: ['prayer_43', 'i_blowpipe'],
+    reward: 'i_fire_cape',
+    coins: 80,
+    reroll: 1,
+    huntUnlock: 'tztok_jad',
   },
   {
-    id: 'm39', title: 'Boticário de Guerra', diff: 'normal', type: 'Skilling', priority: 8,
-    desc: 'Atingir 63 de Herblore e fazer Super Combat Potions.',
-    req: ['herblore_55', 'farming_50'],
-    reward: 'super_pot',
-    flavor: 'A poção de combate suprema flui em suas mãos.',
+    id: 'm3_05', chapter: 3, path: 'main', category: 'Dungeon', priority: 8,
+    title: 'Dragon Defender',
+    desc: "100+ kills no Warrior's Guild até obter Dragon Defender.",
+    req: ['q_mm1', 'attack_60', 'defence_60'],
+    reward: 'i_d_defender',
+    coins: 65,
   },
   {
-    id: 'm40', title: 'Fazendeiro Dedicado', diff: 'normal', type: 'Farming', priority: 8,
-    desc: 'Atingir 50 de Farming e começar tree runs diárias.',
-    req: ['farming_35', 'birdhouse'],
-    reward: 'farming_50',
-    flavor: 'Suas plantações cobrem Gielinor — os recursos nunca faltam.',
+    id: 'm3_06', chapter: 3, path: 'main', category: 'Boss', priority: 8,
+    title: 'Barrows',
+    desc: "50+ runs de Barrows até montar um set completo (Dharok's ou Guthan's).",
+    req: ['a_barrows', 'prayer_43', 'magic_55', 'shark'],
+    reward: 'barrows_armor',
+    coins: 85,
   },
+
+  // ── Side ──────────────────────────────────────────────────────────────────
   {
-    id: 'm41', title: 'Flecheiro das Florestas', diff: 'normal', type: 'Skilling', priority: 6,
-    desc: 'Atingir 65 de Fletching fazendo Maple Longbows.',
-    req: ['fletching_50', 'woodcut_60'],
-    reward: 'fletching_65',
-    flavor: 'Seus arcos se tornam ferramentas de alta alchemy.',
-  },
-  {
-    id: 'm42', title: 'Proteção Sagrada', diff: 'normal', type: 'Skilling', priority: 9,
-    desc: 'Atingir 70 de Prayer via ossários ou altar de POH.',
+    id: 'm3_07', chapter: 3, path: 'side', category: 'Skilling', priority: 10,
+    title: 'Prayer',
+    desc: 'Atingir Prayer 70 via altar de POH ou Ectofuntus.',
     req: ['prayer_43', 'construction_50'],
     reward: 'prayer_70',
-    flavor: 'Piety flui por você — ataque, força e defesa são amplificados.',
-  },
-
-  // ── Hard — mid ────────────────────────────────────────────────────────────
-
-  {
-    id: 'm43', title: 'Guerreiro do Barrows', diff: 'hard', type: 'Boss', priority: 8,
-    desc: 'Completar 20 runs de Barrows e obter pelo menos 1 item.',
-    req: ['d_scimitar', 'mithril_armor', 'prayer_43', 'prayer_pot', 'shark'],
-    reward: 'barrows_access',
-    flavor: 'Os irmãos Barrows caem — e seu espólio equipa você para batalhas maiores.',
+    coins: 60,
   },
   {
-    id: 'm44', title: 'Boots do Dragão', diff: 'hard', type: 'Slayer', priority: 9,
-    desc: 'Atingir 60 de Slayer e matar Spiritual Warriors até dropar Dragon Boots.',
-    req: ['slayer_access', 'd_scimitar', 'mithril_armor', 'prayer_43'],
-    reward: 'dragon_boots',
-    flavor: 'As botas de dragão aumentam seu Strength além do limite anterior.',
+    id: 'm3_08', chapter: 3, path: 'side', category: 'Skilling', priority: 9,
+    title: 'Herblore',
+    desc: 'Atingir Herblore 63.',
+    req: ['herblore_45', 'farming_35'],
+    reward: 'herblore_63',
+    coins: 55,
   },
   {
-    id: 'm45', title: 'Senhor das Cobras', diff: 'hard', type: 'Slayer', priority: 8,
-    desc: 'Atingir 70 de Slayer e fazer 50 tasks com Nieve/Steve.',
-    req: ['slayer_access', 'rune_scimitar', 'prayer_43', 'lobster'],
-    reward: 'slayer_70',
-    flavor: 'Nieve te olha com respeito — você é um caçador de verdade.',
-  },
-  {
-    id: 'm46', title: 'Herdeiro do Dragão', diff: 'hard', type: 'Quest', priority: 9,
-    desc: 'Completar Monkey Madness II.',
-    req: ['d_scimitar', 'rune_armor', 'prayer_43', 'prayer_pot', 'shark'],
-    reward: 'magic_75',
-    flavor: 'O General Kruk cai — e o poder dos macacos flui por você.',
-  },
-  {
-    id: 'm47', title: 'Tridente das Profundezas', diff: 'hard', type: 'Slayer', priority: 9,
-    desc: 'Atingir 75 de Slayer e matar Krakens até obter o Trident of the Seas.',
-    req: ['slayer_70', 'magic_55', 'rune_armor', 'prayer_pot', 'shark'],
-    reward: 'trident',
-    flavor: 'O Kraken libera seu tridente — magia nunca mais será a mesma.',
-  },
-  {
-    id: 'm48', title: 'Mestre Ladrão', diff: 'hard', type: 'Skilling', priority: 6,
-    desc: 'Atingir 75 de Thieving roubando Elves em Prifddinas.',
-    req: ['thieving_55'],
-    reward: 'thieving_75',
-    flavor: 'Nem os elfos conseguem te ver chegar.',
-  },
-  {
-    id: 'm49', title: 'Blowpipe', diff: 'hard', type: 'Boss', priority: 10,
-    desc: 'Fazer Zulrah até dropar Tanzanite Fang e criar o Toxic Blowpipe.',
-    req: ['zulrah_access', 'ranging_pot', 'shark', 'antidote'],
-    reward: 'blowpipe',
-    flavor: 'O veneno da serpente se torna sua arma mais poderosa.',
-  },
-  {
-    id: 'm50', title: 'Armadura Sagrada', diff: 'hard', type: 'Boss', priority: 8,
-    desc: 'Completar 50 runs de Barrows e montar um set completo.',
-    req: ['barrows_access', 'prayer_pot', 'shark'],
-    reward: 'barrows_armor',
-    flavor: 'Os irmãos se curvam — você porta o poder deles.',
-  },
-
-  // ════════════════════════════════════════════════════════════════════════════
-  // LATE-MID GAME — preparação para Raids
-  // ════════════════════════════════════════════════════════════════════════════
-
-  {
-    id: 'm51', title: 'Portal dos Deuses', diff: 'easy', type: 'Quest', priority: 9,
-    desc: 'Completar Troll Stronghold e Death Plateau para acessar o GWD.',
-    req: ['rune_armor', 'prayer_43', 'shark'],
-    reward: 'gwd_access',
-    flavor: 'As portas da Dungeon dos Deuses se abrem para você.',
-  },
-  {
-    id: 'm52', title: 'Altar Sagrado', diff: 'easy', type: 'Skilling', priority: 9,
-    desc: 'Atingir 70 de Construction e construir altar de marble na POH.',
+    id: 'm3_09', chapter: 3, path: 'side', category: 'Skilling', priority: 8,
+    title: 'Construction',
+    desc: 'Atingir Construction 70 e construir Marble Altar na POH.',
     req: ['construction_50'],
     reward: 'construction_70',
-    flavor: 'Seu altar permite treinar Prayer sem sair de casa.',
+    coins: 55,
   },
   {
-    id: 'm53', title: 'Picada Suprema', diff: 'easy', type: 'Skilling', priority: 7,
-    desc: 'Atingir 72 de Herblore e fazer Ranging Potions.',
+    id: 'm3_10', chapter: 3, path: 'side', category: 'Minigame', priority: 7,
+    title: 'Nightmare Zone',
+    desc: 'Desbloquear NMZ e acumular pontos para Overloads.',
+    req: ['q_mm1', 'prayer_43'],
+    reward: 'a_nmz',
+    coins: 60,
+  },
+  {
+    id: 'm3_11', chapter: 3, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Agility',
+    desc: 'Atingir Agility 70 no Seers Village Rooftop Course.',
+    req: ['agility_50'],
+    reward: 'agility_70',
+    coins: 50,
+  },
+  {
+    id: 'm3_12', chapter: 3, path: 'side', category: 'Slayer', priority: 9,
+    title: 'Slayer',
+    desc: 'Atingir Slayer 70 com Nieve/Steve.',
+    req: ['a_slayer', 'q_mm1', 'prayer_43'],
+    reward: 'slayer_70',
+    coins: 65,
+  },
+  {
+    id: 'm3_13', chapter: 3, path: 'side', category: 'Boss', priority: 8,
+    title: 'Zulrah',
+    desc: '50 kills de Zulrah.',
+    req: ['i_blowpipe', 'ranging_pot', 'shark', 'antidote'],
+    reward: 'zulrah_access',
+    coins: 70,
+  },
+  {
+    id: 'm3_14', chapter: 3, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Fishing',
+    desc: 'Atingir Fishing 76 no Resource Area — Dark Crabs.',
+    req: ['a_tempoross'],
+    reward: 'fishing_76',
+    coins: 50,
+  },
+  {
+    id: 'm3_15', chapter: 3, path: 'side', category: 'Minigame', priority: 6,
+    title: 'Pest Control',
+    desc: '850 pontos de Pest Control — Void Knight set completo.',
+    req: ['q_mm1'],
+    reward: 'void_ranged',
+    coins: 65,
+  },
+  {
+    id: 'm3_16', chapter: 3, path: 'side', category: 'Slayer', priority: 8,
+    title: 'Trident of the Seas',
+    desc: 'Slayer 75 e matar Cave Krakens até obter Trident of the Seas.',
+    req: ['slayer_70', 'magic_55'],
+    reward: 'trident',
+    coins: 70,
+    huntUnlock: 'cave_kraken',
+  },
+  {
+    id: 'm3_17', chapter: 3, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Fishing',
+    desc: 'Pescar e cozinhar 300 Sharks.',
+    req: ['fishing_76'],
+    reward: 'shark',
+    coins: 50,
+  },
+  {
+    id: 'm3_18', chapter: 3, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Herblore',
+    desc: 'Atingir Herblore 55.',
+    req: ['herblore_45'],
+    reward: 'herblore_55',
+    coins: 45,
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 4 — GWD & BOSS GRIND
+  // Meta: Bandos, Armadyl, Dragon Warhammer, Occult, Rings
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ── Main ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm4_01', chapter: 4, path: 'main', category: 'Quest', priority: 10,
+    title: 'God Wars Dungeon',
+    desc: 'Completar Troll Stronghold e Death Plateau.',
+    req: ['prayer_70', 'q_mm1'],
+    reward: 'a_gwd',
+    coins: 70,
+    huntUnlock: 'general_graardor',
+  },
+  {
+    id: 'm4_02', chapter: 4, path: 'main', category: 'Boss', priority: 10,
+    title: 'Bandos Chestplate',
+    desc: 'Matar General Graardor até obter Bandos Chestplate.',
+    req: ['a_gwd', 'prayer_70', 'super_pot', 'shark'],
+    reward: 'i_bandos_chest',
+    coins: 100,
+    reroll: 1,
+  },
+  {
+    id: 'm4_03', chapter: 4, path: 'main', category: 'Boss', priority: 9,
+    title: 'Bandos Tassets',
+    desc: 'Continuar General Graardor até obter Bandos Tassets.',
+    req: ['i_bandos_chest', 'prayer_70'],
+    reward: 'i_bandos_tassets',
+    coins: 100,
+  },
+  {
+    id: 'm4_04', chapter: 4, path: 'main', category: 'Boss', priority: 9,
+    title: "Kree'arra",
+    desc: "Matar Kree'arra até obter Armadyl Helm.",
+    req: ['a_gwd', 'prayer_70', 'ranging_pot', 'shark', 'i_blowpipe'],
+    reward: 'i_armadyl_helm',
+    coins: 100,
+    huntUnlock: 'kreearra',
+  },
+  {
+    id: 'm4_05', chapter: 4, path: 'main', category: 'Boss', priority: 10, chapterFinal: true,
+    title: 'Dragon Warhammer',
+    desc: 'Matar Lizardman Shamans (Shayzien favour) até obter Dragon Warhammer.',
+    req: ['i_bandos_tassets', 'prayer_70'],
+    reward: 'i_dwh',
+    coins: 120,
+    reroll: 1,
+  },
+
+  // ── Side ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm4_06', chapter: 4, path: 'side', category: 'Slayer', priority: 9,
+    title: 'Occult Necklace',
+    desc: 'Slayer 93 e matar Smoke Devils até obter Occult Necklace.',
+    req: ['slayer_70', 'magic_55'],
+    reward: 'occult',
+    coins: 80,
+    huntUnlock: 'thermonuclear',
+  },
+  {
+    id: 'm4_07', chapter: 4, path: 'side', category: 'Boss', priority: 8,
+    title: 'Cerberus',
+    desc: 'Slayer 91 e matar Cerberus até obter crystal boots (Primordial, Pegasian ou Eternal).',
+    req: ['slayer_70', 'prayer_70'],
+    reward: 'cerberus_access',
+    coins: 90,
+    huntUnlock: 'cerberus',
+  },
+  {
+    id: 'm4_08', chapter: 4, path: 'side', category: 'Boss', priority: 8,
+    title: 'Berserker Ring',
+    desc: 'Matar Dagannoth Rex até obter Berserker Ring.',
+    req: ['prayer_70', 'super_pot', 'shark'],
+    reward: 'berserker_ring',
+    coins: 80,
+    huntUnlock: 'dagannoth_rex',
+  },
+  {
+    id: 'm4_09', chapter: 4, path: 'side', category: 'Boss', priority: 8,
+    title: 'Archers Ring',
+    desc: 'Matar Dagannoth Supreme até obter Archers Ring (i).',
+    req: ['prayer_70', 'i_blowpipe'],
+    reward: 'archers_ring',
+    coins: 80,
+    huntUnlock: 'dagannoth_supreme',
+  },
+  {
+    id: 'm4_10', chapter: 4, path: 'side', category: 'Boss', priority: 7,
+    title: 'Bandos Godsword',
+    desc: 'Matar General Graardor até obter Bandos Godsword.',
+    req: ['i_bandos_chest', 'prayer_70'],
+    reward: 'bandos_gs',
+    coins: 85,
+  },
+  {
+    id: 'm4_11', chapter: 4, path: 'side', category: 'Boss', priority: 8,
+    title: 'Armadyl Armour',
+    desc: "Continuar Kree'arra até obter Armadyl Chestplate + Chainskirt.",
+    req: ['i_armadyl_helm', 'prayer_70'],
+    reward: 'armadyl_armor',
+    coins: 100,
+  },
+  {
+    id: 'm4_12', chapter: 4, path: 'side', category: 'Boss', priority: 7,
+    title: 'Abyssal Sire',
+    desc: 'Matar Abyssal Sire até obter Abyssal Dagger.',
+    req: ['slayer_85', 'prayer_70'],
+    reward: 'abyssal_sire',
+    coins: 90,
+  },
+  {
+    id: 'm4_13', chapter: 4, path: 'side', category: 'Skilling', priority: 8,
+    title: 'Herblore',
+    desc: 'Atingir Herblore 72.',
     req: ['herblore_63'],
     reward: 'herblore_72',
-    flavor: 'Sua Ranging Potion amplifica cada flecha disparada.',
+    coins: 65,
   },
   {
-    id: 'm54', title: 'Madeira Mágica', diff: 'easy', type: 'Skilling', priority: 6,
-    desc: 'Atingir 75 de Woodcutting cortando Magic Trees.',
-    req: ['woodcut_60'],
-    reward: 'woodcut_75',
-    flavor: 'As árvores mágicas revelam seus segredos para você.',
+    id: 'm4_14', chapter: 4, path: 'side', category: 'Minigame', priority: 8,
+    title: 'Nightmare Zone',
+    desc: 'Acumular pontos de NMZ e comprar Overloads.',
+    req: ['a_nmz', 'herblore_72'],
+    reward: 'overload',
+    coins: 70,
   },
   {
-    id: 'm55', title: 'Artesão Supremo', diff: 'easy', type: 'Skilling', priority: 6,
-    desc: 'Atingir 61 de Crafting fazendo dragonhide armor.',
-    req: ['crafting_40'],
-    reward: 'crafting_61',
-    flavor: 'Suas mãos transformam couro de dragão em armadura.',
+    id: 'm4_15', chapter: 4, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Runecrafting',
+    desc: 'Atingir Runecraft 44 via ZMI Altar ou Abyss.',
+    req: ['q_rune_mysteries', 'magic_55'],
+    reward: 'runecraft_44',
+    coins: 55,
+  },
+  {
+    id: 'm4_16', chapter: 4, path: 'side', category: 'Boss', priority: 5,
+    title: 'Sarachnis',
+    desc: '50 kills de Sarachnis.',
+    req: ['prayer_43', 'q_mm1'],
+    reward: null,
+    coins: 65,
+    huntUnlock: 'sarachnis',
+  },
+  {
+    id: 'm4_17', chapter: 4, path: 'side', category: 'Boss', priority: 5,
+    title: 'King Black Dragon',
+    desc: '50 kills de King Black Dragon.',
+    req: ['prayer_43', 'ranged_60', 'i_blowpipe'],
+    reward: null,
+    coins: 65,
+    huntUnlock: 'kbd',
   },
 
-  // ── Normal — late-mid ─────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 5 — PRÉ-RAIDS
+  // Meta: Vorkath, DHCB, SOTE, Gauntlet, gear de Raids
+  // ══════════════════════════════════════════════════════════════════════════
 
+  // ── Main ──────────────────────────────────────────────────────────────────
   {
-    id: 'm56', title: 'Dragão do Norte', diff: 'normal', type: 'Boss', priority: 10,
-    desc: 'Completar Dragon Slayer II e fazer 10 kills de Vorkath.',
-    req: ['rune_armor', 'prayer_70', 'shark', 'blowpipe'],
+    id: 'm5_01', chapter: 5, path: 'main', category: 'Quest', priority: 10,
+    title: 'Dragon Slayer II',
+    desc: 'Completar Dragon Slayer II (200 Quest Points + quests específicas).',
+    req: ['q_mm2', 'prayer_70', 'i_bandos_tassets'],
+    reward: 'q_ds2',
+    coins: 120,
+    reroll: 1,
+    huntUnlock: 'vorkath',
+  },
+  {
+    id: 'm5_02', chapter: 5, path: 'main', category: 'Boss', priority: 10,
+    title: 'Vorkath',
+    desc: '50+ kills de Vorkath.',
+    req: ['q_ds2', 'i_blowpipe', 'prayer_70'],
     reward: 'vorkath_access',
-    flavor: 'Vorkath ruge e cai — seu ouro e drops transformam sua conta.',
+    coins: 120,
   },
   {
-    id: 'm57', title: 'General de Bandos', diff: 'normal', type: 'Boss', priority: 9,
-    desc: 'Fazer 20 kills de General Graardor no GWD.',
-    req: ['gwd_access', 'rune_armor', 'prayer_70', 'super_pot', 'shark'],
-    reward: 'bandos_access',
-    flavor: 'Graardor cai com um estrondo — Bandos armor é seu.',
+    id: 'm5_03', chapter: 5, path: 'main', category: 'Boss', priority: 10,
+    title: 'Dragon Hunter Crossbow',
+    desc: 'Matar Vorkath até obter Dragon Hunter Crossbow.',
+    req: ['vorkath_access'],
+    reward: 'i_dhcb',
+    coins: 150,
+    reroll: 1,
   },
   {
-    id: 'm58', title: 'Caçador de Abismos', diff: 'normal', type: 'Slayer', priority: 8,
-    desc: 'Atingir 85 de Slayer e desbloquear Abyssal Demons.',
-    req: ['slayer_70', 'd_scimitar', 'rune_armor', 'prayer_pot'],
-    reward: 'slayer_85',
-    flavor: 'Os demônios abissais chamam seu nome — você responde.',
+    id: 'm5_04', chapter: 5, path: 'main', category: 'Quest', priority: 9,
+    title: 'Song of the Elves',
+    desc: 'Completar Song of the Elves.',
+    req: ['q_mm2', 'prayer_70', 'q_regicide'],
+    reward: 'q_sote',
+    coins: 130,
+    huntUnlock: 'zalcano',
   },
   {
-    id: 'm59', title: 'Espada dos Deuses', diff: 'normal', type: 'Boss', priority: 8,
-    desc: 'Fazer Bandos até dropar Bandos Godsword.',
-    req: ['bandos_access', 'super_pot', 'shark', 'prayer_70'],
-    reward: 'bandos_gs',
-    flavor: 'A Godsword de Bandos pulsa com o poder dos deuses da guerra.',
-  },
-  {
-    id: 'm60', title: 'Coleira do Cerbero', diff: 'normal', type: 'Slayer', priority: 8,
-    desc: 'Atingir 91 de Slayer e fazer Cerberus até obter Primordial/Eternal/Pegasian Crystal.',
-    req: ['slayer_85', 'prayer_70', 'super_pot', 'shark'],
-    reward: 'cerberus_access',
-    flavor: 'O cão de três cabeças uiva — e seus cristais valem um reino.',
+    id: 'm5_05', chapter: 5, path: 'main', category: 'Minigame', priority: 9, chapterFinal: true,
+    title: 'Corrupted Gauntlet',
+    desc: 'Completar Corrupted Gauntlet até obter Crystal Armor ou Bow of Faerdhinen.',
+    req: ['q_sote', 'prayer_70', 'i_dhcb'],
+    reward: 'a_gauntlet',
+    coins: 150,
+    reroll: 1,
   },
 
-  // ── Hard — late-mid ───────────────────────────────────────────────────────
+  // ── Side ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm5_06', chapter: 5, path: 'side', category: 'Boss', priority: 9,
+    title: 'Demonic Gorillas',
+    desc: '100 kills de Demonic Gorillas até obter Zenyte Shards.',
+    req: ['q_mm2', 'prayer_70', 'i_blowpipe'],
+    reward: 'zenyte_access',
+    coins: 100,
+  },
+  {
+    id: 'm5_07', chapter: 5, path: 'side', category: 'Quest', priority: 8,
+    title: 'Desert Treasure I',
+    desc: 'Completar Desert Treasure I.',
+    req: ['q_mm1', 'magic_55', 'prayer_43', 'q_priest_peril'],
+    reward: 'q_dt1',
+    coins: 80,
+  },
+  {
+    id: 'm5_08', chapter: 5, path: 'side', category: 'Boss', priority: 7,
+    title: 'Phantom Muspah',
+    desc: 'Matar Phantom Muspah até obter Venator Shard.',
+    req: ['prayer_70', 'i_blowpipe'],
+    reward: null,
+    coins: 100,
+    huntUnlock: 'phantom_muspah',
+  },
+  {
+    id: 'm5_09', chapter: 5, path: 'side', category: 'Boss', priority: 7,
+    title: 'Grotesque Guardians',
+    desc: 'Slayer 75 e matar Grotesque Guardians até obter Black Tourmaline Core.',
+    req: ['slayer_75', 'prayer_70'],
+    reward: null,
+    coins: 80,
+    huntUnlock: 'grotesque_guardians',
+  },
+  {
+    id: 'm5_10', chapter: 5, path: 'side', category: 'Skilling', priority: 9,
+    title: 'Combat Training',
+    desc: 'Atingir 90+ em Attack, Strength e Defence via NMZ.',
+    req: ['prayer_70', 'a_nmz'],
+    reward: 'combat_90',
+    coins: 100,
+  },
+  {
+    id: 'm5_11', chapter: 5, path: 'side', category: 'Skilling', priority: 8,
+    title: 'Herblore',
+    desc: 'Atingir Herblore 90.',
+    req: ['herblore_72', 'a_farming_runs'],
+    reward: 'herblore_90',
+    coins: 90,
+  },
+  {
+    id: 'm5_12', chapter: 5, path: 'side', category: 'Boss', priority: 6,
+    title: "K'ril Tsutsaroth",
+    desc: "Matar K'ril Tsutsaroth no GWD até obter Zamorak Godsword.",
+    req: ['a_gwd', 'prayer_70', 'i_bandos_tassets'],
+    reward: null,
+    coins: 90,
+    huntUnlock: 'k_ril_tsutsaroth',
+  },
+  {
+    id: 'm5_13', chapter: 5, path: 'side', category: 'Combat Achievement', priority: 7,
+    title: 'Combat Achievements',
+    desc: 'Completar 20 Combat Achievements.',
+    req: ['slayer_85', 'prayer_70'],
+    reward: 'ca_medium',
+    coins: 80,
+  },
+  {
+    id: 'm5_14', chapter: 5, path: 'side', category: 'Slayer', priority: 8,
+    title: 'Slayer Helm (i)',
+    desc: 'Comprar Slayer Helm e imbuí-la via NMZ.',
+    req: ['a_slayer', 'a_nmz', 'slayer_55'],
+    reward: 'slayer_helm',
+    coins: 75,
+  },
+  {
+    id: 'm5_15', chapter: 5, path: 'side', category: 'Boss', priority: 7,
+    title: 'Abyssal Sire',
+    desc: '30 kills de Abyssal Sire.',
+    req: ['slayer_85', 'prayer_70', 'super_pot'],
+    reward: null,
+    coins: 95,
+  },
+  {
+    id: 'm5_16', chapter: 5, path: 'side', category: 'Slayer', priority: 7,
+    title: 'Basilisk Knights',
+    desc: 'Matar Basilisk Knights (Mirror Shield) até obter Basilisk Jaw.',
+    req: ['slayer_70', 'prayer_70'],
+    reward: null,
+    coins: 85,
+    huntUnlock: 'basilisk_knights',
+  },
+  {
+    id: 'm5_17', chapter: 5, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Agility',
+    desc: 'Atingir Agility 80 no Hallowed Sepulchre ou rooftops.',
+    req: ['agility_70'],
+    reward: 'agility_80',
+    coins: 75,
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CAPÍTULO 6 — RAIDS
+  // Meta: CoX, ToB, ToA, Twisted Bow, Scythe, Inferno
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ── Main ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm6_01', chapter: 6, path: 'main', category: 'Boss', priority: 10,
+    title: 'Chambers of Xeric',
+    desc: 'Primeiro run de CoX (80+ combate, 78 Herblore, Trident + Blowpipe).',
+    req: ['q_ds2', 'prayer_70', 'i_bandos_tassets', 'i_blowpipe', 'trident', 'herblore_72'],
+    reward: 'a_cox',
+    coins: 150,
+    reroll: 2,
+  },
+  {
+    id: 'm6_02', chapter: 6, path: 'main', category: 'Boss', priority: 10,
+    title: 'Theatre of Blood',
+    desc: 'Primeiro run de ToB.',
+    req: ['a_cox', 'prayer_70', 'i_bandos_tassets', 'i_blowpipe'],
+    reward: 'a_tob',
+    coins: 180,
+    reroll: 2,
+  },
+  {
+    id: 'm6_03', chapter: 6, path: 'main', category: 'Boss', priority: 10,
+    title: 'Tombs of Amascut',
+    desc: 'Primeiro run de ToA — Invocation 0–50 para iniciantes.',
+    req: ['a_cox', 'prayer_70', 'i_bandos_tassets'],
+    reward: 'a_toa',
+    coins: 160,
+    reroll: 2,
+  },
+  {
+    id: 'm6_04', chapter: 6, path: 'main', category: 'Boss', priority: 10,
+    title: 'Twisted Bow',
+    desc: 'Acumular runs de CoX em busca do Twisted Bow.',
+    req: ['a_cox', 'prayer_70', 'i_dhcb'],
+    reward: 'i_twisted_bow',
+    coins: 200,
+    reroll: 3,
+  },
+  {
+    id: 'm6_05', chapter: 6, path: 'main', category: 'Boss', priority: 10,
+    title: 'Scythe of Vitur',
+    desc: 'Acumular runs de ToB em busca da Scythe of Vitur.',
+    req: ['a_tob', 'prayer_70', 'i_bandos_tassets'],
+    reward: 'i_scythe',
+    coins: 200,
+    reroll: 3,
+  },
+
+  // ── Side ──────────────────────────────────────────────────────────────────
+  {
+    id: 'm6_06', chapter: 6, path: 'side', category: 'Boss', priority: 10, chapterFinal: true,
+    title: 'The Inferno',
+    desc: 'Completar o Inferno e derrotar TzKal-Zuk.',
+    req: ['i_fire_cape', 'prayer_70', 'a_nmz'],
+    reward: 'i_infernal_cape',
+    coins: 200,
+    reroll: 3,
+    huntUnlock: 'tzkalmzuk',
+  },
+  {
+    id: 'm6_07', chapter: 6, path: 'side', category: 'Quest', priority: 9,
+    title: 'Desert Treasure II',
+    desc: 'Completar Desert Treasure II — The Fallen Empire.',
+    req: ['q_dt1', 'prayer_70', 'i_bandos_tassets'],
+    reward: 'q_dt2',
+    coins: 150,
+    reroll: 1,
+    huntUnlock: 'vardorvis',
+  },
+  {
+    id: 'm6_08', chapter: 6, path: 'side', category: 'Boss', priority: 9,
+    title: 'DT2 Rings',
+    desc: 'Matar os 4 bosses de DT2 em busca de Venator, Bellator, Magus ou Ultor Ring.',
+    req: ['q_dt2'],
+    reward: null,
+    coins: 180,
+    huntUnlock: 'the_leviathan',
+  },
+  {
+    id: 'm6_09', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Sanguinesti Staff',
+    desc: 'Fazer ToB até obter Sanguinesti Staff.',
+    req: ['a_tob', 'magic_75'],
+    reward: 'sang_staff',
+    coins: 180,
+  },
+  {
+    id: 'm6_10', chapter: 6, path: 'side', category: 'Boss', priority: 7,
+    title: 'Armadyl Crossbow',
+    desc: "Matar Kree'arra até obter Armadyl Crossbow.",
+    req: ['a_gwd', 'prayer_70', 'i_blowpipe'],
+    reward: 'armadyl_cbow',
+    coins: 120,
+  },
+  {
+    id: 'm6_11', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Ancestral Robes',
+    desc: 'Fazer CoX até obter Ancestral Hat, Top e Bottom.',
+    req: ['a_cox', 'magic_75'],
+    reward: 'ancestral_armor',
+    coins: 180,
+  },
+  {
+    id: 'm6_12', chapter: 6, path: 'side', category: 'Slayer', priority: 8,
+    title: 'Neitiznot Faceguard',
+    desc: 'Matar Basilisk Knights até obter Basilisk Jaw e criar Neitiznot Faceguard.',
+    req: ['slayer_70', 'prayer_70'],
+    reward: null,
+    coins: 130,
+  },
+  {
+    id: 'm6_13', chapter: 6, path: 'side', category: 'Boss', priority: 7,
+    title: 'Justiciar Armour',
+    desc: 'Fazer ToB em busca de Justiciar Faceguard.',
+    req: ['a_tob', 'prayer_70', 'i_bandos_tassets'],
+    reward: null,
+    coins: 180,
+  },
+  {
+    id: 'm6_14', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Duke Sucellus',
+    desc: "Matar Duke Sucellus até obter Leviathan's Lure ou Magus Ring shards.",
+    req: ['q_dt2'],
+    reward: null,
+    coins: 160,
+    huntUnlock: 'duke_sucellus',
+  },
+  {
+    id: 'm6_15', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'The Whisperer',
+    desc: 'Matar The Whisperer até obter Ultor Ring shards ou Shadow Quartz.',
+    req: ['q_dt2'],
+    reward: null,
+    coins: 160,
+    huntUnlock: 'the_whisperer',
+  },
+
+  // ── Combat Achievement missions ──────────────────────────────────────────────
+  // Sincronizados automaticamente via RuneProfile. ca_10/ca_50 etc. são adicionados
+  // ao unlocked ao detectar o count. As missões abaixo aparecem quando o req é
+  // atingido e dão coins + unlock para desbloquear a próxima.
+  {
+    id: 'ca_m1', chapter: 2, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: '10 Combat Achievements',
+    desc: 'Completar 10 Combat Achievements (qualquer tier). Sincronizado via RuneProfile.',
+    req: ['ca_10'],
+    reward: null,
+    coins: 40,
+  },
+  {
+    id: 'ca_m2', chapter: 2, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: 'Easy tier completo (33 CAs)',
+    desc: 'Completar todos os 33 Combat Achievements do tier Easy. Verificado via RuneProfile.',
+    req: ['ca_easy_done'],
+    reward: null,
+    coins: 60,
+  },
+  {
+    id: 'ca_m3', chapter: 3, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: '50 Combat Achievements',
+    desc: 'Acumular 50 Combat Achievements no total. Sincronizado via RuneProfile.',
+    req: ['ca_50'],
+    reward: null,
+    coins: 80,
+  },
+  {
+    id: 'ca_m4', chapter: 3, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: 'Medium tier completo (41 CAs)',
+    desc: 'Completar todos os 41 Combat Achievements do tier Medium.',
+    req: ['ca_medium_done'],
+    reward: null,
+    coins: 100,
+  },
+  {
+    id: 'ca_m5', chapter: 4, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: '100 Combat Achievements',
+    desc: 'Acumular 100 Combat Achievements no total. Sincronizado via RuneProfile.',
+    req: ['ca_100'],
+    reward: null,
+    coins: 120,
+  },
+  {
+    id: 'ca_m6', chapter: 4, path: 'side', category: 'Combat Achievement', priority: 5,
+    title: 'Hard tier completo (65 CAs)',
+    desc: 'Completar todos os 65 Combat Achievements do tier Hard.',
+    req: ['ca_hard_done'],
+    reward: null,
+    coins: 150,
+  },
+
+  // ── Achievement Diary missions ────────────────────────────────────────────────
+  {
+    id: 'diary_m1', chapter: 1, path: 'side', category: 'Diary', priority: 4,
+    title: 'Lumbridge & Draynor Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Lumbridge & Draynor. Requer Mining 10, Crafting 1.',
+    req: ['mining_10'],
+    reward: 'diary_lumbridge_easy',
+    coins: 20,
+  },
+  {
+    id: 'diary_m2', chapter: 1, path: 'side', category: 'Diary', priority: 4,
+    title: 'Varrock Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Varrock. Requer Attack 30, Mining 15, Magic 25.',
+    req: ['attack_30', 'mining_15'],
+    reward: 'diary_varrock_easy',
+    coins: 20,
+  },
+  {
+    id: 'diary_m3', chapter: 1, path: 'side', category: 'Diary', priority: 4,
+    title: 'Falador Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Falador. Requer Mining 10, Crafting 10.',
+    req: ['mining_10', 'crafting_10'],
+    reward: 'diary_falador_easy',
+    coins: 20,
+  },
+  {
+    id: 'diary_m4', chapter: 1, path: 'side', category: 'Diary', priority: 4,
+    title: 'Karamja Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Karamja. Requer Fishing 35.',
+    req: ['fishing_35'],
+    reward: 'diary_karamja_easy',
+    coins: 20,
+  },
+  {
+    id: 'diary_m5', chapter: 2, path: 'side', category: 'Diary', priority: 4,
+    title: 'Ardougne Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Ardougne. Requer Thieving 38 e acesso a Ardougne (Biohazard).',
+    req: ['q_biohazard', 'thieving_38'],
+    reward: 'diary_ardougne_easy',
+    coins: 25,
+  },
+  {
+    id: 'diary_m6', chapter: 2, path: 'side', category: 'Diary', priority: 4,
+    title: 'Morytania Easy Diary',
+    desc: 'Completar o Achievement Diary Easy de Morytania. Requer Priest in Peril + Slayer 15.',
+    req: ['q_priest_peril', 'slayer_15'],
+    reward: 'diary_morytania_easy',
+    coins: 25,
+  },
+  {
+    id: 'diary_m7', chapter: 2, path: 'side', category: 'Diary', priority: 4,
+    title: 'Lumbridge & Draynor Medium Diary',
+    desc: 'Completar o Achievement Diary Medium de Lumbridge & Draynor. Requer Farming 26, Crafting 36.',
+    req: ['diary_lumbridge_easy', 'farming_26', 'crafting_36'],
+    reward: 'diary_lumbridge_medium',
+    coins: 40,
+  },
+  {
+    id: 'diary_m8', chapter: 2, path: 'side', category: 'Diary', priority: 4,
+    title: 'Varrock Medium Diary',
+    desc: 'Completar o Achievement Diary Medium de Varrock. Requer Mining 40, Smithing 40.',
+    req: ['diary_varrock_easy', 'mining_40', 'smithing_40'],
+    reward: 'diary_varrock_medium',
+    coins: 40,
+  },
+  {
+    id: 'diary_m9', chapter: 3, path: 'side', category: 'Diary', priority: 4,
+    title: 'Ardougne Medium Diary',
+    desc: 'Completar o Achievement Diary Medium de Ardougne. Requer Fishing 56, Thieving 56.',
+    req: ['diary_ardougne_easy', 'fishing_56', 'thieving_56'],
+    reward: 'diary_ardougne_medium',
+    coins: 60,
+  },
+  {
+    id: 'diary_m10', chapter: 3, path: 'side', category: 'Diary', priority: 4,
+    title: 'Morytania Medium Diary',
+    desc: 'Completar o Achievement Diary Medium de Morytania. Requer Crafting 53, Slayer 50.',
+    req: ['diary_morytania_easy', 'crafting_53', 'slayer_50'],
+    reward: 'diary_morytania_medium',
+    coins: 60,
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // VARLAMORE & SAILING — Capítulo 4 (mid-game)
+  // ══════════════════════════════════════════════════════════════════════════
 
   {
-    id: 'm61', title: 'Armadura dos Deuses', diff: 'hard', type: 'Boss', priority: 10,
-    desc: 'Completar 50 kills de Bandos e obter Bandos Chestplate + Tassets.',
-    req: ['bandos_access', 'prayer_70', 'super_pot', 'shark', 'dragon_boots'],
-    reward: 'bandos_armor',
-    flavor: 'A armadura de Bandos abraça seu corpo — você está pronto para os Raids.',
+    id: 'mv_01', chapter: 4, path: 'main', category: 'Quest', priority: 8,
+    title: 'Children of the Sun',
+    desc: 'Completar Children of the Sun — acesso a Varlamore e todo o conteúdo mid-game da região.',
+    req: [],
+    reward: 'q_children_sun',
+    coins: 60,
   },
   {
-    id: 'm62', title: 'Chicote do Abismo', diff: 'hard', type: 'Slayer', priority: 10,
-    desc: 'Fazer Abyssal Sire até dropar Abyssal Whip.',
-    req: ['slayer_85', 'rune_armor', 'prayer_70', 'super_pot', 'shark'],
-    reward: 'abyssal_whip',
-    flavor: 'O chicote abissal vibra em sua mão — ataque nunca mais será limitado.',
+    id: 'mv_02', chapter: 4, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Sailing 47 — Rosewood Blowpipe',
+    desc: 'Alcançar Sailing 47 e craftar o Rosewood Blowpipe — alternativa ao Toxic Blowpipe que não consome Zulrah scales.',
+    req: [],
+    reward: 'sailing_47',
+    coins: 50,
   },
   {
-    id: 'm63', title: 'Martelo do Caos', diff: 'hard', type: 'Boss', priority: 9,
-    desc: 'Fazer Skeletal Wyverns/Corporeal Beast até obter Dragon Warhammer.',
-    req: ['slayer_85', 'bandos_armor', 'prayer_70', 'super_pot', 'shark'],
-    reward: 'd_warhammer',
-    flavor: 'O martelo de dragão esmaga defesas como se fossem papel.',
+    id: 'mv_03', chapter: 4, path: 'side', category: 'Skilling', priority: 5,
+    title: "Sailor's Amulet",
+    desc: "Obter o Sailor's Amulet via Sailing — um dos amulets de utilidade mais fáceis de conseguir, com teleportes convenientes desde o início.",
+    req: [],
+    reward: null,
+    coins: 30,
   },
   {
-    id: 'm64', title: 'Besta de Sangue', diff: 'hard', type: 'Boss', priority: 9,
-    desc: 'Fazer Theatre of Blood prep: obter gear completo e 200+ kills de Vorkath.',
-    req: ['bandos_armor', 'blowpipe', 'prayer_70', 'super_pot', 'dark_crab', 'vorkath_access'],
-    reward: 'tob_prep',
-    flavor: 'O Theatre of Blood aguarda — você está pronto para o maior desafio.',
+    id: 'mv_04', chapter: 4, path: 'side', category: 'Minigame', priority: 6,
+    title: 'Mixology — Alchemist\'s Amulet',
+    desc: "Completar a atividade Mixology em Varlamore e obter o Alchemist's Amulet (15% de chance de salvar dose de poção). A atividade também oferece outros itens úteis para Herblore.",
+    req: ['q_children_sun'],
+    reward: 'a_mixology',
+    coins: 50,
   },
   {
-    id: 'm65', title: 'Câmaras do Xeric', diff: 'hard', type: 'Boss', priority: 10,
-    desc: 'Atingir stats mínimos (75+ em combate, 78 Herblore) e fazer primeira run de CoX.',
-    req: ['bandos_armor', 'blowpipe', 'trident', 'prayer_70', 'super_pot', 'dark_crab', 'd_warhammer'],
-    reward: 'cox_prep',
-    flavor: 'As Câmaras do Xeric se abrem — sua jornada como raider começa.',
+    id: 'mv_05', chapter: 4, path: 'side', category: 'Skilling', priority: 5,
+    title: 'Rainbow Crab Trapping',
+    desc: 'Coletar crab paste via Rainbow Crabs (Sailing) — ingrediente para Saradomin brews sem o grind tradicional de farming.',
+    req: ['sailing_47'],
+    reward: null,
+    coins: 30,
+  },
+  {
+    id: 'mv_06', chapter: 4, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Sunlight Hunter\'s Crossbow',
+    desc: 'Alcançar 72 Hunter e caçar Sun-Tipped Antelopes em Varlamore para craftar a Sunlight Hunter\'s Crossbow — ranged weapon mid-game com Sunlight Bolts.',
+    req: ['q_children_sun', 'hunter_72', 'ranged_50'],
+    reward: null,
+    coins: 60,
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // VARLAMORE & SAILING — Capítulo 5 (pré-raids)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'mv_07', chapter: 5, path: 'main', category: 'Quest', priority: 7,
+    title: 'Shadows of Custodia',
+    desc: 'Completar Shadows of Custodia — continua a história de Varlamore e desbloqueia conteúdo adicional da região.',
+    req: ['q_children_sun'],
+    reward: 'q_shadows_custodia',
+    coins: 80,
+  },
+  {
+    id: 'mv_08', chapter: 5, path: 'main', category: 'Boss', priority: 9,
+    title: 'Perilous Moons — Primeiro Kill',
+    desc: 'Matar os 3 bosses do Perilous Moons pela 1ª vez (Blood Moon, Eclipse Moon, Blue Moon) em Tlati Rainforest.',
+    req: ['q_children_sun'],
+    reward: 'a_perilous_moons',
+    coins: 80,
+  },
+  {
+    id: 'mv_09', chapter: 5, path: 'side', category: 'Boss', priority: 8,
+    title: 'Blood Moon Set (melee)',
+    desc: "Farmar Perilous Moons até obter Blood Moon Helm, Chestplate e Tassets — set melee mid-game supply-free. Stopgap entre Barrows e Bandos.",
+    req: ['a_perilous_moons', 'defence_70'],
+    reward: null,
+    coins: 100,
+  },
+  {
+    id: 'mv_10', chapter: 5, path: 'side', category: 'Boss', priority: 8,
+    title: 'Eclipse Moon Set (ranged)',
+    desc: "Farmar Perilous Moons até obter Eclipse Moon Helm, Body e Legs — set ranged mid-game supply-free. Entre Karil's e Armadyl.",
+    req: ['a_perilous_moons', 'ranged_60', 'defence_60'],
+    reward: null,
+    coins: 100,
+  },
+  {
+    id: 'mv_11', chapter: 5, path: 'side', category: 'Boss', priority: 8,
+    title: 'Blue Moon Set (mage)',
+    desc: "Farmar Perilous Moons até obter Blue Moon Helm, Spell Robe e Legs — set mage mid-game supply-free. Entre Ahrim's e Ancestral.",
+    req: ['a_perilous_moons', 'magic_60', 'defence_60'],
+    reward: null,
+    coins: 100,
+  },
+  {
+    id: 'mv_12', chapter: 5, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Sailing 60 — Charred Dungeon',
+    desc: 'Alcançar Sailing 60 e desbloquear o Charred Dungeon com Tower Nechryaels em multi-combat — barrageáveis para XP eficiente.',
+    req: ['sailing_47'],
+    reward: 'sailing_60',
+    coins: 70,
+  },
+  {
+    id: 'mv_13', chapter: 5, path: 'side', category: 'Skilling', priority: 6,
+    title: 'Sailing 76 — Bloodvelds',
+    desc: "Alcançar Sailing 76 e desbloquear Bloodvelds no Buccs' Lab — local conveniente para task de Slayer.",
+    req: ['sailing_60'],
+    reward: 'sailing_76',
+    coins: 80,
+  },
+  {
+    id: 'mv_14', chapter: 5, path: 'side', category: 'Boss', priority: 7,
+    title: 'Gryphon — Arma de Stab',
+    desc: 'Farmar Gryphons (Sailing) para obter a arma de stab — excelente gap-filler para contas sem Zamorakian hasta.',
+    req: ['q_children_sun'],
+    reward: null,
+    coins: 70,
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // VARLAMORE & SAILING — Capítulo 6 (endgame)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'mv_15', chapter: 6, path: 'main', category: 'Quest', priority: 8,
+    title: 'The Final Dawn',
+    desc: 'Completar The Final Dawn — quest final da cadeia de Varlamore. Desbloqueia conteúdo endgame da região.',
+    req: ['q_shadows_custodia'],
+    reward: 'q_final_dawn',
+    coins: 100,
+    reroll: 1,
+  },
+  {
+    id: 'mv_16', chapter: 6, path: 'main', category: 'Boss', priority: 10, chapterFinal: true,
+    title: 'Colosseum — Sol Heredit',
+    desc: 'Completar o Colosseum e derrotar Sol Heredit — desafio de dificuldade máxima de Varlamore, comparável ao Inferno.',
+    req: ['q_children_sun', 'prayer_70'],
+    reward: 'a_colosseum',
+    coins: 200,
+    reroll: 3,
+  },
+  {
+    id: 'mv_17', chapter: 6, path: 'side', category: 'Boss', priority: 9,
+    title: 'Sunfire Fanatic Armour',
+    desc: 'Obter o Sunfire Fanatic Armour completo via Colosseum — BIS situacional para conteúdo que exige Prayer sustentado.',
+    req: ['a_colosseum'],
+    reward: null,
+    coins: 150,
+  },
+  {
+    id: 'mv_18', chapter: 6, path: 'side', category: 'Skilling', priority: 7,
+    title: 'Sailing 87 — Frost Dragons',
+    desc: 'Alcançar Sailing 87 e desbloquear Frost Dragons — um dos melhores métodos para Ironman farmar Draconic Bones e Draconic Visage.',
+    req: ['sailing_76'],
+    reward: 'sailing_87',
+    coins: 100,
+  },
+  {
+    id: 'mv_18b', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Amoxliatl — Primeiro Kill',
+    desc: 'Matar Amoxliatl pela 1ª vez — boss endgame de Varlamore (fraco a crush). Dropa Pendant of Ates e Glacial Temotli.',
+    req: ['q_final_dawn'],
+    reward: 'a_amoxliatl',
+    coins: 120,
+  },
+  {
+    id: 'mv_19', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Avernic Treads — Mokha',
+    desc: 'Matar Mokha até obter Avernic Treads — BIS boots para todos os estilos de combate. Supera Primordial, Pegasian e Eternal.',
+    req: ['q_final_dawn'],
+    reward: null,
+    coins: 150,
+  },
+  {
+    id: 'mv_20', chapter: 6, path: 'side', category: 'Boss', priority: 8,
+    title: 'Confliction Gauntlets',
+    desc: 'Obter Confliction Gauntlets via Delve Mokha — BIS luvas late-game para todos os estilos de combate.',
+    req: ['q_final_dawn'],
+    reward: null,
+    coins: 150,
+  },
+  {
+    id: 'mv_21', chapter: 6, path: 'side', category: 'Boss', priority: 7,
+    title: 'Eye of Ayak',
+    desc: 'Obter Eye of Ayak via Delve Mokha — arma mágica 3-tick, mid-tier entre Trident e Sanguinesti Staff.',
+    req: ['q_final_dawn', 'magic_75'],
+    reward: null,
+    coins: 130,
   },
 ]
+
+export const CHAPTER_META = {
+  1: { label: 'Primeiros Passos',        color: '#3B6D11', bg: '#EAF3DE', border: '#97C459' },
+  2: { label: 'Fundação do Ironman',     color: '#854F0B', bg: '#FAEEDA', border: '#EF9F27' },
+  3: { label: 'Construindo o Personagem',color: '#7A1F1F', bg: '#FAECE7', border: '#D85A30' },
+  4: { label: 'GWD & Boss Grind',        color: '#2a1a6e', bg: '#ede8ff', border: '#8B6BD4' },
+  5: { label: 'Pré-Raids',              color: '#0a4a4a', bg: '#e0f5f5', border: '#2ca8a8' },
+  6: { label: 'Raids',                  color: '#5a1a00', bg: '#fff0e6', border: '#c8682a' },
+}
+
+export function checkReq(req, unlocked, realLevels) {
+  if (unlocked.has(req)) return true
+  const match = req.match(/^([a-z]+)_(\d+)$/)
+  if (!match) return false
+  const skill = match[1].charAt(0).toUpperCase() + match[1].slice(1)
+  return (realLevels?.[skill] ?? 0) >= parseInt(match[2], 10)
+}
+
+export function drawOptions(unlocked, completed, realLevels) {
+  const rnd = arr => arr.length ? arr[Math.floor(Math.random() * arr.length)] : null
+
+  const pool = MISSIONS.filter(m =>
+    !completed.has(m.id) &&
+    (m.req ?? []).every(r => checkReq(r, unlocked, realLevels))
+  )
+
+  if (!pool.length) return []
+
+  // Current chapter = lowest chapter that still has main missions available
+  const mainPool = pool.filter(m => m.path === 'main')
+  const currentChapter = mainPool.length
+    ? Math.min(...mainPool.map(m => m.chapter))
+    : Math.min(...pool.map(m => m.chapter))
+
+  const chapterMain = pool.filter(m => m.path === 'main' && m.chapter === currentChapter)
+  const chapterSide = pool.filter(m => m.path === 'side' && m.chapter === currentChapter)
+
+  // card1: highest priority main mission
+  const sortedMain = [...chapterMain].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+  const card1 = sortedMain[0] ?? null
+
+  // card2: random side from current chapter
+  const card2 = rnd(chapterSide)
+
+  // card3: anything else in pool (any chapter, different from card1/card2)
+  const used = new Set([card1?.id, card2?.id].filter(Boolean))
+  const card3 = rnd(pool.filter(m => !used.has(m.id)))
+
+  return [card1, card2, card3].filter(Boolean)
+}
+
+export function getChapterProgress(completed) {
+  const result = {}
+  for (let ch = 1; ch <= 6; ch++) {
+    const mainMissions = MISSIONS.filter(m => m.chapter === ch && m.path === 'main')
+    const doneMain = mainMissions.filter(m => completed.has(m.id))
+    result[ch] = { total: mainMissions.length, done: doneMain.length }
+  }
+  return result
+}

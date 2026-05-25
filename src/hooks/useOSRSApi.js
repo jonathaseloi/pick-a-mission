@@ -1,9 +1,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// OSRS Hiscores API — Ironman
+// OSRS Hiscores API
 // Proxy público para evitar CORS
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PROXY = 'https://pam-proxy.jonathaseloi.workers.dev'
+
+export const ACCOUNT_TYPES = [
+  { id: 'ironman', label: 'Ironman',          emoji: '🛡️' },
+  { id: 'hcim',    label: 'Hardcore Ironman', emoji: '💀' },
+  { id: 'normal',  label: 'Normal',           emoji: '⚔️' },
+]
 
 // Ordem das skills no retorno da API (formato CSV da Jagex)
 // Linha 0 = Overall, linhas 1-23 = skills
@@ -36,11 +42,11 @@ const SKILL_ORDER = [
 ]
 
 /**
- * Busca os níveis reais de um jogador ironman.
+ * Busca os níveis reais de um jogador.
  * Retorna um objeto { Attack: 70, Strength: 65, ... } ou lança erro.
  */
-export async function fetchPlayerLevels(username) {
-  const url = `${PROXY}/${encodeURIComponent(username)}`
+export async function fetchPlayerLevels(username, accountType = 'ironman') {
+  const url = `${PROXY}/${encodeURIComponent(username)}?type=${accountType}`
   const res = await fetch(url)
 
   if (!res.ok) throw new Error(`Jogador não encontrado ou erro na API (${res.status})`)

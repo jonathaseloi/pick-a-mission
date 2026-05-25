@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { MONSTERS, TIERS, BOSS_TIER, TIER_META, getBuyableMonsters, getTierCost } from '../data/monsters.js'
 import { parchment } from '../constants.js'
+import EquipmentSection from './EquipmentSection.jsx'
 
 const parch = parchment
 
 function Tag({ color, bg, border, children }) {
   return (
     <span style={{
-      fontSize: 10, padding: '1px 6px', borderRadius: 10,
+      fontSize: 11, padding: '1px 6px', borderRadius: 10,
       background: bg, color, border: `1px solid ${border}`,
       fontWeight: 600, whiteSpace: 'nowrap',
     }}>{children}</span>
@@ -46,7 +47,7 @@ function UnlockReveal({ monster, onClose }) {
       zIndex: 1000, padding: '1rem',
     }}>
       <div style={{
-        ...parch, borderRadius: 16, padding: '2rem 1.5rem',
+        ...parch, padding: '2rem 1.5rem',
         maxWidth: 340, width: '100%',
         boxShadow: `0 0 60px ${meta.border}55, 0 20px 60px rgba(0,0,0,0.5)`,
         border: `2px solid ${meta.border}`,
@@ -61,14 +62,13 @@ function UnlockReveal({ monster, onClose }) {
         </p>
 
         {/* Imagem grande */}
-        <div style={{
-          display: 'flex', justifyContent: 'center', marginBottom: 14,
-          filter: `drop-shadow(0 0 12px ${meta.border})`,
-        }}>
-          <MonsterImg src={monster.img} name={monster.name} size={120} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14, filter: `drop-shadow(0 0 12px ${meta.border})` }}>
+          <div style={{ width: 120, height: 120, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <MonsterImg src={monster.img} name={monster.name} size={100} />
+          </div>
         </div>
 
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#2c1a00', margin: '0 0 6px' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 6px' }}>
           {monster.name}
         </h2>
 
@@ -85,23 +85,23 @@ function UnlockReveal({ monster, onClose }) {
             { label: 'A cada',      value: `${monster.bonusEvery}kc` },
           ].map(({ label, value }) => (
             <div key={label} style={{
-              background: meta.bg, borderRadius: 8, padding: '8px 6px',
+              background: 'var(--c-panel)', borderRadius: 0, padding: '8px 6px',
               border: `1px solid ${meta.border}`,
             }}>
               <div style={{ fontSize: 9, color: meta.color, marginBottom: 2 }}>{label}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', fontFamily: 'system-ui, sans-serif' }}>{value}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', fontFamily: 'system-ui, sans-serif' }}>{value}</div>
             </div>
           ))}
         </div>
 
         <a href={monster.wiki} target="_blank" rel="noopener noreferrer"
-          style={{ display: 'block', fontSize: 12, color: '#8B6914', marginBottom: 14, textDecoration: 'underline' }}>
+          style={{ display: 'block', fontSize: 12, color: 'var(--c-muted)', marginBottom: 14, textDecoration: 'underline' }}>
           Ver loot e locais na Wiki ↗
         </a>
 
         <button onClick={onClose} style={{
-          width: '100%', padding: '12px', fontSize: 14, borderRadius: 10,
-          border: '1px solid #c8a96e', background: 'transparent', color: '#8B6914',
+          width: '100%', padding: '12px', fontSize: 14, borderRadius: 0,
+          border: '1px solid #6a4820', background: 'transparent', color: 'var(--c-muted)',
           fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
         }}>
           Fechar
@@ -120,7 +120,7 @@ function BuyModal({ tierId, monster, cost, onConfirm, onCancel }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 1000, padding: '1rem',
     }}>
-      <div style={{ ...parch, borderRadius: 14, padding: '1.5rem', maxWidth: 360, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+      <div style={{ ...parch, padding: '1.5rem', maxWidth: 360, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
         <div style={{ textAlign: 'center', marginBottom: 14 }}>
           {isMystery ? (
             <div style={{
@@ -128,17 +128,19 @@ function BuyModal({ tierId, monster, cost, onConfirm, onCancel }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 40, margin: '0 auto 10px',
               border: `2px dashed ${meta.border}`,
-            }}>🎲</div>
+            }}>🔒</div>
           ) : (
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-              <MonsterImg src={monster.img} name={monster.name} size={90} />
+              <div style={{ width: 90, height: 90, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <MonsterImg src={monster.img} name={monster.name} size={76} />
+              </div>
             </div>
           )}
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: '0 0 4px' }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 4px' }}>
             {isMystery ? `Monstro misterioso — ${meta.label}` : monster.name}
           </h2>
           {isMystery && (
-            <p style={{ fontSize: 12, color: '#8B6914', margin: '0 0 8px' }}>
+            <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: '0 0 8px' }}>
               Um monstro aleatório do tier <strong>{meta.label}</strong> será desbloqueado
             </p>
           )}
@@ -154,33 +156,34 @@ function BuyModal({ tierId, monster, cost, onConfirm, onCancel }) {
               { label: '🪙 Coins/kill', value: monster.coinsPerKill },
               { label: '🏆 Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}k` },
             ].map(({ label, value }) => (
-              <div key={label} style={{ background: '#f5ead0', borderRadius: 6, padding: '6px 10px', border: '1px solid #e0c88a' }}>
-                <div style={{ fontSize: 10, color: '#8B6914' }}>{label}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#2c1a00' }}>{value}</div>
+              <div key={label} style={{ background: 'var(--c-panel)', borderRadius: 0, padding: '6px 10px', border: '1px solid var(--c-accent)' }}>
+                <div style={{ fontSize: 10, color: 'var(--c-muted)' }}>{label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--c-text)' }}>{value}</div>
               </div>
             ))}
           </div>
         )}
 
         <div style={{
-          background: '#f5ead0', border: '1px solid #c8a96e', borderRadius: 8,
+          background: 'var(--c-panel)', border: '1px solid var(--c-accent)', borderRadius: 0,
           padding: '10px', textAlign: 'center', marginBottom: 14,
         }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#2c1a00' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text)' }}>
             Custo: {cost} 🪙
           </span>
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={onCancel} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 8,
-            border: '1px solid #c8a96e', background: 'transparent',
-            color: '#8B6914', fontFamily: 'inherit', cursor: 'pointer',
+            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
+            border: '1px solid #6a4820', background: 'transparent',
+            color: 'var(--c-muted)', fontFamily: 'inherit', cursor: 'pointer',
           }}>Cancelar</button>
           <button onClick={onConfirm} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 8,
-            border: 'none', background: '#2c1a00', color: '#f5ead0',
+            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
+            border: '2px solid var(--btn-bd)', background: 'var(--btn-bg)', color: 'var(--btn-fg)',
             fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
+            boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
           }}>Comprar!</button>
         </div>
       </div>
@@ -188,49 +191,142 @@ function BuyModal({ tierId, monster, cost, onConfirm, onCancel }) {
   )
 }
 
+function LockedSlots({ monsters }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {monsters.map(m => (
+        <div key={m.id} title={`${m.name} — requer CB ${m.minCB}`} style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 56,
+          opacity: 0.45,
+        }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: 0,
+            background: '#1a1208', border: '1px solid #3a2a0a',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 2,
+          }}>
+            <span style={{ fontSize: 14 }}>🔒</span>
+            <span style={{ fontSize: 9, color: 'var(--c-muted)', lineHeight: 1 }}>CB {m.minCB}</span>
+          </div>
+          <span title={m.name} style={{ fontSize: 11, color: 'var(--c-muted)', textAlign: 'center', lineHeight: 1.2, maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {m.name}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ToggleLockedBtn({ count, expanded, onToggle }) {
+  return (
+    <button onClick={onToggle} style={{
+      padding: '3px 10px', fontSize: 11, borderRadius: 0,
+      border: '1px solid var(--c-accent)', background: 'transparent',
+      color: 'var(--c-muted)', fontFamily: 'inherit', cursor: 'pointer',
+      whiteSpace: 'nowrap',
+    }}>
+      {expanded ? 'Ocultar' : `${count} bloqueado${count !== 1 ? 's' : ''}`}
+    </button>
+  )
+}
+
+// ─── Mission-locked monster card ──────────────────────────────────────────────
+function MissionLockedCard({ monster }) {
+  return (
+    <div title={`${monster.name} — desbloqueado via missão`}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 56, opacity: 0.6 }}>
+      <div style={{
+        width: 56, height: 56, borderRadius: 0,
+        background: '#1a1208', border: '1px solid #7a5a1e',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
+      }}>
+        <span style={{ fontSize: 9, color: '#c8a96e', fontWeight: 700, letterSpacing: '0.04em', lineHeight: 1 }}>
+          MISSÃO
+        </span>
+        <span style={{ fontSize: 8, color: 'var(--c-muted)', lineHeight: 1 }}>🔒</span>
+      </div>
+      <span title={monster.name} style={{
+        fontSize: 11, color: 'var(--c-muted)', textAlign: 'center', lineHeight: 1.2,
+        maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}>
+        {monster.name}
+      </span>
+    </div>
+  )
+}
+
 // ─── Tier section ─────────────────────────────────────────────────────────────
 function TierSection({ tier, monsters, unlockedIds, combatLevel, pamCoins, onBuy }) {
+  const [showLocked, setShowLocked] = useState(false)
   const meta = TIER_META[tier.id]
   const cost = getTierCost(tier.id)
   const canAfford = pamCoins >= cost
-  const available = monsters.filter(m => !unlockedIds.has(m.id) && combatLevel >= m.minCB)
-  const owned = monsters.filter(m => unlockedIds.has(m.id))
+  const tierLocked = tier.id !== 'boss' && combatLevel < tier.minCB
 
-  if (combatLevel < tier.minCB && tier.id !== 'boss') {
+  // Monsters only unlockable via mission (not buyable)
+  const missionLocked = monsters.filter(m => m.missionUnlock && !unlockedIds.has(m.id))
+  const missionLockedIds = new Set(missionLocked.map(m => m.id))
+
+  // Buyable (no missionUnlock, not yet owned, CB accessible)
+  const available = tierLocked ? [] : monsters.filter(m =>
+    !unlockedIds.has(m.id) && !missionLockedIds.has(m.id) && combatLevel >= m.minCB
+  )
+  const owned = monsters.filter(m => unlockedIds.has(m.id))
+  const lockedByLevel = monsters.filter(m =>
+    !unlockedIds.has(m.id) && !missionLockedIds.has(m.id) && combatLevel < m.minCB
+  )
+
+  // Entire non-boss tier locked: show collapsed header + optional monster list
+  if (tierLocked) {
     return (
-      <div style={{ ...parch, borderRadius: 10, padding: '12px 14px', opacity: 0.5, borderLeft: `4px solid ${meta.border}` }}>
+      <div style={{ padding: '10px 0 10px 14px', borderLeft: `4px solid ${meta.border}`, opacity: showLocked ? 1 : 0.55 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Tag {...meta}>{meta.label}</Tag>
-          <span style={{ fontSize: 12, color: '#8B6914' }}>Disponível no CB {tier.minCB}</span>
-          <span style={{ marginLeft: 'auto', fontSize: 18 }}>🔒</span>
+          <span style={{ fontSize: 12, color: 'var(--c-muted)' }}>Disponível no CB {tier.minCB}</span>
+          <span style={{ fontSize: 16 }}>🔒</span>
+          <div style={{ flex: 1 }} />
+          <ToggleLockedBtn count={lockedByLevel.length + missionLocked.length} expanded={showLocked} onToggle={() => setShowLocked(s => !s)} />
         </div>
+        {showLocked && (
+          <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {lockedByLevel.length > 0 && <LockedSlots monsters={lockedByLevel} />}
+            {missionLocked.map(m => <MissionLockedCard key={m.id} monster={m} />)}
+          </div>
+        )}
       </div>
     )
   }
 
+  // Accessible tier (or boss tier)
+  const totalLocked = lockedByLevel.length + missionLocked.length
+  const hasContent  = available.length > 0 || owned.length > 0
   return (
-    <div style={{ ...parch, borderRadius: 10, padding: '14px', borderLeft: `4px solid ${meta.border}` }}>
+    <div style={{ padding: '12px 0 12px 14px', borderLeft: `4px solid ${meta.border}` }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: hasContent ? 12 : 0 }}>
         <Tag {...meta}>{meta.label}</Tag>
-        <span style={{ fontSize: 11, color: '#8B6914' }}>
+        <span style={{ fontSize: 11, color: 'var(--c-muted)' }}>
           {owned.length} desbloqueado{owned.length !== 1 ? 's' : ''} · {available.length} disponíve{available.length !== 1 ? 'is' : 'l'}
         </span>
+        <div style={{ flex: 1 }} />
+        {totalLocked > 0 && (
+          <ToggleLockedBtn count={totalLocked} expanded={showLocked} onToggle={() => setShowLocked(s => !s)} />
+        )}
         {available.length > 0 && (
           <button
             onClick={() => canAfford && onBuy(tier.id)}
             disabled={!canAfford}
             style={{
-              marginLeft: 'auto', padding: '6px 14px', fontSize: 12, borderRadius: 8,
+              padding: '6px 14px', fontSize: 12, borderRadius: 8,
               border: 'none', fontFamily: 'inherit',
               cursor: canAfford ? 'pointer' : 'not-allowed',
-              background: canAfford ? '#2c1a00' : '#3a2a0a',
-              color: canAfford ? '#f5d78e' : '#8B6914',
+              background: canAfford ? 'var(--c-text)' : '#3a2a0a',
+              color: canAfford ? '#f5d78e' : 'var(--c-muted)',
               fontWeight: 600, whiteSpace: 'nowrap',
             }}
-            title={canAfford ? `Comprar monstro aleatório por ${cost} 🪙` : `Precisa de ${cost} 🪙`}
+            title={canAfford ? `Comprar por ${cost} 🪙` : `Precisa de ${cost} 🪙`}
           >
-            🎲 {cost} 🪙
+            {cost} 🪙
           </button>
         )}
       </div>
@@ -240,13 +336,11 @@ function TierSection({ tier, monsters, unlockedIds, combatLevel, pamCoins, onBuy
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: owned.length ? 12 : 0 }}>
           {available.map(m => (
             <div key={m.id} style={{
-              width: 56, height: 56, borderRadius: 8,
-              background: '#2a1a0a',
-              border: `1px dashed ${meta.border}`,
+              width: 56, height: 56, borderRadius: 0,
+              background: 'var(--c-mid)', border: `1px dashed ${meta.border}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, color: '#c8a96e33',
-              title: 'Monstro bloqueado',
-            }}>🔒</div>
+              fontSize: 18, color: 'rgba(148,134,109,0.5)',
+            }}>?</div>
           ))}
         </div>
       )}
@@ -257,15 +351,13 @@ function TierSection({ tier, monsters, unlockedIds, combatLevel, pamCoins, onBuy
           {owned.map(m => (
             <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 56 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: 8,
-                border: `2px solid ${meta.border}`,
-                background: '#1e1005',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                overflow: 'hidden',
+                width: 56, height: 56, borderRadius: 0,
+                border: `2px solid ${meta.border}`, background: 'var(--c-mid)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
               }}>
-                <MonsterImg src={m.img} name={m.name} size={48} />
+                <MonsterImg src={m.img} name={m.name} size={42} />
               </div>
-              <span style={{ fontSize: 9, color: '#5a3a0e', textAlign: 'center', lineHeight: 1.2, maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span title={m.name} style={{ fontSize: 11, color: '#5a3a0e', textAlign: 'center', lineHeight: 1.2, maxWidth: 56, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {m.name}
               </span>
             </div>
@@ -273,69 +365,103 @@ function TierSection({ tier, monsters, unlockedIds, combatLevel, pamCoins, onBuy
         </div>
       )}
 
-      {available.length === 0 && owned.length === 0 && (
-        <p style={{ fontSize: 12, color: '#8B6914', margin: 0 }}>Nenhum monstro disponível para seu CB neste tier.</p>
+      {/* Locked (CB level + mission) — all collapsed under toggle */}
+      {showLocked && totalLocked > 0 && (
+        <div style={{ marginTop: hasContent ? 12 : 0, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {lockedByLevel.length > 0 && <LockedSlots monsters={lockedByLevel} />}
+          {missionLocked.map(m => <MissionLockedCard key={m.id} monster={m} />)}
+        </div>
+      )}
+
+      {!hasContent && totalLocked === 0 && (
+        <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: 0 }}>Nenhum monstro disponível para seu CB neste tier.</p>
       )}
     </div>
   )
 }
 
 // ─── Main ShopTab ─────────────────────────────────────────────────────────────
-export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onHuntUnlockedChange, onCoinsChange }) {
-  const [buyModal, setBuyModal] = useState(null) // { tierId, monster|null }
+export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onMonsterBuy, obtainedEquipment, onEquipmentBuy }) {
+  const [view, setView]         = useState('monsters') // 'monsters' | 'equipment'
+  const [buyModal, setBuyModal] = useState(null)
   const [lastUnlocked, setLastUnlocked] = useState(null)
 
   function handleBuy(tierId) {
     const cost = getTierCost(tierId)
     if (pamCoins < cost) return
-    // Show mystery modal first
     setBuyModal({ tierId, monster: null, cost })
   }
 
   function handleConfirmBuy() {
     const { tierId, cost } = buyModal
-    const pool = getBuyableMonsters(combatLevel, huntUnlocked).filter(m => m.tier === tierId)
+    const pool = getBuyableMonsters(combatLevel, huntUnlocked).filter(m => m.tier === tierId && !m.missionUnlock)
     if (!pool.length) { setBuyModal(null); return }
     const picked = pool[Math.floor(Math.random() * pool.length)]
     const newSet = new Set([...huntUnlocked, picked.id])
-    onHuntUnlockedChange(newSet)
-    onCoinsChange(-cost)
+    onMonsterBuy(newSet, cost)
     setLastUnlocked(picked)
     setBuyModal(null)
   }
 
   const allTiers = [...TIERS, BOSS_TIER]
 
+  const subTabs = (
+    <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)' }}>
+      {[{ id: 'monsters', label: 'Monstros' }, { id: 'equipment', label: 'Equipamentos' }].map((v, i) => (
+        <Fragment key={v.id}>
+          {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
+          <button onClick={() => setView(v.id)} style={{
+            flex: 1, padding: '8px 12px', fontSize: 12, border: 'none', borderRadius: 0,
+            fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap',
+            background: view === v.id ? 'var(--c-panel)' : 'transparent',
+            color: view === v.id ? 'var(--c-text)' : 'var(--c-panel)',
+            fontWeight: view === v.id ? 700 : 400,
+          }}>{v.label}</button>
+        </Fragment>
+      ))}
+    </div>
+  )
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {/* Header */}
-      <div style={{ ...parch, borderRadius: 12, padding: '1rem 1.25rem' }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#2c1a00', margin: '0 0 4px' }}>Loja</h2>
-        <p style={{ fontSize: 12, color: '#8B6914', margin: 0 }}>
-          Compre monstros aleatórios para huntar. Bosses precisam ser comprados aqui.
-        </p>
-      </div>
-
-      {/* Unlock reveal */}
       {lastUnlocked && (
         <UnlockReveal monster={lastUnlocked} onClose={() => setLastUnlocked(null)} />
       )}
 
-      {/* Tier sections */}
-      {allTiers.map(tier => {
-        const monsters = MONSTERS.filter(m => m.tier === tier.id)
-        return (
-          <TierSection
-            key={tier.id}
-            tier={tier}
-            monsters={monsters}
-            unlockedIds={huntUnlocked}
-            combatLevel={combatLevel}
-            pamCoins={pamCoins}
-            onBuy={handleBuy}
-          />
-        )
-      })}
+      {/* Monstros view: único card com sub-tabs + tier sections */}
+      {view === 'monsters' && (
+        <div style={{ ...parch, padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 2px' }}>Loja</h2>
+              <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: 0 }}>Compre monstros aleatórios para huntar. Bosses precisam ser comprados aqui.</p>
+            </div>
+          </div>
+          <div style={{ marginBottom: 14 }}>{subTabs}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {allTiers.map(tier => {
+              const monsters = MONSTERS.filter(m => m.tier === tier.id)
+              return (
+                <TierSection key={tier.id} tier={tier} monsters={monsters} unlockedIds={huntUnlocked} combatLevel={combatLevel} pamCoins={pamCoins} onBuy={handleBuy} />
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Equipamentos view: single card with sub-tabs + content */}
+      {view === 'equipment' && (
+        <div style={{ ...parch, padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 2px' }}>Loja</h2>
+              <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: 0 }}>Compre equipamentos com PAM coins para registrar seu progresso.</p>
+            </div>
+          </div>
+          <div style={{ marginBottom: 14 }}>{subTabs}</div>
+          <EquipmentSection obtained={obtainedEquipment} onBuy={onEquipmentBuy} pamCoins={pamCoins} />
+        </div>
+      )}
 
       {buyModal && (
         <BuyModal
