@@ -17,6 +17,7 @@
 - Barrows Gloves (Recipe for Disaster) — upgrade obrigatório
 - Piety (Dragon Bones + Gilded Altar) — melhor Prayer melee
 - Zombie Axe (Zombie Pirates) — melhor arma early-mid melee atualmente
+- Abyssal Whip (Abyssal Demons, 85 Slayer) — marco natural pós-Zombie Axe, melhor arma melee mid-late
 
 ---
 
@@ -51,7 +52,7 @@
 - Ancient Magicks (Desert Treasure I) — unlock essencial para burst/barrage
 - Desert Treasure (quest) — abre Ancient Magicks e Mage Arena
 - Imbued God Cape (Mage Arena II) — melhor mage cape até endgame
-- Burst tasks — Nechryaels, Dust Devils, Smoke Devils em Catacombs
+- Burst tasks — Nechryaels e Dust Devils nas Catacombs (Smoke Devils ficam no Smoke Devil Dungeon, sul de Pollnivneach)
 - Powered staves — Trident, Sanguinesti, Eye of Ayak, Tumeken's Shadow
 
 ---
@@ -61,7 +62,7 @@
 | Level | Método | Local | Observações |
 |-------|--------|-------|-------------|
 | 1–43 | Bones de Slayer | Em qualquer lugar | Protect from Melee em 43 é obrigatório |
-| 43–70 | Ensouled Heads / Ectofuntus | Arceuus / Morytania | Ensouled Heads: XP/custo excelente. Ectofuntus: 4x XP por osso |
+| 43–70 | Ensouled Heads / Ectofuntus | Arceuus / Morytania | Ensouled Heads: XP/custo excelente. Ectofuntus: 3.5x XP por osso (sem custo de ossos sagrados) |
 | 70–99 | Gilded Altar / Chaos Altar | POH / Wilderness | Gilded: 3.5x XP, sem risco. Chaos: 3.5x + 50% economia de ossos (risco PvP) |
 
 **Prioridades:**
@@ -96,7 +97,7 @@
 | Level | Método | Local | Observações |
 |-------|--------|-------|-------------|
 | 1–35 | Tempoross | Al Kharid | Melhor early fishing moderno. Fish Barrel como reward prioritário |
-| 35–58 | Barbarian Fishing | Barbarian Village | XP triplo: Fishing + Strength + Agility simultaneamente |
+| 35–58 | Barbarian Fishing | Otto's Grotto (Baxtorian Falls) | XP triplo: Fishing + Strength + Agility. Requer 15 Agility + 15 Strength |
 | 58–82 | Karambwans (AFK) | Karamja | Melhor AFK + comida. Combo eating em raids |
 | 82–99 | Anglerfish | Piscarilius (Zeah) | Overheal. BIS comida para raids e bosses |
 
@@ -147,7 +148,7 @@
 | 1–25 | Men / Cake Stalls | Lumbridge / Ardougne | Early rápido |
 | 25–55 | Fruit Stalls / Blackjack | Hosidius / Pollnivneach | Fruit Stalls: fácil e muito XP. Blackjack: melhor XP/h mas intenso |
 | 55–91 | Ardougne Knights (AFK) | East Ardougne | Melhor equilíbrio XP/AFK. Rogue Outfit obrigatório |
-| 80+ | Pyramid Plunder | Sophanem | Muito XP e GP. Desert Treasure necessário |
+| 80+ | Pyramid Plunder | Sophanem | Muito XP e GP. Requer Icthlarin's Little Helper para acessar Sophanem |
 | 82+ | Vyres | Darkmeyer | GP + Blood Shards. A Taste of Hope quest |
 
 **Prioridades:**

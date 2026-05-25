@@ -6,12 +6,12 @@
 |------|-----------|-----------|-------------|
 | Ava's Accumulator / Assembler | Muito Alta | Animal Magnetism / Vorkath | Essencial para ranged. Recupera munição automaticamente |
 | Graceful | Muito Alta | Marks of Grace | Um dos primeiros grandes objetivos da conta |
-| Fighter Torso | Muito Alta | Barbarian Assault | +4 Strength bonus. Excelente até late game |
-| Dragon Defender | Muito Alta | Warriors' Guild | Melhor defender até Avernic |
-| Barrows Gloves | Muito Alta | Recipe for Disaster | Item obrigatório para progressão |
+| Fighter Torso | Muito Alta | Barbarian Assault (300 Honor Points) | +4 Strength bonus — mesmo bônus ofensivo do Bandos, sem as stats de defesa |
+| Dragon Defender | Muito Alta | Warriors' Guild (animar armaduras → tokens → Cyclops) | Melhor defender até Avernic. Essencial DPS melee |
+| Barrows Gloves | Muito Alta | Recipe for Disaster (todos os sub-quests) | Item obrigatório para progressão |
 | Fire Cape | Muito Alta | Fight Caves | Primeiro grande upgrade de melee cape |
-| Herb Sack | Muito Alta | Slayer Points (750) | Essencial para slayer |
-| Rune Pouch | Muito Alta | Slayer Points / PvP drops | QoL enorme para mage/slayer |
+| Herb Sack | Muito Alta | Slayer Points (750) ou Farmer Gricoller's Rewards (Farming Guild) | Essencial para ironman em slayer. Guarda até 30 de cada erva grimy |
+| Rune Pouch | Muito Alta | Slayer Points (750) | QoL enorme para mage/slayer. Para ironman, Slayer Points é a única forma confiável |
 | Slayer Helm (i) | Muito Alta | Slayer + NMZ / Soul Wars | +15% para todos os estilos em task |
 | Zombie Axe | Muito Alta | Zombie Pirates (Wilderness) | Melhor arma early-mid melee atualmente |
 | Dragon Scimitar | Muito Alta | Monkey Madness I | Clássico upgrade melee |
@@ -27,7 +27,7 @@
 | Fish Barrel | Alta | Tempoross | Dobra eficiência de fishing trips |
 | Elite Void Knight | Alta | Western Provinces Hard + Pest Control | Muito usado em Vorkath e raids |
 | Amulet of Fury | Alta | 90 Crafting + Onyx | Melhor amulet geral early-mid |
-| Berserker Ring (i) | Alta | Dagannoth Kings + NMZ imbue | Melhor anel melee por muito tempo |
+| Berserker Ring (i) | Alta | Dagannoth Kings + NMZ (650k pts) ou Soul Wars (300 Zeal) | Melhor anel melee por muito tempo. Soul Wars geralmente mais rápido |
 | Xeric's Talisman | Alta | Lizardmen drop | Teleports úteis para CoX e Zeah |
 | Stamina Potions | **Extremamente Alta** | Herblore 77 | Um dos maiores unlocks do iron |
 | Amulet of Torture | Muito Alta | Zenyte (MM2) | Melhor necklace melee |

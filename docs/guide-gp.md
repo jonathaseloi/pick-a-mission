@@ -7,9 +7,9 @@
 | Wealthy Citizens | ~100k–250k | Acesso a Varlamore | Muito AFK e relaxado para early-mid. Civitas Illa Fortis |
 | Agility Pyramid | ~150k–250k | 30+ Agility (50+ recomendado) | Melhor GP bruto early game. Coins direto, sem intermediário |
 | Slayer + Alchs | ~200k–1M+ | 70+ combat, 55 Magic | Principal fonte de riqueza da conta |
-| Gargoyles | ~300k–600k | 75 Slayer, Slayer Task | Excelente raw GP + alchs |
+| Gargoyles | ~300k–600k | 75 Slayer, Slayer Task | Excelente raw GP + alchs. Slayer Helm + Guthan's para sustain |
 | Dust Devils / Nechs | ~300k–800k | 65 Slayer, Ancient Magicks | Burst gera GP + runes + XP de Prayer |
-| Zombie Pirates | ~500k–1M+ | Wilderness (Level 55) | Meta moderno early-mid. Muito raw GP. Risco PvP |
+| Zombie Pirates | ~500k–1M+ | Wilderness (via Port Phasmatys) | Meta moderno early-mid ironman. Zombie Axe como drop prioritário. Risco PvP |
 | Moons of Peril | ~300k–700k | Midgame PvM (Varlamore) | Supply-free. Excelente supplies + alchs |
 | Corrupted Gauntlet | ~500k–1.5M+ | Song of the Elves | Principal spike econômico do ironman moderno |
 | Vorkath | ~700k–1.5M+ | Dragon Slayer II | Muito raw GP e alchables |
