@@ -1,7 +1,8 @@
-import { useState, useEffect, Fragment } from 'react'
+import { useState, useEffect } from 'react'
 import { MONSTERS, TIERS, BOSS_TIER, TIER_META, getBuyableMonsters, getTierCost } from '../data/monsters.js'
 import { parchment } from '../constants.js'
 import EquipmentSection from './EquipmentSection.jsx'
+import { Button, Modal, Card, TabGroup } from './ui/index.js'
 
 const parch = parchment
 
@@ -112,82 +113,67 @@ function UnlockReveal({ monster, onClose }) {
 }
 function BuyModal({ tierId, monster, cost, onConfirm, onCancel }) {
   const meta = TIER_META[tierId]
-  const isMystery = !monster // compra sem saber qual
+  const isMystery = !monster
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 1000, padding: '1rem',
-    }}>
-      <div style={{ ...parch, padding: '1.5rem', maxWidth: 360, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 14 }}>
-          {isMystery ? (
-            <div style={{
-              width: 90, height: 90, borderRadius: 12, background: '#2a1a0a',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 40, margin: '0 auto 10px',
-              border: `2px dashed ${meta.border}`,
-            }}>🔒</div>
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-              <div style={{ width: 90, height: 90, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                <MonsterImg src={monster.img} name={monster.name} size={76} />
-              </div>
+    <Modal onClose={onCancel} maxWidth={360}>
+      <div style={{ textAlign: 'center', marginBottom: 14 }}>
+        {isMystery ? (
+          <div style={{
+            width: 90, height: 90, borderRadius: 12, background: '#2a1a0a',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 40, margin: '0 auto 10px',
+            border: `2px dashed ${meta.border}`,
+          }}>🔒</div>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+            <div style={{ width: 90, height: 90, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <MonsterImg src={monster.img} name={monster.name} size={76} />
             </div>
-          )}
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 4px' }}>
-            {isMystery ? `Monstro misterioso — ${meta.label}` : monster.name}
-          </h2>
-          {isMystery && (
-            <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: '0 0 8px' }}>
-              Um monstro aleatório do tier <strong>{meta.label}</strong> será desbloqueado
-            </p>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
-            <Tag {...meta}>{meta.label}</Tag>
-            {monster?.slayerReq && <Tag color="#5a2db0" bg="#f0e8ff" border="#b39ddb">Slayer Task</Tag>}
-          </div>
-        </div>
-
-        {monster && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-            {[
-              { label: '🪙 Coins/kill', value: monster.coinsPerKill },
-              { label: '🏆 Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}k` },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ background: 'var(--c-panel)', borderRadius: 0, padding: '6px 10px', border: '1px solid var(--c-accent)' }}>
-                <div style={{ fontSize: 10, color: 'var(--c-muted)' }}>{label}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--c-text)' }}>{value}</div>
-              </div>
-            ))}
           </div>
         )}
-
-        <div style={{
-          background: 'var(--c-panel)', border: '1px solid var(--c-accent)', borderRadius: 0,
-          padding: '10px', textAlign: 'center', marginBottom: 14,
-        }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text)' }}>
-            Custo: {cost} 🪙
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={onCancel} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
-            border: '1px solid #6a4820', background: 'transparent',
-            color: 'var(--c-muted)', fontFamily: 'inherit', cursor: 'pointer',
-          }}>Cancelar</button>
-          <button onClick={onConfirm} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
-            border: '2px solid var(--btn-bd)', background: 'var(--btn-bg)', color: 'var(--btn-fg)',
-            fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
-            boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-          }}>Comprar!</button>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 4px' }}>
+          {isMystery ? `Monstro misterioso — ${meta.label}` : monster.name}
+        </h2>
+        {isMystery && (
+          <p style={{ fontSize: 12, color: 'var(--c-muted)', margin: '0 0 8px' }}>
+            Um monstro aleatório do tier <strong>{meta.label}</strong> será desbloqueado
+          </p>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
+          <Tag {...meta}>{meta.label}</Tag>
+          {monster?.slayerReq && <Tag color="#5a2db0" bg="#f0e8ff" border="#b39ddb">Slayer Task</Tag>}
         </div>
       </div>
-    </div>
+
+      {monster && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+          {[
+            { label: '🪙 Coins/kill', value: monster.coinsPerKill },
+            { label: '🏆 Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}k` },
+          ].map(({ label, value }) => (
+            <div key={label} style={{ background: 'var(--c-panel)', borderRadius: 0, padding: '6px 10px', border: '1px solid var(--c-accent)' }}>
+              <div style={{ fontSize: 10, color: 'var(--c-muted)' }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--c-text)' }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{
+        background: 'var(--c-panel)', border: '1px solid var(--c-accent)',
+        padding: '10px', textAlign: 'center', marginBottom: 14,
+      }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text)' }}>
+          Custo: {cost} 🪙
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Button variant="secondary" onClick={onCancel} style={{ flex: 1, padding: '10px' }}>Cancelar</Button>
+        <Button onClick={onConfirm} style={{ flex: 1, padding: '10px' }}>Comprar!</Button>
+      </div>
+    </Modal>
   )
 }
 
@@ -406,20 +392,10 @@ export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onMonster
   const allTiers = [...TIERS, BOSS_TIER]
 
   const subTabs = (
-    <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)' }}>
-      {[{ id: 'monsters', label: 'Monstros' }, { id: 'equipment', label: 'Equipamentos' }].map((v, i) => (
-        <Fragment key={v.id}>
-          {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-          <button onClick={() => setView(v.id)} style={{
-            flex: 1, padding: '8px 12px', fontSize: 12, border: 'none', borderRadius: 0,
-            fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap',
-            background: view === v.id ? 'var(--c-panel)' : 'transparent',
-            color: view === v.id ? 'var(--c-text)' : 'var(--c-panel)',
-            fontWeight: view === v.id ? 700 : 400,
-          }}>{v.label}</button>
-        </Fragment>
-      ))}
-    </div>
+    <TabGroup
+      tabs={[{ id: 'monsters', label: 'Monstros' }, { id: 'equipment', label: 'Equipamentos' }]}
+      active={view} onChange={setView}
+    />
   )
 
   return (
@@ -430,7 +406,7 @@ export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onMonster
 
       {/* Monstros view: único card com sub-tabs + tier sections */}
       {view === 'monsters' && (
-        <div style={{ ...parch, padding: '1.25rem' }}>
+        <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div>
               <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 2px' }}>Loja</h2>
@@ -446,12 +422,12 @@ export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onMonster
               )
             })}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Equipamentos view: single card with sub-tabs + content */}
       {view === 'equipment' && (
-        <div style={{ ...parch, padding: '1.25rem' }}>
+        <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div>
               <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 2px' }}>Loja</h2>
@@ -460,7 +436,7 @@ export default function ShopTab({ combatLevel, pamCoins, huntUnlocked, onMonster
           </div>
           <div style={{ marginBottom: 14 }}>{subTabs}</div>
           <EquipmentSection obtained={obtainedEquipment} onBuy={onEquipmentBuy} pamCoins={pamCoins} />
-        </div>
+        </Card>
       )}
 
       {buyModal && (

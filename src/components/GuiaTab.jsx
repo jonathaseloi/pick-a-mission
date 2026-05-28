@@ -1,12 +1,10 @@
-import { useState, Fragment } from 'react'
-import { parchment } from '../constants.js'
+import { useState } from 'react'
+import { Card, TabGroup } from './ui/index.js'
 import {
   GUIDE_SKILLS, GUIDE_GP, GUIDE_ITEMS,
   GUIDE_RUNES, GUIDE_AMMO, GUIDE_FOOD, GUIDE_VARLAMORE, GUIDE_SAILING,
   GUIDE_SUPPLIES_MODERN,
 } from '../data/guide.js'
-
-const parch = parchment
 
 const PRIORITY_COLOR = {
   'Muito Alta': '#3a6a10',
@@ -354,26 +352,13 @@ export default function GuiaTab() {
   }
 
   return (
-    <div style={{ ...parch, padding: 0, overflow: 'hidden' }}>
-      {/* Tab bar */}
-      <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', borderBottom: '2px solid var(--c-border)' }}>
-        {SECTIONS.map((s, i) => (
-          <Fragment key={s.id}>
-            {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-            <button onClick={() => setSection(s.id)} style={{
-              padding: '8px 14px', fontSize: 11, border: 'none', borderRadius: 0,
-              fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-              background: section === s.id ? 'var(--c-panel)' : 'transparent',
-              color: section === s.id ? 'var(--c-text)' : 'var(--c-panel)',
-              fontWeight: section === s.id ? 700 : 400,
-            }}>{s.label}</button>
-          </Fragment>
-        ))}
-      </div>
+    <Card padding={0} style={{ overflow: 'hidden' }}>
+      <TabGroup tabs={SECTIONS} active={section} onChange={setSection} size="sm"
+        style={{ border: 'none', borderBottom: '2px solid var(--c-border)' }} />
 
       <div style={{ padding: '1.25rem' }}>
         {content[section]}
       </div>
-    </div>
+    </Card>
   )
 }

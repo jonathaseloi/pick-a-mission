@@ -1,10 +1,8 @@
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { DiffBadge, ChapterBadge } from './MissionCard.jsx'
 import { TIER_META } from '../data/monsters.js'
 import { MONSTERS } from '../data/monsters.js'
-import { parchment } from '../constants.js'
-
-const parch = parchment
+import { Card, TabGroup } from './ui/index.js'
 
 // ─── Mission entry ────────────────────────────────────────────────────────────
 function MissionEntry({ h }) {
@@ -165,22 +163,9 @@ export default function HistoryTab({ history, huntHistory }) {
   ]
 
   return (
-    <div style={{ ...parch, padding: 0, overflow: 'hidden' }}>
-      {/* Tab bar inside the card */}
-      <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', borderBottom: '2px solid var(--c-border)' }}>
-        {FILTERS.map((f, i) => (
-          <Fragment key={f.id}>
-            {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-            <button onClick={() => setFilter(f.id)} style={{
-              padding: '8px 12px', fontSize: 11, border: 'none', borderRadius: 0,
-              fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-              background: filter === f.id ? 'var(--c-panel)' : 'transparent',
-              color: filter === f.id ? 'var(--c-text)' : 'var(--c-panel)',
-              fontWeight: filter === f.id ? 700 : 400,
-            }}>{f.label}</button>
-          </Fragment>
-        ))}
-      </div>
+    <Card padding={0} style={{ overflow: 'hidden' }}>
+      <TabGroup tabs={FILTERS} active={filter} onChange={setFilter} size="sm"
+        style={{ border: 'none', borderBottom: '2px solid var(--c-border)' }} />
 
       {/* Content */}
       <div style={{ padding: '1.25rem' }}>
@@ -204,6 +189,6 @@ export default function HistoryTab({ history, huntHistory }) {
           </>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

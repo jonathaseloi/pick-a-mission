@@ -1,9 +1,9 @@
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { UNLOCKS } from '../data/unlocks.js'
 import { getBIS, getIdealBIS } from '../data/bis.js'
 import { EQUIPMENT, getEquipmentCost } from '../data/equipment.js'
 import { MONSTERS } from '../data/monsters.js'
-import { parchment as parch } from '../constants.js'
+import { Button, Card, TabGroup } from './ui/index.js'
 
 const EQUIPMENT_MAP = new Map(EQUIPMENT.map(e => [e.id, e]))
 const MONSTERS_MAP_BIS = new Map(MONSTERS.map(m => [m.id, m]))
@@ -73,16 +73,12 @@ function SkillsTab({ realLevels, onRefresh }) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <p style={{ fontSize: 11, color: '#5a3e1b', margin: 0, letterSpacing: '0.06em' }}>SKILLS</p>
-        <button onClick={handleRefresh} disabled={refreshing}
-          style={{
-            padding: '4px 10px', fontSize: 11, borderRadius: 0, cursor: refreshing ? 'default' : 'pointer',
-            fontFamily: 'inherit', border: '2px solid var(--btn-bd)',
-            background: refreshOk === false ? '#2a0a00' : 'var(--btn-bg)',
-            color: refreshOk === false ? '#ff6040' : 'var(--btn-fg)',
-            boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-          }}>
+        <Button onClick={handleRefresh} disabled={refreshing}
+          style={{ padding: '4px 10px', fontSize: 11,
+            background: refreshOk === false ? '#2a0a00' : undefined,
+            color: refreshOk === false ? '#ff6040' : undefined }}>
           {refreshing ? 'Atualizando...' : refreshOk === true ? 'Atualizado!' : refreshOk === false ? 'Erro' : 'Atualizar níveis'}
-        </button>
+        </Button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
         {ALL_SKILLS.map(sk => {
@@ -149,53 +145,33 @@ function EquipmentTab({ unlocked, obtainedEquipment, realLevels }) {
     <>
       {/* Style selector + Check BIS toggle on the same row */}
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 8, marginBottom: style === 'ranged' ? 8 : '1.25rem' }}>
-        <div style={{ display: 'flex', flex: 1, alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)' }}>
-          {['melee','ranged','mage'].map((s, i) => (
-            <Fragment key={s}>
-              {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 14, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-              <button onClick={() => { setStyle(s); setAmmoFilter(null) }} style={{
-                flex: 1, padding: '7px 10px', fontSize: 12, border: 'none', borderRadius: 0,
-                fontFamily: 'inherit', cursor: 'pointer', textTransform: 'capitalize',
-                background: style === s ? 'var(--c-panel)' : 'transparent',
-                color: style === s ? 'var(--c-text)' : 'var(--c-panel)',
-                fontWeight: style === s ? 700 : 400,
-              }}>{s}</button>
-            </Fragment>
-          ))}
-        </div>
-        <button onClick={() => setCheckBIS(b => !b)} style={{
-          padding: '6px 10px', fontSize: 10, borderRadius: 0, cursor: 'pointer',
-          fontFamily: 'inherit', border: '2px solid var(--btn-bd)', whiteSpace: 'nowrap',
-          background: checkBIS ? '#1a3a10' : 'var(--btn-bg)',
-          color: checkBIS ? '#90d060' : 'var(--btn-fg)',
-          boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-          fontWeight: checkBIS ? 700 : 400,
-        }}>
+        <TabGroup style={{ flex: 1 }}
+          tabs={[{ id: 'melee', label: 'Melee' }, { id: 'ranged', label: 'Ranged' }, { id: 'mage', label: 'Mage' }]}
+          active={style}
+          onChange={s => { setStyle(s); setAmmoFilter(null) }}
+        />
+        <Button onClick={() => setCheckBIS(b => !b)}
+          style={{ padding: '6px 10px', fontSize: 10, whiteSpace: 'nowrap',
+            background: checkBIS ? '#1a3a10' : undefined,
+            color: checkBIS ? '#90d060' : undefined,
+            fontWeight: checkBIS ? 700 : 400 }}>
           {checkBIS ? '✓ BIS Check' : 'Check BIS'}
-        </button>
+        </Button>
       </div>
 
       {/* Ammo type filter — only for ranged */}
       {style === 'ranged' && (
-        <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid var(--c-border)', borderTop: 'none', marginBottom: '1.25rem' }}>
-          {[
-            { id: null,     label: 'Todos' },
-            { id: 'arrow',  label: 'Arrows' },
-            { id: 'bolt',   label: 'Bolts' },
-            { id: 'dart',   label: 'Darts' },
-          ].map((a, i) => (
-            <Fragment key={String(a.id)}>
-              {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 14, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-              <button onClick={() => setAmmoFilter(a.id)} style={{
-                flex: 1, padding: '5px 8px', fontSize: 10, border: 'none', borderRadius: 0,
-                fontFamily: 'inherit', cursor: 'pointer',
-                background: ammoFilter === a.id ? 'var(--c-mid)' : 'transparent',
-                color: ammoFilter === a.id ? 'var(--c-text)' : 'var(--c-panel)',
-                fontWeight: ammoFilter === a.id ? 700 : 400,
-              }}>{a.label}</button>
-            </Fragment>
-          ))}
-        </div>
+        <TabGroup size="sm"
+          tabs={[
+            { id: null,    label: 'Todos' },
+            { id: 'arrow', label: 'Arrows' },
+            { id: 'bolt',  label: 'Bolts' },
+            { id: 'dart',  label: 'Darts' },
+          ]}
+          active={ammoFilter}
+          onChange={setAmmoFilter}
+          style={{ borderTop: 'none', marginBottom: '1.25rem' }}
+        />
       )}
 
       {/* Warning when no level data in check BIS mode */}
@@ -430,22 +406,9 @@ export default function UnlocksTab({ unlocked, realLevels, onRefresh, obtainedEq
   ]
 
   return (
-    <div style={{ ...parch, padding: 0, overflow: 'hidden' }}>
-      {/* Tab bar inside the card */}
-      <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', borderBottom: '2px solid var(--c-border)' }}>
-        {SUB_TABS.map((t, i) => (
-          <Fragment key={t.id}>
-            {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 16, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-            <button onClick={() => setSub(t.id)} style={{
-              padding: '8px 12px', fontSize: 11, border: 'none', borderRadius: 0,
-              fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-              background: sub === t.id ? 'var(--c-panel)' : 'transparent',
-              color: sub === t.id ? 'var(--c-text)' : 'var(--c-panel)',
-              fontWeight: sub === t.id ? 700 : 400,
-            }}>{t.label}</button>
-          </Fragment>
-        ))}
-      </div>
+    <Card padding={0} style={{ overflow: 'hidden' }}>
+      <TabGroup tabs={SUB_TABS} active={sub} onChange={setSub} size="sm"
+        style={{ border: 'none', borderBottom: '2px solid var(--c-border)' }} />
 
       {/* Content area */}
       <div style={{ padding: '1.25rem' }}>
@@ -454,6 +417,6 @@ export default function UnlocksTab({ unlocked, realLevels, onRefresh, obtainedEq
         {sub === 'others'    && <OthersTab    unlocked={unlocked} />}
         {sub === 'general'   && <GeneralTab   unlocked={unlocked} />}
       </div>
-    </div>
+    </Card>
   )
 }

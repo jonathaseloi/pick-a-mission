@@ -1,6 +1,7 @@
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { MONSTERS, TIERS, TIER_META } from '../data/monsters.js'
 import { parchment } from '../constants.js'
+import { Button, Modal, Card, TabGroup } from './ui/index.js'
 
 const parch = parchment
 
@@ -243,34 +244,21 @@ function ActiveHunt({ hunt, onAddKills, onFinish, collectionLog }) {
             borderRadius: 0, border: '1px solid var(--c-accent)',
             background: 'var(--c-panel)', color: 'var(--c-text)', fontFamily: 'inherit', outline: 'none',
           }} />
-        <button onClick={handleAdd} style={{
-          padding: '10px 20px', fontSize: 13, borderRadius: 0,
-          border: '2px solid var(--btn-bd)', fontWeight: 600, background: 'var(--btn-bg)',
-          color: 'var(--btn-fg)', fontFamily: 'inherit', cursor: 'pointer',
-          boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-        }}>+ Registrar</button>
+        <Button onClick={handleAdd} style={{ padding: '10px 20px' }}>+ Registrar</Button>
       </div>
 
       {/* Quick add */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
         {[1, 5, 10, 25, 50, 100].map(n => (
-          <button key={n} onClick={() => onAddKills(n)} style={{
-            padding: '5px 12px', fontSize: 12, borderRadius: 0,
-            border: '1px solid #6a4820', background: 'transparent',
-            color: 'var(--btn-bg)', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 500,
-          }}>+{n}</button>
+          <Button key={n} variant="secondary" onClick={() => onAddKills(n)}
+            style={{ padding: '5px 12px', fontSize: 12, color: 'var(--btn-bg)' }}>
+            +{n}
+          </Button>
         ))}
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={onFinish} style={{
-          flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
-          border: '2px solid var(--btn-bd)', background: 'var(--btn-bg)', color: 'var(--btn-fg)',
-          fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
-          boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-        }}>Finalizar Hunt</button>
-      </div>
+      <Button onClick={onFinish} style={{ width: '100%', padding: '10px' }}>Finalizar Hunt</Button>
     </div>
   )
 }
@@ -279,59 +267,44 @@ function ActiveHunt({ hunt, onAddKills, onFinish, collectionLog }) {
 function ConfirmModal({ monster, onConfirm, onCancel }) {
   const meta = TIER_META[monster.tier]
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 1000, padding: '1rem',
-    }}>
-      <div style={{ ...parch, padding: '1.5rem', maxWidth: 380, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-          <div style={{ width: 110, height: 110, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <MonsterImg src={monster.img} name={monster.name} size={90} />
-          </div>
-        </div>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 4px', textAlign: 'center' }}>
-          {monster.name}
-        </h2>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
-          <Tag {...meta}>{meta.label}</Tag>
-          {monster.slayerReq && <Tag color="#5a2db0" bg="#f0e8ff" border="#b39ddb">Slayer Task</Tag>}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-          {[
-            { label: '🪙 Coins/kill', value: monster.coinsPerKill },
-            { label: 'Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}kc` },
-          ].map(({ label, value }) => (
-            <div key={label} style={{ background: 'var(--c-panel)', borderRadius: 0, padding: '6px 10px', border: '1px solid var(--c-accent)' }}>
-              <div style={{ fontSize: 10, color: 'var(--c-muted)' }}>{label}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--c-text)' }}>{value}</div>
-            </div>
-          ))}
-        </div>
-        <a href={monster.wiki} target="_blank" rel="noopener noreferrer"
-          style={{ display: 'block', textAlign: 'center', fontSize: 12, color: 'var(--c-muted)', marginBottom: 12 }}>
-          Ver loot e locais na Wiki ↗
-        </a>
-        {monster.slayerReq && (
-          <p style={{ fontSize: 11, color: '#5a2db0', textAlign: 'center', background: '#f0e8ff', border: '1px solid #b39ddb', borderRadius: 6, padding: '5px 10px', marginBottom: 10 }}>
-            ⚠️ Requer Slayer Task ativa no jogo
-          </p>
-        )}
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={onCancel} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
-            border: '1px solid #6a4820', background: 'transparent',
-            color: 'var(--c-muted)', fontFamily: 'inherit', cursor: 'pointer',
-          }}>Cancelar</button>
-          <button onClick={() => onConfirm(monster)} style={{
-            flex: 1, padding: '10px', fontSize: 13, borderRadius: 0,
-            border: '2px solid var(--btn-bd)', background: 'var(--btn-bg)', color: 'var(--btn-fg)',
-            fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
-            boxShadow: 'inset 2px 2px 0 #6a4820, inset -2px -2px 0 var(--btn-bd)',
-          }}>Iniciar Hunt!</button>
+    <Modal onClose={onCancel}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+        <div style={{ width: 110, height: 110, background: 'var(--c-mid)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <MonsterImg src={monster.img} name={monster.name} size={90} />
         </div>
       </div>
-    </div>
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-text)', margin: '0 0 4px', textAlign: 'center' }}>
+        {monster.name}
+      </h2>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
+        <Tag {...meta}>{meta.label}</Tag>
+        {monster.slayerReq && <Tag color="#5a2db0" bg="#f0e8ff" border="#b39ddb">Slayer Task</Tag>}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+        {[
+          { label: '🪙 Coins/kill', value: monster.coinsPerKill },
+          { label: 'Bônus', value: `+${monster.bonusAmount} / ${monster.bonusEvery}kc` },
+        ].map(({ label, value }) => (
+          <div key={label} style={{ background: 'var(--c-panel)', borderRadius: 0, padding: '6px 10px', border: '1px solid var(--c-accent)' }}>
+            <div style={{ fontSize: 10, color: 'var(--c-muted)' }}>{label}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--c-text)' }}>{value}</div>
+          </div>
+        ))}
+      </div>
+      <a href={monster.wiki} target="_blank" rel="noopener noreferrer"
+        style={{ display: 'block', textAlign: 'center', fontSize: 12, color: 'var(--c-muted)', marginBottom: 12 }}>
+        Ver loot e locais na Wiki ↗
+      </a>
+      {monster.slayerReq && (
+        <p style={{ fontSize: 11, color: '#5a2db0', textAlign: 'center', background: '#f0e8ff', border: '1px solid #b39ddb', borderRadius: 6, padding: '5px 10px', marginBottom: 10 }}>
+          ⚠️ Requer Slayer Task ativa no jogo
+        </p>
+      )}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Button variant="secondary" onClick={onCancel} style={{ flex: 1, padding: '10px' }}>Cancelar</Button>
+        <Button onClick={() => onConfirm(monster)} style={{ flex: 1, padding: '10px' }}>Iniciar Hunt!</Button>
+      </div>
+    </Modal>
   )
 }
 
@@ -463,7 +436,7 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
     .sort(SORT_FNS[sortOrder] ?? SORT_FNS.tier)
 
   return (
-    <div style={{ ...parch, padding: '1.25rem' }}>
+    <Card>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text)', margin: 0 }}>Hunt</h2>
         <span style={{ fontSize: 11, color: 'var(--c-muted)' }}>CB {combatLevel} · {MONSTERS.filter(m => huntUnlocked.has(m.id)).length} monstros</span>
@@ -496,24 +469,9 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
           {/* Controls row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
             {/* Sort */}
-            <div style={{ display: 'flex', alignItems: 'stretch', background: 'var(--c-accent)', border: '2px solid #3a2e20' }}>
-              {[
-                { id: 'tier',  label: 'Tier' },
-                { id: 'coins', label: 'Coins' },
-                { id: 'name',  label: 'Nome' },
-              ].map((s, i) => (
-                <Fragment key={s.id}>
-                  {i > 0 && <span style={{ color: 'var(--c-mid)', fontSize: 14, alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>|</span>}
-                  <button onClick={() => setSortOrder(s.id)} style={{
-                    padding: '5px 10px', fontSize: 11, border: 'none', borderRadius: 0,
-                    fontFamily: 'inherit', cursor: 'pointer', whiteSpace: 'nowrap',
-                    background: sortOrder === s.id ? 'var(--c-panel)' : 'transparent',
-                    color: sortOrder === s.id ? 'var(--c-text)' : 'var(--c-panel)',
-                    fontWeight: sortOrder === s.id ? 700 : 400,
-                  }}>{s.label}</button>
-                </Fragment>
-              ))}
-            </div>
+            <TabGroup size="sm" style={{ border: '2px solid #3a2e20' }}
+              tabs={[{ id: 'tier', label: 'Tier' }, { id: 'coins', label: 'Coins' }, { id: 'name', label: 'Nome' }]}
+              active={sortOrder} onChange={setSortOrder} />
 
             {/* Slayer toggle */}
             <label style={{
@@ -552,6 +510,6 @@ export default function HuntTab({ combatLevel, hunt, onHuntUpdate, onCoinsChange
       )}
 
       <KillFeed events={feedEvents} onDismiss={id => setFeedEvents(prev => prev.filter(e => e.id !== id))} />
-    </div>
+    </Card>
   )
 }
